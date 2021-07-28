@@ -1,0 +1,11 @@
+{
+  "name": "lucas-messenger",
+  "title": "Lucas's Almost Magnificent Messenger",
+  "description": "Provides a simple messenger interface to easily whisper messages.<br>Thanks to BerlinAtmospheres (https://youtu.be/syG19v7pJC4?t=26) for the Pst-pst sound.",
+  "author": "Lucas",
+  "version": "2.1.3",
+  "minimumCoreVersion": "0.7.9",
+  "compatibleCoreVersion": "0.8.8",
+  "scripts": ["./scripts/main.js"],
+  "styles": ["./css/messenger.css"]
+}

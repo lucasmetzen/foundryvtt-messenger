@@ -1,0 +1,92 @@
+div.window-app.messenger {
+  width: 637px; /* 631px is minimum but doesn't work with minimizing the window */
+  height: 470px; /* 4 players: 470 */
+}
+
+#messenger {
+  /* center all elements */
+  text-align: center;
+}
+
+#messenger ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+#messenger li {
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+#messenger input[type="checkbox"][class~="user-checkmark"] {
+  display: none;
+}
+
+#messenger label {
+  display: block;
+  position: relative;
+  /* padding: 10px;
+  margin: 10px; */
+  cursor: pointer;
+}
+
+#messenger label:before {
+  background-color: white;
+  color: white;
+  content: " ";
+  display: block;
+  border-radius: 50%;
+  border: 1px solid green; /* grey */
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  width: 25px;
+  height: 25px;
+  text-align: center;
+  line-height: 28px;
+  transform: scale(0);
+  z-index: 1;
+}
+
+#messenger label img {
+  height: 75px;
+  width: 75px;
+  transform-origin: 50% 50%;
+  border-width: 2px;
+}
+
+#messenger :checked + label {
+  border-color: #ddd;
+}
+
+#messenger :checked + label:before {
+  content: "✓";
+  background-color: green; /* grey */
+  transform: scale(1);
+  font-weight: bold;
+}
+
+#messenger :checked + label img {
+  transform: scale(0.9);
+  box-shadow: 0 0 5px #333;
+  z-index: -1;
+}
+
+#history /* TODO: rename these about identifies */ {
+  text-align: left;
+}
+
+#messenger .players {
+  float: left;
+  width: 75px;
+  margin-right: 8px; /* same as application window's inner padding */
+}
+
+#messenger .chat-elements {
+  float: left;
+}
+
+#messenger textarea {
+  resize: none;
+}
