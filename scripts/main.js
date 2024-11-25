@@ -1,8 +1,7 @@
-// export const NAME = "name-of-module";
-const NAME = "lucas-messenger",
+const MODULE_ID = "lucas-messenger",
 	TITLE = "Lucas's Almost Magnificent Messenger", // or Lucas's Almost Awesome Messenger; or Lucas's Awesome Messenger Extension
 	TITLE_ABBREVIATION = "LAMM",
-	PATH = `modules/${NAME}`,
+	PATH = `modules/${MODULE_ID}`,
 	TEMPLATE_PATH = `${PATH}/templates`,
 	TEMPLATES = {
 		history: `${TEMPLATE_PATH}/history.hbs`,
@@ -37,83 +36,20 @@ class LAMM extends FormApplication { /* TODO: A subclass of the FormApplication 
 
 	static setup() {
 		const newLAMM = new LAMM();
-		newLAMM.history = []
+		newLAMM.history = [];
 		//newLAMM.window = new LAMMwindow();
 		window.LAMM = newLAMM;
-        //let template = Handlebars.compile('{{> modules/token-action-hud/templates/tagdialog.hbs}}');
 		log('set up');
 	}
 
 	static ready() {
-	    /* operations = {
-	        isMaster: () => PseudoClock.isMaster,
-	        isRunning: PseudoClock.isRunning,
-	        doAt: ElapsedTime.doAt,
-	        doIn: ElapsedTime.doIn,
-	        doEvery: ElapsedTime.doEvery,
-	        doAtEvery: ElapsedTime.doAtEvery,
-	        reminderAt: ElapsedTime.reminderAt,
-	        reminderIn: ElapsedTime.reminderIn,
-	        reminderEvery: ElapsedTime.reminderEvery,
-	        reminderAtEvery: ElapsedTime.reminderAtEvery,
-	        notifyAt: ElapsedTime.notifyAt,
-	        notifyIn: ElapsedTime.notifyIn,
-	        notifyEvery: ElapsedTime.notifyEvery,
-	        notifyAtEvery: ElapsedTime.notifyAtEvery,
-	        clearTimeout: ElapsedTime.gclearTimeout,
-	        getTimeString: ElapsedTime.currentTimeString,
-	        getTime: ElapsedTime.currentTimeString,
-	        queue: ElapsedTime.showQueue,
-	        chatQueue: ElapsedTime.chatQueue,
-	        ElapsedTime: ElapsedTime,
-	        DTM: DTMod,
-	        DTC: DTCalc,
-	        DT: DateTime,
-	        DMf: DTMod.create,
-	        DTf: DateTime.create,
-	        DTNow: DateTime.now,
-	        calendars: calendars,
-	        _notifyEvent: PseudoClock.notifyEvent,
-	        startRunning: PseudoClock.startRealTime,
-	        stopRunning: PseudoClock.stopRealTime,
-	        mutiny: PseudoClock.mutiny,
-	        advanceClock: ElapsedTime.advanceClock,
-	        advanceTime: ElapsedTime.advanceTime,
-	        setClock: PseudoClock.setClock,
-	        setTime: ElapsedTime.setTime,
-	        setAbsolute: ElapsedTime.setAbsolute,
-	        setDateTime: ElapsedTime.setDateTime,
-	        flushQueue: ElapsedTime._flushQueue,
-	        reset: ElapsedTime._initialize,
-	        resetCombats: ElapsedTime.resetCombats,
-	        status: ElapsedTime.status,
-	        pc: PseudoClock,
-	        showClock: SimpleCalendarDisplay.showClock,
-	        CountDown: CountDown,
-	        RealTimeCountDown: RealTimeCountDown,
-	        _save: ElapsedTime._save,
-	        _load: ElapsedTime._load,
-	    };
-	    //@ts-ignore
-	    game.Gametime = operations;
-	    //@ts-ignore
-	    window.Gametime = operations;*/
-		window.LAMM.users = window.LAMM.computeUsersData(); // DEBUG: das kann so nicht sinn der sache sein...
+		window.LAMM.users = window.LAMM.computeUsersData(); // TODO: Look into this again as this doesn't seem to be the intended way...
 		window.LAMM.pstSound.load();
 		log('ready')
 	}
 
 	static get defaultOptions() {
 		const options = super.defaultOptions;
-	    /*return mergeObject(super.defaultOptions, {
-	      width: 560,
-	      height: 420,
-	      classes: ["dnd5e", "sheet", "item"],
-	      resizable: true,
-	      scrollY: [".tab.details"],
-	      tabs: [{navSelector: ".tabs", contentSelector: ".sheet-body", initial: "description"}]
-	    });*/
-
 		options.title = TITLE;
 		options.classes = options.classes.concat('messenger');
 		options.template = TEMPLATES.whispers;
@@ -123,11 +59,11 @@ class LAMM extends FormApplication { /* TODO: A subclass of the FormApplication 
 		options.closeOnSubmit = false;
 		options.submitOnClose = false;
 		options.submitOnUnfocus = false;
-		// options.buttons = { // isn't doing anything
 		return options;
 	}
 
 	beautifyHistory() {
+		// TODO: I think this is called too often and the output should be cached if it isn't already.
 		let beautified = [];
 		for (let msg of this.history) {
 			beautified.push(
@@ -258,11 +194,6 @@ class LAMM extends FormApplication { /* TODO: A subclass of the FormApplication 
 		await this.renderHistoryPartial();
 	}
 
-	/*convertTimestampToTime(timestamp) {
-		let date = new Date(data.data.timestamp);
-		return date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-	}*/
-
 	currentTime() {
 		function padLeadingZero(num) {
 			return ('00' + num).slice(-2);
@@ -319,55 +250,9 @@ Hooks.on('renderSceneControls', (controls, html) => {
 	html.find('.control-tools').find('.scene-control').last().after(messengerBtn);
 });
 
-/*
-Hooks.on("getSceneControlButtons", (controls) => {
-	log('controls', controls)
-	controls.push({
-		icon: "fas fa-comment-dots",
-		name: "lamm",
-		title: TITLE,
-		visible: true,
-		tools: [
-			{
-				name: "lamm-nested-01",
-				title: "LAMM nested",
-				icon: "fas fa-hat-wizard",
-				onClick: () => {
-					log('control button clicked')
-					window.LAMM.render();
-				},
-				button: true,
-				active: true
-			}
-		],
-		layer: 'lamm-layer',  // THIS FAILS because the layer is not defined.
-		activeTool: 'lamm-nested-01'
-	})
-})
-*/
-
-/*
-Hooks.on("getSceneControlButtons", (controls) => {
-	// https://foundryvtt.com/api/functions/hookEvents.getSceneControlButtons.html
-	// https://foundryvtt.com/api/interfaces/client.SceneControl.html
-	// It does not seem to be possible to add a non-menu button to the controls this way.
-	controls[0].tools.push({
-		icon: "fas fa-comment-dots",
-		name: "lamm",
-		title: TITLE,
-		visible: true,
-		button: true,
-		onClick: () => {
-			log('control button clicked')
-			window.LAMM.render();
-		}
-	})
-})
-*/
-
 Hooks.on("createChatMessage", async (data, options, senderUserId) => {
 	// const showNotif = game.settings.get(moduleName, showWhisperNotificationsKey);
-	const isToMe = (data?.data?.whisper ?? []).includes(game.userId),
+	const isToMe = (data?.whisper ?? []).includes(game.userId),
 		isFromMe = senderUserId === game.userId,
 		LAMM = window.LAMM;
 	/*if (override && isToMe) {
@@ -375,7 +260,8 @@ Hooks.on("createChatMessage", async (data, options, senderUserId) => {
 	}*/
 
 	if (!isToMe || isFromMe) return;
-	if (data.data.content.indexOf('<div>') > -1) return; // ignore privat messages (to GM) that are roll results or Midi-QOL cards
+	// TODO: re-add the following:
+	// if (data.data.content.indexOf('<div>') > -1) return; // ignore privat messages (to GM) that are roll results or Midi-QOL cards
 
 	/* ui.notifications.info(
 		`Whisper from ${data.user.data.name}`,
@@ -393,40 +279,3 @@ Hooks.once('ready', LAMM.ready);
 /* Hooks.on('renderPlayerList', () => {
 	window.LAMM.users = window.LAMM.computeUsersData(); // update player list when user (dis)connects
 } */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-    static getSceneControlButtons(buttons) {
-        let tokenButton = buttons.find(b => b.name == "token")
-
-        if (tokenButton) {
-            tokenButton.tools.push({
-                name: "request-roll",
-                title: game.i18n.localize('LMRTFY.ControlTitle'),
-                icon: "fas fa-dice-d20",
-                visible: game.user.isGM,
-                onClick: () => LMRTFY.requestRoll(),
-                button: true
-            });
-        }
-    }
-}
-
-Hooks.on('getSceneControlButtons', LMRTFY.getSceneControlButtons);
-*/
