@@ -312,21 +312,60 @@ Hooks.on('renderSceneControls', (controls, html) => {
 			<i class="fas fa-comment-dots"></i>
 		</li>`
 	);
-	html.append(messengerBtn);
 	messengerBtn[0].addEventListener('click', evt => {
-		evt.stopPropagation();
-		//return new LAMM().render(true);
+		// evt.stopPropagation();
+		// return new LAMM().render(true);
 		window.LAMM.render();
 	});
 
-    /* Hooks.once('init', async function () {
-	$('#logo').after(`<button type='button' id="dev-mode-button">🧙</button>`);
-    $('#dev-mode-button').on('click', () => {
-        const devModeConfig = new DevModeConfig();
-        devModeConfig.render(true);
-    }); */
+	html.find('.control-tools').find('.scene-control').last().after(messengerBtn);
 });
 
+/*
+Hooks.on("getSceneControlButtons", (controls) => {
+	log('controls', controls)
+	controls.push({
+		icon: "fas fa-comment-dots",
+		name: "lamm",
+		title: TITLE,
+		visible: true,
+		tools: [
+			{
+				name: "lamm-nested-01",
+				title: "LAMM nested",
+				icon: "fas fa-hat-wizard",
+				onClick: () => {
+					log('control button clicked')
+					window.LAMM.render();
+				},
+				button: true,
+				active: true
+			}
+		],
+		layer: 'lamm-layer',  // THIS FAILS because the layer is not defined.
+		activeTool: 'lamm-nested-01'
+	})
+})
+*/
+
+/*
+Hooks.on("getSceneControlButtons", (controls) => {
+	// https://foundryvtt.com/api/functions/hookEvents.getSceneControlButtons.html
+	// https://foundryvtt.com/api/interfaces/client.SceneControl.html
+	// It does not seem to be possible to add a non-menu button to the controls this way.
+	controls[0].tools.push({
+		icon: "fas fa-comment-dots",
+		name: "lamm",
+		title: TITLE,
+		visible: true,
+		button: true,
+		onClick: () => {
+			log('control button clicked')
+			window.LAMM.render();
+		}
+	})
+})
+*/
 
 Hooks.on("createChatMessage", async (data, options, senderUserId) => {
 	// const showNotif = game.settings.get(moduleName, showWhisperNotificationsKey);
