@@ -22,6 +22,7 @@ class LAMM extends FormApplication { /* TODO: A subclass of the FormApplication 
 		super(app);
 		// this.users = this.computeUsersData(); // DEBUG: deactivated for .setup() test
 		this.history = [];
+		this.pstSound = new Sound("modules/lucas-messenger/sounds/pst-pst.ogg");
 		// this.window = new LAMMwindow();
 	}
 
@@ -98,6 +99,7 @@ class LAMM extends FormApplication { /* TODO: A subclass of the FormApplication 
 	    //@ts-ignore
 	    window.Gametime = operations;*/
 		window.LAMM.users = window.LAMM.computeUsersData(); // DEBUG: das kann so nicht sinn der sache sein...
+		window.LAMM.pstSound.load();
 		log('ready')
 	}
 
@@ -196,8 +198,7 @@ class LAMM extends FormApplication { /* TODO: A subclass of the FormApplication 
 			// resulting in multiple messages with unique document IDs but to the same recipient.
 			let chatData = {
 				user: game.user.id,
-				content: msg,
-				sound: "modules/lucas-messenger/sounds/pst-pst.mp3"
+				content: msg
 			};
 			chatData.whisper = ChatMessage.getWhisperRecipients(username);
 			ChatMessage.create(chatData);
@@ -251,6 +252,7 @@ class LAMM extends FormApplication { /* TODO: A subclass of the FormApplication 
 
 	async handleIncomingPrivateMessage(data) {
 		this.addIncomingMessageToHistory(data);
+		await window.LAMM.pstSound.play();
 		if (!this.rendered) return this.render();
 
 		await this.renderHistoryPartial();
@@ -375,7 +377,6 @@ Hooks.on("createChatMessage", async (data, options, senderUserId) => {
 	if (!isToMe || isFromMe) return;
 	if (data.data.content.indexOf('<div>') > -1) return; // ignore privat messages (to GM) that are roll results or Midi-QOL cards
 
-	// TODO: play "modules/lucas-messenger/sounds/pst-pst.mp3" here instead of on sending the message
 	/* ui.notifications.info(
 		`Whisper from ${data.user.data.name}`,
 		{ permanent: true },
