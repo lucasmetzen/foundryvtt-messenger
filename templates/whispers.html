@@ -3,8 +3,8 @@
 	<div class="players">
 		<ul>
 			{{#each users}}
-			<li>
-				<input type="checkbox" id="user-{{this.name}}" class="user-checkmark" />
+			<li {{#unless this.active}} class="offline" {{/unless}}>
+				<input type="checkbox" id="user-{{this.name}}" class="user-checkmark" {{#unless this.active}} disabled {{/unless}} />
 				<label for="user-{{this.name}}">
 					<img src="{{this.avatar}}" style="border-color: {{this.color}}"/><br/>
 					{{this.name}}

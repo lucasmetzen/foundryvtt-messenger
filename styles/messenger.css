@@ -54,6 +54,7 @@ div.window-app.messenger {
   width: 75px;
   transform-origin: 50% 50%;
   border-width: 2px;
+  border-style: ridge;
 }
 
 #messenger :checked + label {
@@ -71,10 +72,21 @@ div.window-app.messenger {
   transform: scale(0.9);
   box-shadow: 0 0 5px #333;
   z-index: -1;
+  border-style: inset;
+}
+
+#messenger .offline label {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+#messenger .offline label img {
+  border-style: dotted;
 }
 
 #history /* TODO: rename these about identifies */ {
   text-align: left;
+  height: 100%;
 }
 
 #messenger .players {
@@ -85,6 +97,7 @@ div.window-app.messenger {
 
 #messenger .chat-elements {
   float: right;
+  height: 100%;
 }
 
 #messenger textarea {
