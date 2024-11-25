@@ -159,27 +159,20 @@ class LAMM extends FormApplication { /* TODO: A subclass of the FormApplication 
 	}
 
 	render(...args) {
-	    // render(force, context={}) {
-		// log('rendered', this.rendered);
 		if (!this.rendered) return super.render(true, ...args);
-	}
-
-	isCurrentUser(user) {
-		return user.data._id == game.user._id;
 	}
 
 	computeUsersData() {
 		let usersData = [];
-		for (let user of game.users.entities) {
-			if (this.isCurrentUser(user) || (user.data.name == "DM's Helper") || (user.data.role == 0)) continue;
-			// user roles: 0 = none, 1 = player, 2 = trusted, 3 = assistant, 4 = gamemaster
+		for (let user of game.users) {
+			if (user.isSelf || (user.name == "DM's Helper") || user.isBanned) continue;
 
 			let data = {
-				name: user.data.name,
-				id: user.data._id,
-				avatar: user.data.avatar,
-				color: user.data.color,
-				active: user.data.active,
+				name: user.name,
+				id: user.id,
+				avatar: user.avatar,
+				color: user.color,
+				active: user.active // user currently connected
 			};
 			usersData.push(data);
 		}
@@ -187,6 +180,9 @@ class LAMM extends FormApplication { /* TODO: A subclass of the FormApplication 
 	}
 
 	getUserNameFromId(id) {
+		// TODO: this is called way too often
+		/*log('getUserNameFromId > id', id)
+		log('getUserNameFromId > users', window.LAMM.users)*/
 		return window.LAMM.users.find(user => user.id === id).name;
 	}
 
@@ -195,14 +191,15 @@ class LAMM extends FormApplication { /* TODO: A subclass of the FormApplication 
 	}
 
 	sendWhisperTo(userNames, msg) {
-		let chatData = {
-			user: game.user._id,
-			content: msg,
-			sound: "modules/lucas-messenger/sounds/pst-pst.mp3"
-		};
-
-		for (let user of userNames) {
-			chatData.whisper = ChatMessage.getWhisperRecipients(user);
+		for (let username of userNames) {
+			// chatData needs to be defined for each message as the .whisper assignment is not overwritten on subsequent loops,
+			// resulting in multiple messages with unique document IDs but to the same recipient.
+			let chatData = {
+				user: game.user.id,
+				content: msg,
+				sound: "modules/lucas-messenger/sounds/pst-pst.mp3"
+			};
+			chatData.whisper = ChatMessage.getWhisperRecipients(username);
 			ChatMessage.create(chatData);
 		}
 	}
@@ -273,11 +270,10 @@ class LAMM extends FormApplication { /* TODO: A subclass of the FormApplication 
 	}
 
 	addIncomingMessageToHistory(data) {
-		// const time = this.convertTimestampToTime(data.data.timestamp);
 		const time = this.currentTime();
-		this.history.push([time, 'in', data.data.user, data.data.content]);
-        //if (LMRTFY.requestor === undefined)
-        //    LMRTFY.requestor = new LMRTFYRequestor();
+		// TODO: data.user.id should be replaced by data.author.name and the whole process simplified
+		// TODO: data.user is also now deprecated since v12 in favor of data.author.
+		this.history.push([time, 'in', data.user.id, data.content]);
 	}
 
 	addOutgoingMessageToHistory(recipients, msg) {
