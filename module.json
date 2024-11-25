@@ -1,8 +1,10 @@
 {
   "id": "lucas-messenger",
   "title": "Lucas's Almost Magnificent Messenger",
-  "description": "Provides a simple messenger interface to easily whisper messages.<br />Thanks to BerlinAtmospheres (https://youtu.be/syG19v7pJC4?t=26) for the Pst-pst sound.",
-  "version": "3.0.0",
+  "description": "Provides a simple messenger interface to easily whisper messages.",
+  "version": "#{VERSION}#",
+  "library": "false",
+  "manifestPlusVersion": "1.2.0",
   "compatibility": {
     "minimum": "12",
     "verified": "12"
@@ -10,13 +12,29 @@
   "authors": [
     {
       "name": "Lucas",
-      "flags": {}
+      "url": "https://github.com/lucasmetzen",
+      "discord": "zandaarl"
     }
   ],
+  "relationships": {
+    "systems": [],
+    "requires": []
+  },
   "esmodules": [
-    "scripts/main.js"
+    "scripts/module.js"
   ],
   "styles": [
-    "css/messenger.css"
-  ]
+    "styles/messenger.css"
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "languages/en.json"
+    }
+  ],
+  "url": "#{URL}#",
+  "manifest": "#{MANIFEST}#",
+  "download": "#{DOWNLOAD}#",
+  "readme": "README.md"
 }
