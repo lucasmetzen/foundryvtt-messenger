@@ -2,7 +2,7 @@
   "id": "lucas-messenger",
   "title": "Lucas's Almost Magnificent Messenger",
   "description": "Provides a simple messenger interface to easily whisper messages.",
-  "version": "3.0.0",
+  "version": "#{VERSION}#",
   "library": "false",
   "manifestPlusVersion": "1.2.0",
   "compatibility": {
@@ -32,5 +32,9 @@
       "name": "English",
       "path": "languages/en.json"
     }
-  ]
+  ],
+  "url": "#{URL}#",
+  "manifest": "#{MANIFEST}#",
+  "download": "#{DOWNLOAD}#",
+  "readme": "README.md"
 }
