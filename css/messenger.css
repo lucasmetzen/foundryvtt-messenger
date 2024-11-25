@@ -1,6 +1,6 @@
 div.window-app.messenger {
-  width: 637px; /* 631px is minimum but doesn't work with minimizing the window */
-  height: 470px; /* 4 players: 470 */
+  width: 640px; /* 631px is minimum but doesn't work with minimizing the window */
+  height: 576px; /* 4 players: 470, 5 players: 576 */
 }
 
 #messenger {
@@ -84,7 +84,7 @@ div.window-app.messenger {
 }
 
 #messenger .chat-elements {
-  float: left;
+  float: right;
 }
 
 #messenger textarea {

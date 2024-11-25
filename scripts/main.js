@@ -1,8 +1,7 @@
-// export const NAME = "name-of-module";
-const NAME = "lucas-messenger",
+const MODULE_ID = "lucas-messenger",
 	TITLE = "Lucas's Almost Magnificent Messenger", // or Lucas's Almost Awesome Messenger; or Lucas's Awesome Messenger Extension
 	TITLE_ABBREVIATION = "LAMM",
-	PATH = `modules/${NAME}`,
+	PATH = `modules/${MODULE_ID}`,
 	TEMPLATE_PATH = `${PATH}/templates`,
 	TEMPLATES = {
 		history: `${TEMPLATE_PATH}/history.hbs`,
@@ -22,6 +21,7 @@ class LAMM extends FormApplication { /* TODO: A subclass of the FormApplication 
 		super(app);
 		// this.users = this.computeUsersData(); // DEBUG: deactivated for .setup() test
 		this.history = [];
+		this.pstSound = new Sound("modules/lucas-messenger/sounds/pst-pst.ogg");
 		// this.window = new LAMMwindow();
 	}
 
@@ -36,82 +36,20 @@ class LAMM extends FormApplication { /* TODO: A subclass of the FormApplication 
 
 	static setup() {
 		const newLAMM = new LAMM();
-		newLAMM.history = []
+		newLAMM.history = [];
 		//newLAMM.window = new LAMMwindow();
 		window.LAMM = newLAMM;
-        //let template = Handlebars.compile('{{> modules/token-action-hud/templates/tagdialog.hbs}}');
 		log('set up');
 	}
 
 	static ready() {
-	    /* operations = {
-	        isMaster: () => PseudoClock.isMaster,
-	        isRunning: PseudoClock.isRunning,
-	        doAt: ElapsedTime.doAt,
-	        doIn: ElapsedTime.doIn,
-	        doEvery: ElapsedTime.doEvery,
-	        doAtEvery: ElapsedTime.doAtEvery,
-	        reminderAt: ElapsedTime.reminderAt,
-	        reminderIn: ElapsedTime.reminderIn,
-	        reminderEvery: ElapsedTime.reminderEvery,
-	        reminderAtEvery: ElapsedTime.reminderAtEvery,
-	        notifyAt: ElapsedTime.notifyAt,
-	        notifyIn: ElapsedTime.notifyIn,
-	        notifyEvery: ElapsedTime.notifyEvery,
-	        notifyAtEvery: ElapsedTime.notifyAtEvery,
-	        clearTimeout: ElapsedTime.gclearTimeout,
-	        getTimeString: ElapsedTime.currentTimeString,
-	        getTime: ElapsedTime.currentTimeString,
-	        queue: ElapsedTime.showQueue,
-	        chatQueue: ElapsedTime.chatQueue,
-	        ElapsedTime: ElapsedTime,
-	        DTM: DTMod,
-	        DTC: DTCalc,
-	        DT: DateTime,
-	        DMf: DTMod.create,
-	        DTf: DateTime.create,
-	        DTNow: DateTime.now,
-	        calendars: calendars,
-	        _notifyEvent: PseudoClock.notifyEvent,
-	        startRunning: PseudoClock.startRealTime,
-	        stopRunning: PseudoClock.stopRealTime,
-	        mutiny: PseudoClock.mutiny,
-	        advanceClock: ElapsedTime.advanceClock,
-	        advanceTime: ElapsedTime.advanceTime,
-	        setClock: PseudoClock.setClock,
-	        setTime: ElapsedTime.setTime,
-	        setAbsolute: ElapsedTime.setAbsolute,
-	        setDateTime: ElapsedTime.setDateTime,
-	        flushQueue: ElapsedTime._flushQueue,
-	        reset: ElapsedTime._initialize,
-	        resetCombats: ElapsedTime.resetCombats,
-	        status: ElapsedTime.status,
-	        pc: PseudoClock,
-	        showClock: SimpleCalendarDisplay.showClock,
-	        CountDown: CountDown,
-	        RealTimeCountDown: RealTimeCountDown,
-	        _save: ElapsedTime._save,
-	        _load: ElapsedTime._load,
-	    };
-	    //@ts-ignore
-	    game.Gametime = operations;
-	    //@ts-ignore
-	    window.Gametime = operations;*/
-		window.LAMM.users = window.LAMM.computeUsersData(); // DEBUG: das kann so nicht sinn der sache sein...
+		window.LAMM.users = window.LAMM.computeUsersData(); // TODO: Look into this again as this doesn't seem to be the intended way...
+		window.LAMM.pstSound.load();
 		log('ready')
 	}
 
 	static get defaultOptions() {
 		const options = super.defaultOptions;
-	    /*return mergeObject(super.defaultOptions, {
-	      width: 560,
-	      height: 420,
-	      classes: ["dnd5e", "sheet", "item"],
-	      resizable: true,
-	      scrollY: [".tab.details"],
-	      tabs: [{navSelector: ".tabs", contentSelector: ".sheet-body", initial: "description"}]
-	    });*/
-
 		options.title = TITLE;
 		options.classes = options.classes.concat('messenger');
 		options.template = TEMPLATES.whispers;
@@ -121,11 +59,11 @@ class LAMM extends FormApplication { /* TODO: A subclass of the FormApplication 
 		options.closeOnSubmit = false;
 		options.submitOnClose = false;
 		options.submitOnUnfocus = false;
-		// options.buttons = { // isn't doing anything
 		return options;
 	}
 
 	beautifyHistory() {
+		// TODO: I think this is called too often and the output should be cached if it isn't already.
 		let beautified = [];
 		for (let msg of this.history) {
 			beautified.push(
@@ -159,27 +97,20 @@ class LAMM extends FormApplication { /* TODO: A subclass of the FormApplication 
 	}
 
 	render(...args) {
-	    // render(force, context={}) {
-		// log('rendered', this.rendered);
 		if (!this.rendered) return super.render(true, ...args);
-	}
-
-	isCurrentUser(user) {
-		return user.data._id == game.user._id;
 	}
 
 	computeUsersData() {
 		let usersData = [];
-		for (let user of game.users.entities) {
-			if (this.isCurrentUser(user) || (user.data.name == "DM's Helper") || (user.data.role == 0)) continue;
-			// user roles: 0 = none, 1 = player, 2 = trusted, 3 = assistant, 4 = gamemaster
+		for (let user of game.users) {
+			if (user.isSelf || (user.name == "DM's Helper") || user.isBanned) continue;
 
 			let data = {
-				name: user.data.name,
-				id: user.data._id,
-				avatar: user.data.avatar,
-				color: user.data.color,
-				active: user.data.active,
+				name: user.name,
+				id: user.id,
+				avatar: user.avatar,
+				color: user.color,
+				active: user.active // user currently connected
 			};
 			usersData.push(data);
 		}
@@ -187,6 +118,9 @@ class LAMM extends FormApplication { /* TODO: A subclass of the FormApplication 
 	}
 
 	getUserNameFromId(id) {
+		// TODO: this is called way too often
+		/*log('getUserNameFromId > id', id)
+		log('getUserNameFromId > users', window.LAMM.users)*/
 		return window.LAMM.users.find(user => user.id === id).name;
 	}
 
@@ -195,14 +129,14 @@ class LAMM extends FormApplication { /* TODO: A subclass of the FormApplication 
 	}
 
 	sendWhisperTo(userNames, msg) {
-		let chatData = {
-			user: game.user._id,
-			content: msg,
-			sound: "modules/lucas-messenger/sounds/pst-pst.mp3"
-		};
-
-		for (let user of userNames) {
-			chatData.whisper = ChatMessage.getWhisperRecipients(user);
+		for (let username of userNames) {
+			// chatData needs to be defined for each message as the .whisper assignment is not overwritten on subsequent loops,
+			// resulting in multiple messages with unique document IDs but to the same recipient.
+			let chatData = {
+				user: game.user.id,
+				content: msg
+			};
+			chatData.whisper = ChatMessage.getWhisperRecipients(username);
 			ChatMessage.create(chatData);
 		}
 	}
@@ -254,15 +188,11 @@ class LAMM extends FormApplication { /* TODO: A subclass of the FormApplication 
 
 	async handleIncomingPrivateMessage(data) {
 		this.addIncomingMessageToHistory(data);
+		await window.LAMM.pstSound.play();
 		if (!this.rendered) return this.render();
 
 		await this.renderHistoryPartial();
 	}
-
-	/*convertTimestampToTime(timestamp) {
-		let date = new Date(data.data.timestamp);
-		return date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-	}*/
 
 	currentTime() {
 		function padLeadingZero(num) {
@@ -273,11 +203,10 @@ class LAMM extends FormApplication { /* TODO: A subclass of the FormApplication 
 	}
 
 	addIncomingMessageToHistory(data) {
-		// const time = this.convertTimestampToTime(data.data.timestamp);
 		const time = this.currentTime();
-		this.history.push([time, 'in', data.data.user, data.data.content]);
-        //if (LMRTFY.requestor === undefined)
-        //    LMRTFY.requestor = new LMRTFYRequestor();
+		// TODO: data.user.id should be replaced by data.author.name and the whole process simplified
+		// TODO: data.user is also now deprecated since v12 in favor of data.author.
+		this.history.push([time, 'in', data.user.id, data.content]);
 	}
 
 	addOutgoingMessageToHistory(recipients, msg) {
@@ -312,25 +241,18 @@ Hooks.on('renderSceneControls', (controls, html) => {
 			<i class="fas fa-comment-dots"></i>
 		</li>`
 	);
-	html.append(messengerBtn);
 	messengerBtn[0].addEventListener('click', evt => {
-		evt.stopPropagation();
-		//return new LAMM().render(true);
+		// evt.stopPropagation();
+		// return new LAMM().render(true);
 		window.LAMM.render();
 	});
 
-    /* Hooks.once('init', async function () {
-	$('#logo').after(`<button type='button' id="dev-mode-button">🧙</button>`);
-    $('#dev-mode-button').on('click', () => {
-        const devModeConfig = new DevModeConfig();
-        devModeConfig.render(true);
-    }); */
+	html.find('.control-tools').find('.scene-control').last().after(messengerBtn);
 });
-
 
 Hooks.on("createChatMessage", async (data, options, senderUserId) => {
 	// const showNotif = game.settings.get(moduleName, showWhisperNotificationsKey);
-	const isToMe = (data?.data?.whisper ?? []).includes(game.userId),
+	const isToMe = (data?.whisper ?? []).includes(game.userId),
 		isFromMe = senderUserId === game.userId,
 		LAMM = window.LAMM;
 	/*if (override && isToMe) {
@@ -338,9 +260,9 @@ Hooks.on("createChatMessage", async (data, options, senderUserId) => {
 	}*/
 
 	if (!isToMe || isFromMe) return;
-	if (data.data.content.indexOf('<div>') > -1) return; // ignore privat messages (to GM) that are roll results or Midi-QOL cards
+	// TODO: re-add the following:
+	// if (data.data.content.indexOf('<div>') > -1) return; // ignore privat messages (to GM) that are roll results or Midi-QOL cards
 
-	// TODO: play "modules/lucas-messenger/sounds/pst-pst.mp3" here instead of on sending the message
 	/* ui.notifications.info(
 		`Whisper from ${data.user.data.name}`,
 		{ permanent: true },
@@ -357,40 +279,3 @@ Hooks.once('ready', LAMM.ready);
 /* Hooks.on('renderPlayerList', () => {
 	window.LAMM.users = window.LAMM.computeUsersData(); // update player list when user (dis)connects
 } */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-    static getSceneControlButtons(buttons) {
-        let tokenButton = buttons.find(b => b.name == "token")
-
-        if (tokenButton) {
-            tokenButton.tools.push({
-                name: "request-roll",
-                title: game.i18n.localize('LMRTFY.ControlTitle'),
-                icon: "fas fa-dice-d20",
-                visible: game.user.isGM,
-                onClick: () => LMRTFY.requestRoll(),
-                button: true
-            });
-        }
-    }
-}
-
-Hooks.on('getSceneControlButtons', LMRTFY.getSceneControlButtons);
-*/
