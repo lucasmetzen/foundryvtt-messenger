@@ -338,8 +338,9 @@ Hooks.on("createChatMessage", async (data, options, senderUserId) => {
 	}*/
 
 	if (!isToMe || isFromMe) return;
-	// TODO: re-add the following:
-	// if (data.data.content.indexOf('<div>') > -1) return; // ignore privat messages (to GM) that are roll results or Midi-QOL cards
+
+	// Ignore privat messages to GM that are player's roll results (e.g. Private/Blind GM rolls):
+	if (data.rolls.length > 0) return;
 
 	/* ui.notifications.info(
 		`Whisper from ${data.user.data.name}`,
