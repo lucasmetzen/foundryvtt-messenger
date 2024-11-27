@@ -250,7 +250,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 // Add icon to left tool bar:
 Hooks.on('renderSceneControls', (controls, html) => {
 	const messengerBtn = $(
-		`<li class="scene-control">
+		`<li class="scene-control control-tool toggle">
 			<i class="fas fa-comment-dots" title="${TITLE}"></i>
 		</li>`
 	);
