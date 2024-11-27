@@ -1,11 +1,10 @@
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
-import { MODULE_ID, TITLE, TEMPLATE_PATH, TEMPLATE_PARTS } from "./config.mjs";
+import { MODULE_ID, TITLE, TEMPLATE_PATH, TEMPLATE_PARTS, TITLE_ABBREVIATION } from "./config.mjs";
 import { log } from "./helpers/log.mjs";
 
 class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
-	// ----- Application v2 BEGIN -----
 	/** @inheritDoc */
 	static DEFAULT_OPTIONS = {
 		// https://foundryvtt.com/api/v12/interfaces/foundry.applications.types.ApplicationConfiguration.html
@@ -19,24 +18,13 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 			width: 640,
 			height: "auto",
 		},
-		tag: "form", // The default is "div"
+		tag: "form",
 		window: {
 			icon: "fas fa-comment-dots", // You can now add an icon to the header
-			title: TITLE // TODO: move this to i18n: "FOO.form.title"
+			title: `${TITLE} (${TITLE_ABBREVIATION})` // TODO: potentially move this to i18n: "FOO.form.title"
 		},
-		classes: ['messenger'] // options.classes.concat('messenger'),
+		classes: ['messenger']
 	}
-/*
-	static get defaultOptions() {
-		return foundry.utils.mergeObject(super.defaultOptions, {
-			popout: true,
-			resizable: false,
-			minimizable: true,
-			submitOnClose: false,
-			submitOnUnfocus: false
-		});
-	}
-*/
 	
 	/** @override */
 	static PARTS = {
@@ -54,9 +42,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 	/** @inheritDoc */
 	get title() {
-		// TODO: add i18n: return `My Module: ${game.i18n.localize(this.options.window.title)}`;
-		log("this.options", this.options)
-		return this.options.window.title;
+		return game.i18n.localize(this.options.window.title);
 	}
 
 	// Provides template with dynamic data:
@@ -69,8 +55,6 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 
 	_onRender(context, options) {
-		// super.activateListeners(html); // DEBUG: this might not be used anymore
-
 		const html = $(this.element);
 		// TODO: try to avoid using jQuery, e.g.:
 		// this.element.querySelector("input[name=something]").addEventListener("click", /* ... */);
@@ -83,42 +67,14 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		html.find('#message').on("keypress", event => this._onKeyPressEvent(event, html));
 	}
 
-	/*
-    async _updateObject() { // `event` uninteresting, `formData` empty 
-    	// log('_updateObject');
-    	// TODO: check if msg has been sent or if no user was selected. if the latter, this would clear the message unintentionally
-    	this.render();
-	}
-	// replaced by: */
-	static async onSubmit(event, form, formData) {
-		/*const settings = foundry.utils.expandObject(formData.object);
-		await Promise.all(
-			Object.entries(settings)
-				.map(([key, value]) => game.settings.set("foo", key, value))
-		);*/
-	}
-	
+	static async onSubmit(event, form, formData) {}
 
-
-	// DEBUG: this might be needed as all template parts are concat'ed, but we only want the main one itself.
 	/** @override */
 	_configureRenderOptions(options) {
-		// This fills in `options.parts` with an array of ALL part keys by default
-		// So we need to call `super` first
 		super._configureRenderOptions(options);
 		// Completely overriding the parts
 		options.parts = ['form']
 	}
-
-	// ----- Application v2 END -----
-
-
-
-
-
-
-
-
 
 	constructor(app) {
 		super(app);
@@ -149,16 +105,6 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		window.LAME.pstSound.load();
 		log('ready')
 	}
-
-
-
-
-
-
-
-
-
-
 
 	beautifyHistory() {
 		// TODO: I think this is called too often and the output should be cached if it isn't already.
@@ -301,17 +247,6 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 }
 
-/* class LAMEwindow {
-	constructor() {
-		console.log('LAMEwindow: constructed');
-	}
-
-	hi() {
-		console.log('LAMEwindow: hi');
-	}
-} */
-
-
 // Add icon to left tool bar:
 Hooks.on('renderSceneControls', (controls, html) => {
 	const messengerBtn = $(
@@ -333,9 +268,6 @@ Hooks.on("createChatMessage", async (data, options, senderUserId) => {
 	const isToMe = (data?.whisper ?? []).includes(game.userId),
 		isFromMe = senderUserId === game.userId,
 		LAME = window.LAME;
-	/*if (override && isToMe) {
-	data.data.sound = override;
-	}*/
 
 	if (!isToMe || isFromMe) return;
 
