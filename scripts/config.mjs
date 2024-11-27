@@ -1,6 +1,6 @@
 export const MODULE_ID = "lucas-messenger",
-	TITLE = "Lucas's Almost Magnificent Messenger", // or Lucas's Almost Awesome Messenger; or Lucas's Awesome Messenger Extension
-	TITLE_ABBREVIATION = "LAMM";
+	TITLE = "Lucas's Awesome Messenger Extension",
+	TITLE_ABBREVIATION = "LAME";
 
 const PATH = `modules/${MODULE_ID}`;
 

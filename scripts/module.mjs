@@ -3,7 +3,7 @@ const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 import { MODULE_ID, TITLE, TEMPLATE_PATH, TEMPLATE_PARTS } from "./config.mjs";
 import { log } from "./helpers/log.mjs";
 
-class LAMM extends HandlebarsApplicationMixin(ApplicationV2) {
+class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 	// ----- Application v2 BEGIN -----
 	/** @inheritDoc */
@@ -12,7 +12,7 @@ class LAMM extends HandlebarsApplicationMixin(ApplicationV2) {
 
 		id: MODULE_ID,
 		form: {
-			handler: LAMM.onSubmit,
+			handler: LAME.onSubmit,
 			closeOnSubmit: false
 		},
 		position: {
@@ -128,7 +128,7 @@ class LAMM extends HandlebarsApplicationMixin(ApplicationV2) {
 		this.pstSound = new Sound("modules/lucas-messenger/sounds/pst-pst.ogg");
 		// TODO: deprecated to foundry.audio.Sound
 
-		// this.window = new LAMMwindow();
+		// this.window = new LAMEwindow();
 	}
 
 	static async init() {
@@ -137,16 +137,16 @@ class LAMM extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 
 	static setup() {
-		const newLAMM = new LAMM();
-		newLAMM.history = [];
-		//newLAMM.window = new LAMMwindow();
-		window.LAMM = newLAMM;
+		const newLAME = new LAME();
+		newLAME.history = [];
+		//newLAME.window = new LAMEwindow();
+		window.LAME = newLAME;
 		log('set up');
 	}
 
 	static ready() {
-		window.LAMM.users = window.LAMM.computeUsersData(); // TODO: Look into this again as this doesn't seem to be the intended way...
-		window.LAMM.pstSound.load();
+		window.LAME.users = window.LAME.computeUsersData(); // TODO: Look into this again as this doesn't seem to be the intended way...
+		window.LAME.pstSound.load();
 		log('ready')
 	}
 
@@ -182,7 +182,7 @@ class LAMM extends HandlebarsApplicationMixin(ApplicationV2) {
 		// await loadTemplates([TEMPLATES.history]);
 		// let historyHtml = $(await renderTemplate(TEMPLATES.history, data));
 
-		// log("renderHistoryPartial > window.LAMM", window.LAMM) // does not contain PARTS
+		// log("renderHistoryPartial > window.LAME", window.LAME) // does not contain PARTS
 		// this.PARTS is not defined as `this` does not refer to the class instance
 		const data = { history: this.beautifyHistory() },
 			history = await renderTemplate(TEMPLATE_PARTS.history, data);
@@ -214,12 +214,12 @@ class LAMM extends HandlebarsApplicationMixin(ApplicationV2) {
 	getUserNameFromId(id) {
 		// TODO: this is called way too often
 		/*log('getUserNameFromId > id', id)
-		log('getUserNameFromId > users', window.LAMM.users)*/
-		return window.LAMM.users.find(user => user.id === id).name;
+		log('getUserNameFromId > users', window.LAME.users)*/
+		return window.LAME.users.find(user => user.id === id).name;
 	}
 
 	getUserIdFromName(name) {
-		return window.LAMM.users.find(user => user.name === name).id;
+		return window.LAME.users.find(user => user.name === name).id;
 	}
 
 	sendWhisperTo(userNames, msg) {
@@ -271,7 +271,7 @@ class LAMM extends HandlebarsApplicationMixin(ApplicationV2) {
 
 	async handleIncomingPrivateMessage(data) {
 		this.addIncomingMessageToHistory(data);
-		await window.LAMM.pstSound.play();
+		await window.LAME.pstSound.play();
 		if (!this.rendered) return this.render();
 
 		await this.renderHistoryPartial();
@@ -301,13 +301,13 @@ class LAMM extends HandlebarsApplicationMixin(ApplicationV2) {
 
 }
 
-/* class LAMMwindow {
+/* class LAMEwindow {
 	constructor() {
-		console.log('LAMMwindow: constructed');
+		console.log('LAMEwindow: constructed');
 	}
 
 	hi() {
-		console.log('LAMMwindow: hi');
+		console.log('LAMEwindow: hi');
 	}
 } */
 
@@ -321,8 +321,8 @@ Hooks.on('renderSceneControls', (controls, html) => {
 	);
 	messengerBtn[0].addEventListener('click', evt => {
 		// evt.stopPropagation();
-		// return new LAMM().render(true);
-		window.LAMM.render();
+		// return new LAME().render(true);
+		window.LAME.render();
 	});
 
 	html.find('.control-tools').find('.scene-control').last().after(messengerBtn);
@@ -332,7 +332,7 @@ Hooks.on("createChatMessage", async (data, options, senderUserId) => {
 	// const showNotif = game.settings.get(moduleName, showWhisperNotificationsKey);
 	const isToMe = (data?.whisper ?? []).includes(game.userId),
 		isFromMe = senderUserId === game.userId,
-		LAMM = window.LAMM;
+		LAME = window.LAME;
 	/*if (override && isToMe) {
 	data.data.sound = override;
 	}*/
@@ -347,13 +347,13 @@ Hooks.on("createChatMessage", async (data, options, senderUserId) => {
 	); */
 
 	// log('incoming whisper', data, options, senderUserId)
-	LAMM.handleIncomingPrivateMessage(data);
+	LAME.handleIncomingPrivateMessage(data);
 });
 
-Hooks.once('init', LAMM.init); // this feels VERY early in Foundry's initialisation...
-Hooks.once('setup', LAMM.setup);
-Hooks.once('ready', LAMM.ready);
+Hooks.once('init', LAME.init); // this feels VERY early in Foundry's initialisation...
+Hooks.once('setup', LAME.setup);
+Hooks.once('ready', LAME.ready);
 
 /* Hooks.on('renderPlayerList', () => {
-	window.LAMM.users = window.LAMM.computeUsersData(); // update player list when user (dis)connects
+	window.LAME.users = window.LAME.computeUsersData(); // update player list when user (dis)connects
 } */
