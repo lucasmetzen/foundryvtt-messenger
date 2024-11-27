@@ -21,7 +21,7 @@
     "requires": []
   },
   "esmodules": [
-    "scripts/module.js"
+    "scripts/module.mjs"
   ],
   "styles": [
     "styles/messenger.css"

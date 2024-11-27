@@ -1,36 +1,138 @@
-const MODULE_ID = "lucas-messenger",
-	TITLE = "Lucas's Almost Magnificent Messenger", // or Lucas's Almost Awesome Messenger; or Lucas's Awesome Messenger Extension
-	TITLE_ABBREVIATION = "LAMM",
-	PATH = `modules/${MODULE_ID}`,
-	TEMPLATE_PATH = `${PATH}/templates`,
-	TEMPLATES = {
-		history: `${TEMPLATE_PATH}/history.hbs`,
-		whispers: `${TEMPLATE_PATH}/whispers.html`
-	},
-    CONSOLE_MESSAGE_PRESET = [`%c${TITLE_ABBREVIATION}%c |`, 'background: #8000ff; color: #fff', 'color: #fff']; // see chat-images\scripts\utils.js
+const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
+
+import { MODULE_ID, TITLE, TEMPLATE_PATH, TEMPLATE_PARTS } from "./config.mjs";
+import { log } from "./helpers/log.mjs";
+
+class LAMM extends HandlebarsApplicationMixin(ApplicationV2) {
+
+	// ----- Application v2 BEGIN -----
+	/** @inheritDoc */
+	static DEFAULT_OPTIONS = {
+		// https://foundryvtt.com/api/v12/interfaces/foundry.applications.types.ApplicationConfiguration.html
+
+		id: MODULE_ID,
+		form: {
+			handler: LAMM.onSubmit,
+			closeOnSubmit: false
+		},
+		position: {
+			width: 640,
+			height: "auto",
+		},
+		tag: "form", // The default is "div"
+		window: {
+			icon: "fas fa-comment-dots", // You can now add an icon to the header
+			title: TITLE // TODO: move this to i18n: "FOO.form.title"
+		},
+		classes: ['messenger'] // options.classes.concat('messenger'),
+	}
+/*
+	static get defaultOptions() {
+		return foundry.utils.mergeObject(super.defaultOptions, {
+			popout: true,
+			resizable: false,
+			minimizable: true,
+			submitOnClose: false,
+			submitOnUnfocus: false
+		});
+	}
+*/
+	
+	/** @override */
+	static PARTS = {
+		// I don't have any idea how to access these later-on
+		history: {
+			// template: "./modules/foo/templates/form.hbs"
+			// id: "history",
+			template: `${TEMPLATE_PATH}/history.hbs`
+			// template: TEMPLATE_PARTS.history
+		},
+		form: { // "main window"
+			template: `${TEMPLATE_PATH}/whispers.html`
+		}
+	}
+
+	/** @inheritDoc */
+	get title() {
+		// TODO: add i18n: return `My Module: ${game.i18n.localize(this.options.window.title)}`;
+		log("this.options", this.options)
+		return this.options.window.title;
+	}
+
+	// Provides template with dynamic data:
+	/** @override */
+	async _prepareContext() {
+		return {
+			users: this.users,
+			history: this.beautifyHistory()
+		};
+	}
+
+	_onRender(context, options) {
+		// super.activateListeners(html); // DEBUG: this might not be used anymore
+
+		const html = $(this.element);
+		// TODO: try to avoid using jQuery, e.g.:
+		// this.element.querySelector("input[name=something]").addEventListener("click", /* ... */);
+
+		// Submit/Send button:
+		html.find('input[type="submit"]').click(event => {
+			this.sendMessage(html);
+		});
+
+		html.find('#message').on("keypress", event => this._onKeyPressEvent(event, html));
+	}
+
+	/*
+    async _updateObject() { // `event` uninteresting, `formData` empty 
+    	// log('_updateObject');
+    	// TODO: check if msg has been sent or if no user was selected. if the latter, this would clear the message unintentionally
+    	this.render();
+	}
+	// replaced by: */
+	static async onSubmit(event, form, formData) {
+		/*const settings = foundry.utils.expandObject(formData.object);
+		await Promise.all(
+			Object.entries(settings)
+				.map(([key, value]) => game.settings.set("foo", key, value))
+		);*/
+	}
+	
 
 
-function log(...args) {
-	console.log(...CONSOLE_MESSAGE_PRESET, ...args);
-}
+	// DEBUG: this might be needed as all template parts are concat'ed, but we only want the main one itself.
+	/** @override */
+	_configureRenderOptions(options) {
+		// This fills in `options.parts` with an array of ALL part keys by default
+		// So we need to call `super` first
+		super._configureRenderOptions(options);
+		// Completely overriding the parts
+		options.parts = ['form']
+	}
+
+	// ----- Application v2 END -----
 
 
-class LAMM extends FormApplication { /* TODO: A subclass of the FormApplication must implement the _updateObject method. */
+
+
+
+
+
+
 
 	constructor(app) {
 		super(app);
 		// this.users = this.computeUsersData(); // DEBUG: deactivated for .setup() test
 		this.history = [];
+
 		this.pstSound = new Sound("modules/lucas-messenger/sounds/pst-pst.ogg");
+		// TODO: deprecated to foundry.audio.Sound
+
 		// this.window = new LAMMwindow();
 	}
 
 	static async init() {
-		let templates = [];
-		for (const key in TEMPLATES) {
-			templates.push(TEMPLATES[key]);
-		}
-		loadTemplates(templates);
+		loadTemplates([TEMPLATE_PARTS.history]); // TODO: figure out how to do this nicely with Application v2's PARTS
 		log('initialised');
 	}
 
@@ -48,19 +150,15 @@ class LAMM extends FormApplication { /* TODO: A subclass of the FormApplication 
 		log('ready')
 	}
 
-	static get defaultOptions() {
-		const options = super.defaultOptions;
-		options.title = TITLE;
-		options.classes = options.classes.concat('messenger');
-		options.template = TEMPLATES.whispers;
-		options.popout = true;
-		options.resizable = false;
-		options.minimizable = true;
-		options.closeOnSubmit = false;
-		options.submitOnClose = false;
-		options.submitOnUnfocus = false;
-		return options;
-	}
+
+
+
+
+
+
+
+
+
 
 	beautifyHistory() {
 		// TODO: I think this is called too often and the output should be cached if it isn't already.
@@ -83,18 +181,14 @@ class LAMM extends FormApplication { /* TODO: A subclass of the FormApplication 
 
 		// await loadTemplates([TEMPLATES.history]);
 		// let historyHtml = $(await renderTemplate(TEMPLATES.history, data));
+
+		// log("renderHistoryPartial > window.LAMM", window.LAMM) // does not contain PARTS
+		// this.PARTS is not defined as `this` does not refer to the class instance
 		const data = { history: this.beautifyHistory() },
-			history = await renderTemplate(TEMPLATES.history, data);
+			history = await renderTemplate(TEMPLATE_PARTS.history, data);
 		$('#history').val(history);
 	}
 
-	// Provides template with dynamic data:
-	getData() {
-		return {
-			users: this.users,
-			history: this.beautifyHistory()
-		};
-	}
 
 	render(...args) {
 		if (!this.rendered) return super.render(true, ...args);
@@ -139,17 +233,6 @@ class LAMM extends FormApplication { /* TODO: A subclass of the FormApplication 
 			chatData.whisper = ChatMessage.getWhisperRecipients(username);
 			ChatMessage.create(chatData);
 		}
-	}
-
-	activateListeners(html) {
-		super.activateListeners(html);
-
-		// Submit/Send button:
-		html.find('input[type="submit"]').click(event => {
-			this.sendMessage(html);
-		});
-
-		html.find('#message').on("keypress", event => this._onKeyPressEvent(event, html));
 	}
 
 	_onKeyPressEvent(event, html) {
@@ -216,11 +299,6 @@ class LAMM extends FormApplication { /* TODO: A subclass of the FormApplication 
 		}
 	}
 
-    async _updateObject() { // `event` uninteresting, `formData` empty 
-    	// log('_updateObject');
-    	// TODO: check if msg has been sent or if no user was selected. if the latter, this would clear the message unintentionally
-    	this.render();
-	}
 }
 
 /* class LAMMwindow {
@@ -238,7 +316,7 @@ class LAMM extends FormApplication { /* TODO: A subclass of the FormApplication 
 Hooks.on('renderSceneControls', (controls, html) => {
 	const messengerBtn = $(
 		`<li class="scene-control">
-			<i class="fas fa-comment-dots"></i>
+			<i class="fas fa-comment-dots" title="${TITLE}"></i>
 		</li>`
 	);
 	messengerBtn[0].addEventListener('click', evt => {

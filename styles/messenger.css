@@ -1,5 +1,5 @@
 div.window-app.messenger {
-  width: 640px; /* 631px is minimum but doesn't work with minimizing the window */
+  width: 660px;
   height: 576px; /* 4 players: 470, 5 players: 576 */
 }
 
@@ -37,7 +37,7 @@ div.window-app.messenger {
   content: " ";
   display: block;
   border-radius: 50%;
-  border: 1px solid green; /* grey */
+  border: 1px solid green;
   position: absolute;
   top: -5px;
   left: -5px;
@@ -54,6 +54,7 @@ div.window-app.messenger {
   width: 75px;
   transform-origin: 50% 50%;
   border-width: 2px;
+  border-style: ridge;
 }
 
 #messenger :checked + label {
@@ -62,7 +63,7 @@ div.window-app.messenger {
 
 #messenger :checked + label:before {
   content: "✓";
-  background-color: green; /* grey */
+  background-color: green;
   transform: scale(1);
   font-weight: bold;
 }
@@ -71,10 +72,25 @@ div.window-app.messenger {
   transform: scale(0.9);
   box-shadow: 0 0 5px #333;
   z-index: -1;
+  border-style: inset;
+}
+
+#messenger .offline label {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+#messenger .offline label img {
+  border-style: dotted;
 }
 
 #history /* TODO: rename these about identifies */ {
-  text-align: left;
+  flex: 1 1 auto;
+}
+
+#message {
+  flex: 0 1 auto;
+  margin: 10px 0;
 }
 
 #messenger .players {
@@ -84,7 +100,9 @@ div.window-app.messenger {
 }
 
 #messenger .chat-elements {
-  float: right;
+  height: 424px; /* TODO: find a way to make it dynamic again based on the number of players */
+  display: flex;
+  flex-flow: column;
 }
 
 #messenger textarea {
