@@ -1,20 +1,7 @@
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
-const MODULE_ID = "lucas-messenger",
-	TITLE = "Lucas's Almost Magnificent Messenger", // or Lucas's Almost Awesome Messenger; or Lucas's Awesome Messenger Extension
-	TITLE_ABBREVIATION = "LAMM",
-	PATH = `modules/${MODULE_ID}`,
-	TEMPLATE_PATH = `${PATH}/templates`,
-	TEMPLATE_PARTS = {
-		history: `${TEMPLATE_PATH}/history.hbs`,
-	},
-    CONSOLE_MESSAGE_PRESET = [`%c${TITLE_ABBREVIATION}%c |`, 'background: #8000ff; color: #fff', 'color: #fff']; // see chat-images\scripts\utils.js
-
-
-function log(...args) {
-	console.log(...CONSOLE_MESSAGE_PRESET, ...args);
-}
-
+import { MODULE_ID, TITLE, TEMPLATE_PATH, TEMPLATE_PARTS } from "./config.mjs";
+import { log } from "./helpers/log.mjs";
 
 class LAMM extends HandlebarsApplicationMixin(ApplicationV2) {
 
@@ -329,7 +316,7 @@ class LAMM extends HandlebarsApplicationMixin(ApplicationV2) {
 Hooks.on('renderSceneControls', (controls, html) => {
 	const messengerBtn = $(
 		`<li class="scene-control">
-			<i class="fas fa-comment-dots"></i>
+			<i class="fas fa-comment-dots" title="${TITLE}"></i>
 		</li>`
 	);
 	messengerBtn[0].addEventListener('click', evt => {
