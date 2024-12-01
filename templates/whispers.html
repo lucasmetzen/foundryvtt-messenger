@@ -17,12 +17,12 @@
 	</div>
 
 	<div class="chat-elements">
-<textarea id="history" placeholder="{{ localize 'LAME.HistoryHint' }}" disabled>
+<textarea id="history" placeholder="{{ localize 'LAME.History.Hint' }}" disabled>
 {{> "modules/lucas-messenger/templates/history.hbs"}}
 </textarea>
 
 		<textarea value="" id="message" name="message" placeholder="{{ localize 'LAME.WhisperHint' }}" rows="3"></textarea>
-		<input type="submit" value="Send">
+		<input type="submit" value="{{ localize 'LAME.Send' }}">
 	</div>
 
 </form>

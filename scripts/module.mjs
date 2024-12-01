@@ -1,6 +1,6 @@
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
-import { MODULE_ID, TITLE, TEMPLATE_PATH, TEMPLATE_PARTS, TITLE_ABBREVIATION } from "./config.mjs";
+import { MODULE_ID, TEMPLATE_PATH, TEMPLATE_PARTS, localize } from "./config.mjs";
 import { log } from "./helpers/log.mjs";
 
 class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
@@ -20,8 +20,8 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		},
 		tag: "form",
 		window: {
-			icon: "fas fa-comment-dots", // You can now add an icon to the header
-			title: `${TITLE} (${TITLE_ABBREVIATION})` // TODO: potentially move this to i18n: "FOO.form.title"
+			icon: "fas fa-comment-dots",
+			title: "LAME.Module.TitleWithAbbreviation"
 		},
 		classes: ['messenger']
 	}
@@ -42,7 +42,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 	/** @inheritDoc */
 	get title() {
-		return game.i18n.localize(this.options.window.title);
+		return localize(this.options.window.title);
 	}
 
 	// Provides template with dynamic data:
@@ -110,9 +110,10 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		// TODO: I think this is called too often and the output should be cached if it isn't already.
 		let beautified = [];
 		for (let msg of this.history) {
+			let toOrFrom = localize(msg[1] === 'in' ? "LAME.History.From" : "LAME.History.To");
 			beautified.push(
 				msg[0] + // (date &) time
-				(msg[1] === 'in' ? ' from ' : ' to ') + // in or out
+				` ${toOrFrom} ` + // in or out
 				this.getUserNameFromId(msg[2]) + ': ' + // User name
 				msg[3] // message
 			);
@@ -195,7 +196,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 			selectedUserNames.push(this.id.replace('user-', ''));
 		});
 		if (selectedUserNames.length == 0) {
-			ui.notifications.error("No recipient selected.")
+			ui.notifications.error(localize("LAME.Notification.NoRecipientSelected"));
 			return;
 		}
 		
@@ -203,7 +204,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		const messageField = html.find('#message');
 		let message = messageField.val();
 		if (message.length == 0) {
-			ui.notifications.error("Nothing to send.")
+			ui.notifications.error(localize("LAME.Notification.NoMessageToSend"));
 			return;
 		}
 		this.sendWhisperTo(selectedUserNames, message);
@@ -251,7 +252,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 Hooks.on('renderSceneControls', (controls, html) => {
 	const messengerBtn = $(
 		`<li class="scene-control control-tool toggle">
-			<i class="fas fa-comment-dots" title="${TITLE}"></i>
+			<i class="fas fa-comment-dots" title="${localize("LAME.Module.TitleWithAbbreviation")}"></i>
 		</li>`
 	);
 	messengerBtn[0].addEventListener('click', evt => {
