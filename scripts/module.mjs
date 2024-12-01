@@ -2,6 +2,7 @@ const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
 import { MODULE_ID, TEMPLATE_PATH, TEMPLATE_PARTS, localize } from "./config.mjs";
 import { log } from "./helpers/log.mjs";
+import { getSetting, registerSettings } from "./settings.mjs";
 
 class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
@@ -88,6 +89,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 
 	static async init() {
+		registerSettings();
 		loadTemplates([TEMPLATE_PARTS.history]); // TODO: figure out how to do this nicely with Application v2's PARTS
 		log('initialised');
 	}
@@ -217,6 +219,13 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 
 	async handleIncomingPrivateMessage(data) {
+		if (getSetting("showNotificationForNewWhisper")) {
+			ui.notifications.info(
+				`${localize("LAME.IncomingWhisperFrom")} ${data.author.name}`,
+				{ permanent: getSetting("permanentNotificationForNewWhisper") },
+			);
+		}
+	
 		this.addIncomingMessageToHistory(data);
 		await window.LAME.pstSound.play();
 		if (!this.rendered) return this.render();
@@ -274,11 +283,6 @@ Hooks.on("createChatMessage", async (data, options, senderUserId) => {
 
 	// Ignore privat messages to GM that are player's roll results (e.g. Private/Blind GM rolls):
 	if (data.rolls.length > 0) return;
-
-	/* ui.notifications.info(
-		`Whisper from ${data.user.data.name}`,
-		{ permanent: true },
-	); */
 
 	// log('incoming whisper', data, options, senderUserId)
 	LAME.handleIncomingPrivateMessage(data);

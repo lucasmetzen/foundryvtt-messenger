@@ -1,5 +1,5 @@
 export const MODULE_ID = "lucas-messenger",
-	TITLE_ABBREVIATION = "LAME";
+	MODULE_ABBREVIATION = "LAME";
 
 const PATH = `modules/${MODULE_ID}`;
 
