@@ -1,3 +1,7 @@
+#chat-controls .lame-messenger {
+  flex: 0 0 24px;
+}
+
 div.window-app.messenger {
   width: 660px;
   height: 576px; /* 4 players: 470, 5 players: 576 */

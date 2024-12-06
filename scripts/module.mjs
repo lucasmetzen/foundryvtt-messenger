@@ -273,6 +273,22 @@ Hooks.on('renderSceneControls', (controls, html) => {
 	html.find('.control-tools').find('.scene-control').last().after(messengerBtn);
 });
 
+// Add button to chat controls:
+Hooks.on("renderSidebarTab", async (app, html, _data) => {
+	if (app.tabName !== "chat" || !getSetting("buttonInChatControls")) return;
+
+	const messengerBtn = $(
+		`<a aria-label="${localize("LAME.Module.Title")}" role="button" class="lame-messenger" data-tooltip="LAME.Module.Title">
+			<i class="fas fa-comment-dots"></i>
+		</a>`
+	);
+	messengerBtn[0].addEventListener('click', _event => {
+		window.LAME.render();
+	});
+
+	html.find("#chat-controls select.roll-type-select").after(messengerBtn);
+});
+
 Hooks.on("createChatMessage", async (data, options, senderUserId) => {
 	// const showNotif = game.settings.get(moduleName, showWhisperNotificationsKey);
 	const isToMe = (data?.whisper ?? []).includes(game.userId),

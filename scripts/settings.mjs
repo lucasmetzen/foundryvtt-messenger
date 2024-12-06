@@ -35,6 +35,16 @@ export function registerSettings() {
     }
   });
 
+  registerSetting('buttonInChatControls', {
+    name: "LAME.Setting.ButtonInChatControl",
+    hint: "LAME.Setting.ButtonInChatControlHint",
+    scope: 'client',
+    config: true,
+    type: Boolean,
+    default: true,
+    requiresReload: true
+  });
+
   log("Module settings registered."); // DEBUG: Remove after development.
 }
 
