@@ -1,6 +1,31 @@
 {
-  "LAMM": {
-    "HistoryHint": "This is your message history. Sent and received messages will appear here while you're logged in and until you refresh your browser.",
-    "WhisperHint": "Type your whisper here. Send message by pressing Ctrl-Enter."
+  "LAME": {
+    "Module": {
+      "Title": "Lucas's Awesome Messenger Extension",
+      "Abbreviation": "LAME",
+      "TitleWithAbbreviation": "Lucas's Awesome Messenger Extension (LAME)"
+    },
+    "History": {
+      "Hint": "This is your message history. Sent and received messages will appear here while you're logged in and until you refresh your browser.",
+      "To": "to",
+      "From": "from"
+    },
+    "WhisperHint": "Type your whisper here. Send message by pressing Ctrl-Enter.",
+    "Send": "Send",
+    "Notification": {
+      "NoRecipientSelected": "No recipient selected.",
+      "NoMessageToSend": "No message to send."
+    },
+    "Setting": {
+      "ShowNotificationForNewWhisper": "Show notification for new whisper",
+      "ShowNotificationForNewWhisperHint": "Should a visual notification be shown every time a whisper is received?",
+      "PermanentNotificationForNewWhisper": "Permanent notification for new whisper",
+      "PermanentNotificationForNewWhisperHint": "Should the visual notification stay until you dismiss it?",
+      "ButtonInSceneControlToolbar": "Add button to scene controls",
+      "ButtonInSceneControlToolbarHint": "Should the button to open the messenger be added to the scene controls toolbar on the left side of the screen?",
+      "ButtonInChatControl": "Add button to chat controls",
+      "ButtonInChatControlHint": "Should the button to open the messenger be added to the chat controls (to the right of the roll type selector) in the sidebar?"
+    },
+    "IncomingWhisperFrom": "Whisper from"
   }
 }
