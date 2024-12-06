@@ -11,6 +11,7 @@ export function registerSettings() {
     default: false,
     requiresReload: false
   });
+
   registerSetting('permanentNotificationForNewWhisper', {
     name: "LAME.Setting.PermanentNotificationForNewWhisper",
     hint: "LAME.Setting.PermanentNotificationForNewWhisperHint",
@@ -21,7 +22,20 @@ export function registerSettings() {
     requiresReload: false
   });
 
-  log("Module settings registered.")
+  registerSetting('buttonInSceneControlToolbar', {
+    name: "LAME.Setting.ButtonInSceneControlToolbar",
+    hint: "LAME.Setting.ButtonInSceneControlToolbarHint",
+    scope: 'client',
+    config: true,
+    type: Boolean,
+    default: false,
+    requiresReload: false,
+    onChange: () => {
+      window.ui.controls.render();
+    }
+  });
+
+  log("Module settings registered."); // DEBUG: Remove after development.
 }
 
 function registerSetting(settingName, options) {

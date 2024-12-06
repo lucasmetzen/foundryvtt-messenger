@@ -257,16 +257,16 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 }
 
-// Add icon to left tool bar:
+// Add button to scene controls toolbar:
 Hooks.on('renderSceneControls', (controls, html) => {
+	if (!getSetting("buttonInSceneControlToolbar")) return;
+
 	const messengerBtn = $(
 		`<li class="scene-control control-tool toggle">
 			<i class="fas fa-comment-dots" title="${localize("LAME.Module.TitleWithAbbreviation")}"></i>
 		</li>`
 	);
 	messengerBtn[0].addEventListener('click', evt => {
-		// evt.stopPropagation();
-		// return new LAME().render(true);
 		window.LAME.render();
 	});
 

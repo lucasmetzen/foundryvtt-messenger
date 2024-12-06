@@ -20,7 +20,9 @@
       "ShowNotificationForNewWhisper": "Show notification for new whisper",
       "ShowNotificationForNewWhisperHint": "Should a visual notification be shown every time a whisper is received?",
       "PermanentNotificationForNewWhisper": "Permanent notification for new whisper",
-      "PermanentNotificationForNewWhisperHint": "Should the visual notification stay until you dismiss it?"
+      "PermanentNotificationForNewWhisperHint": "Should the visual notification stay until you dismiss it?",
+      "ButtonInSceneControlToolbar": "Add button to scene controls",
+      "ButtonInSceneControlToolbarHint": "Should the button to open the messenger be added to the scene controls toolbar on the left side of the screen?"
     },
     "IncomingWhisperFrom": "Whisper from"
   }
