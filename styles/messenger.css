@@ -2,32 +2,32 @@
   flex: 0 0 24px;
 }
 
-div.window-app.messenger {
+div.window-app.lame-messenger {
   width: 660px;
   height: 576px; /* 4 players: 470, 5 players: 576 */
 }
 
-#messenger {
+#lame-messenger {
   /* center all elements */
   text-align: center;
 }
 
-#messenger ul {
+#lame-messenger ul {
   list-style-type: none;
   margin: 0;
   padding: 0;
 }
 
-#messenger li {
+#lame-messenger li {
   display: inline-block;
   margin-bottom: 10px;
 }
 
-#messenger input[type="checkbox"][class~="user-checkmark"] {
+#lame-messenger input[type="checkbox"][class~="user-checkmark"] {
   display: none;
 }
 
-#messenger label {
+#lame-messenger label {
   display: block;
   position: relative;
   /* padding: 10px;
@@ -35,7 +35,7 @@ div.window-app.messenger {
   cursor: pointer;
 }
 
-#messenger label:before {
+#lame-messenger label:before {
   background-color: white;
   color: white;
   content: " ";
@@ -53,7 +53,7 @@ div.window-app.messenger {
   z-index: 1;
 }
 
-#messenger label img {
+#lame-messenger label img {
   height: 75px;
   width: 75px;
   transform-origin: 50% 50%;
@@ -61,54 +61,54 @@ div.window-app.messenger {
   border-style: ridge;
 }
 
-#messenger :checked + label {
+#lame-messenger :checked + label {
   border-color: #ddd;
 }
 
-#messenger :checked + label:before {
+#lame-messenger :checked + label:before {
   content: "✓";
   background-color: green;
   transform: scale(1);
   font-weight: bold;
 }
 
-#messenger :checked + label img {
+#lame-messenger :checked + label img {
   transform: scale(0.9);
   box-shadow: 0 0 5px #333;
   z-index: -1;
   border-style: inset;
 }
 
-#messenger .offline label {
+#lame-messenger .offline label {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-#messenger .offline label img {
+#lame-messenger .offline label img {
   border-style: dotted;
 }
 
-#history /* TODO: rename these about identifies */ {
+#lame-messenger .history {
   flex: 1 1 auto;
 }
 
-#message {
+#lame-messenger .message {
   flex: 0 1 auto;
   margin: 10px 0;
 }
 
-#messenger .players {
+#lame-messenger .players {
   float: left;
   width: 75px;
   margin-right: 8px; /* same as application window's inner padding */
 }
 
-#messenger .chat-elements {
+#lame-messenger .chat-elements {
   height: 424px; /* TODO: find a way to make it dynamic again based on the number of players */
   display: flex;
   flex-flow: column;
 }
 
-#messenger textarea {
+#lame-messenger textarea {
   resize: none;
 }

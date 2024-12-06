@@ -65,7 +65,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 			this.sendMessage(html);
 		});
 
-		html.find('#message').on("keypress", event => this._onKeyPressEvent(event, html));
+		html.find('#lame-messenger .message').on("keypress", event => this._onKeyPressEvent(event, html));
 	}
 
 	static async onSubmit(event, form, formData) {}
@@ -82,7 +82,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		// this.users = this.computeUsersData(); // DEBUG: deactivated for .setup() test
 		this.history = [];
 
-		this.pstSound = new Sound("modules/lucas-messenger/sounds/pst-pst.ogg");
+		this.pstSound = new Sound("modules/lame-messenger/sounds/pst-pst.ogg");
 		// TODO: deprecated to foundry.audio.Sound
 
 		// this.window = new LAMEwindow();
@@ -135,7 +135,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		// this.PARTS is not defined as `this` does not refer to the class instance
 		const data = { history: this.beautifyHistory() },
 			history = await renderTemplate(TEMPLATE_PARTS.history, data);
-		$('#history').val(history);
+		$('#lame-messenger .history').val(history);
 	}
 
 
@@ -202,7 +202,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 			return;
 		}
 		
-		const messageField = html.find('#message'),
+		const messageField = html.find('#lame-messenger .message'),
 			message = messageField.val();
 		if (message.length === 0) {
 			ui.notifications.error(localize("LAME.Notification.NoMessageToSend"));
@@ -265,7 +265,7 @@ Hooks.on('renderSceneControls', (controls, html) => {
 
 	const messengerBtn = $(
 		`<li class="scene-control control-tool toggle">
-			<i class="fas fa-comment-dots" title="${localize("LAME.Module.TitleWithAbbreviation")}"></i>
+			<i class="fas fa-comment-dots" title="${localize("LAME.Module.ShortTitle")}"></i>
 		</li>`
 	);
 	messengerBtn[0].addEventListener('click', _event => {
@@ -280,7 +280,7 @@ Hooks.on("renderSidebarTab", async (app, html, _data) => {
 	if (app.tabName !== "chat" || !getSetting("buttonInChatControls")) return;
 
 	const messengerBtn = $(
-		`<a aria-label="${localize("LAME.Module.Title")}" role="button" class="lame-messenger" data-tooltip="LAME.Module.Title">
+		`<a aria-label="${localize("LAME.Module.ShortTitle")}" role="button" class="lame-messenger" data-tooltip="LAME.Module.ShortTitle">
 			<i class="fas fa-comment-dots"></i>
 		</a>`
 	);

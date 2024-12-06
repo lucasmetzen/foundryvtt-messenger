@@ -1,5 +1,5 @@
-export const MODULE_ID = "lucas-messenger",
-	MODULE_ABBREVIATION = "LAME";
+export const MODULE_ID = "lame-messenger",
+	CONSOLE_LOG_PREFIX = "LAME Messenger";
 
 const PATH = `modules/${MODULE_ID}`;
 

@@ -1,4 +1,4 @@
-<form autocomplete="off" onsubmit="event.preventDefault();" id="messenger">
+<form autocomplete="off" onsubmit="event.preventDefault();" id="lame-messenger">
 
 	<div class="players">
 		<ul>
@@ -17,11 +17,11 @@
 	</div>
 
 	<div class="chat-elements">
-<textarea id="history" placeholder="{{ localize 'LAME.History.Hint' }}" disabled>
-{{> "modules/lucas-messenger/templates/history.hbs"}}
+<textarea class="history" placeholder="{{ localize 'LAME.History.Hint' }}" disabled>
+{{> "modules/lame-messenger/templates/history.hbs"}}
 </textarea>
 
-		<textarea value="" id="message" name="message" placeholder="{{ localize 'LAME.WhisperHint' }}" rows="3"></textarea>
+		<textarea value="" class="message" name="message" placeholder="{{ localize 'LAME.WhisperHint' }}" rows="3"></textarea>
 		<input type="submit" value="{{ localize 'LAME.Send' }}">
 	</div>
 
