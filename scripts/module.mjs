@@ -55,13 +55,13 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		};
 	}
 
-	_onRender(context, options) {
+	_onRender(_context, _options) {
 		const html = $(this.element);
 		// TODO: try to avoid using jQuery, e.g.:
 		// this.element.querySelector("input[name=something]").addEventListener("click", /* ... */);
 
 		// Submit/Send button:
-		html.find('input[type="submit"]').click(event => {
+		html.find('input[type="submit"]').click(_event => {
 			this.sendMessage(html);
 		});
 
@@ -146,7 +146,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	computeUsersData() {
 		let usersData = [];
 		for (let user of game.users) {
-			if (user.isSelf || (user.name == "DM's Helper") || user.isBanned) continue;
+			if (user.isSelf || (user.name === "DM's Helper") || user.isBanned) continue;
 
 			let data = {
 				name: user.name,
@@ -197,18 +197,19 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		checkedUserElements.each(function() {
 			selectedUserNames.push(this.id.replace('user-', ''));
 		});
-		if (selectedUserNames.length == 0) {
+		if (selectedUserNames.length === 0) {
 			ui.notifications.error(localize("LAME.Notification.NoRecipientSelected"));
 			return;
 		}
 		
-		// Send whisper(s):
-		const messageField = html.find('#message');
-		let message = messageField.val();
-		if (message.length == 0) {
+		const messageField = html.find('#message'),
+			message = messageField.val();
+		if (message.length === 0) {
 			ui.notifications.error(localize("LAME.Notification.NoMessageToSend"));
 			return;
 		}
+
+		// Send whisper(s):
 		this.sendWhisperTo(selectedUserNames, message);
 		this.addOutgoingMessageToHistory(selectedUserNames, message);
 		this.renderHistoryPartial();
@@ -237,7 +238,8 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		function padLeadingZero(num) {
 			return ('00' + num).slice(-2);
 		}
-		let date = new Date();
+
+		const date = new Date();
 		return padLeadingZero(date.getHours()) + ":" + padLeadingZero(date.getMinutes()) + ":" + padLeadingZero(date.getSeconds());
 	}
 
@@ -249,7 +251,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 
 	addOutgoingMessageToHistory(recipients, msg) {
-		for (let recipient of recipients) {
+		for (const recipient of recipients) {
 			const time = this.currentTime();
 			this.history.push([time, 'out', this.getUserIdFromName(recipient), msg]);
 		}
@@ -266,7 +268,7 @@ Hooks.on('renderSceneControls', (controls, html) => {
 			<i class="fas fa-comment-dots" title="${localize("LAME.Module.TitleWithAbbreviation")}"></i>
 		</li>`
 	);
-	messengerBtn[0].addEventListener('click', evt => {
+	messengerBtn[0].addEventListener('click', _event => {
 		window.LAME.render();
 	});
 
@@ -290,18 +292,16 @@ Hooks.on("renderSidebarTab", async (app, html, _data) => {
 });
 
 Hooks.on("createChatMessage", async (data, options, senderUserId) => {
-	// const showNotif = game.settings.get(moduleName, showWhisperNotificationsKey);
 	const isToMe = (data?.whisper ?? []).includes(game.userId),
-		isFromMe = senderUserId === game.userId,
-		LAME = window.LAME;
+		isFromMe = senderUserId === game.userId;
 
 	if (!isToMe || isFromMe) return;
 
-	// Ignore privat messages to GM that are player's roll results (e.g. Private/Blind GM rolls):
+	// Ignore private messages to GM that are player's roll results (e.g. Private/Blind GM rolls):
 	if (data.rolls.length > 0) return;
 
 	// log('incoming whisper', data, options, senderUserId)
-	LAME.handleIncomingPrivateMessage(data);
+	await window.LAME.handleIncomingPrivateMessage(data);
 });
 
 Hooks.once('init', LAME.init); // this feels VERY early in Foundry's initialisation...
