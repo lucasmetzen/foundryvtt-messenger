@@ -83,9 +83,6 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		// this.users = this.computeUsersData(); // DEBUG: deactivated for .setup() test
 		this.history = [];
 
-		this.pstSound = new Sound("modules/lame-messenger/sounds/pst-pst.ogg");
-		// TODO: deprecated to foundry.audio.Sound
-
 		// this.window = new LAMEwindow();
 	}
 
@@ -108,7 +105,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 	static ready() {
 		window.LAME.users = window.LAME.computeUsersData(); // TODO: Look into this again as this doesn't seem to be the intended way...
-		window.LAME.pstSound.load();
+
 		log('ready')
 	}
 
@@ -232,10 +229,25 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		}
 	
 		this.addIncomingMessageToHistory(data);
-		await window.LAME.pstSound.play();
+		await window.LAME.playNotificationSound();
+
 		if (!this.rendered) return this.render();
 
 		await this.renderHistoryPartial();
+	}
+
+	async playNotificationSound() {
+		// Unless played via `autoplay`, the sound is not played on `interface` channel/context but on `music`.
+		//  This seems to be a bug in Foundry itself.
+		//  Therefore, it can not just be created _once_ during initialisation and then #play-ed.
+		//  According to browser network inspection, the file is at least not requested multiple times.
+		await game.audio.create({
+			src: "modules/lame-messenger/sounds/pst-pst.ogg",
+			context: game.audio.interface,
+			singleton: false,
+			preload: true,
+			autoplay: true
+		});
 	}
 
 	currentTime() {
