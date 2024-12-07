@@ -61,9 +61,8 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		// TODO: try to avoid using jQuery, e.g.:
 		// this.element.querySelector("input[name=something]").addEventListener("click", /* ... */);
 
-		// Submit/Send button:
-		html.find('input[type="submit"]').click(_event => {
-			this.sendMessage(html);
+		html.find('input[type="submit"]').click(async _event => {
+			await this.sendMessage(html);
 		});
 
 		html.find('#lame-messenger .message').on("keypress", event => this._onKeyPressEvent(event, html));
@@ -80,10 +79,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 	constructor(app) {
 		super(app);
-		// this.users = this.computeUsersData(); // DEBUG: deactivated for .setup() test
 		this.history = [];
-
-		// this.window = new LAMEwindow();
 	}
 
 	static async init() {
@@ -96,17 +92,13 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 
 	static setup() {
-		const newLAME = new LAME();
-		newLAME.history = [];
-		//newLAME.window = new LAMEwindow();
-		window.LAME = newLAME;
-		log('set up');
+		window.LAME = new LAME();
 	}
 
 	static ready() {
-		window.LAME.users = window.LAME.computeUsersData(); // TODO: Look into this again as this doesn't seem to be the intended way...
+		window.LAME.computeUsersData(); // TODO: Look into this again as this doesn't seem to be the intended way...
 
-		log('ready')
+		log('ready');
 	}
 
 	beautifyHistory() {
@@ -158,7 +150,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 			};
 			usersData.push(data);
 		}
-		return usersData;
+		window.LAME.users = usersData;
 	}
 
 	getUserNameFromId(id) {
