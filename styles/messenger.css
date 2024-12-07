@@ -97,6 +97,10 @@ div.window-app.lame-messenger {
   margin: 10px 0;
 }
 
+#lame-messenger button[type="submit"] {
+  border: 2px groove;
+}
+
 #lame-messenger .players {
   float: left;
   width: 75px;
