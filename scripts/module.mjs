@@ -17,7 +17,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		},
 		position: {
 			width: 640,
-			height: "auto",
+			height: "auto", // If set to `auto`, setting history's height to 100% results in a minimal height.
 		},
 		tag: "form",
 		window: {
@@ -61,7 +61,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		// TODO: try to avoid using jQuery, e.g.:
 		// this.element.querySelector("input[name=something]").addEventListener("click", /* ... */);
 
-		html.find('input[type="submit"]').click(async _event => {
+		html.find('button[type="submit"]').click(async _event => {
 			await this.sendMessage(html);
 		});
 
