@@ -1,9 +1,9 @@
 {
   "LAME": {
     "Module": {
-      "Title": "Lucas's Awesome Messenger Extension",
-      "Abbreviation": "LAME",
-      "TitleWithAbbreviation": "Lucas's Awesome Messenger Extension (LAME)"
+      "LongTitle": "Lucas's Awesome Messenger Extension",
+      "ShortTitle": "LAME Messenger",
+      "TitleWithAbbreviation": "Lucas's Awesome Messenger Extension (LAME Messenger)"
     },
     "History": {
       "Hint": "This is your message history. Sent and received messages will appear here while you're logged in and until you refresh your browser.",

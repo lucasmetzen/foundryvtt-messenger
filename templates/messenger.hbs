@@ -1,0 +1,18 @@
+<form autocomplete="off" onsubmit="event.preventDefault();" id="lame-messenger">
+
+	<div class="players">
+		<ul>
+            {{> "modules/lame-messenger/templates/sub-templates/users.hbs"}}
+		</ul>
+	</div>
+
+	<div class="chat-elements">
+<textarea class="history" placeholder="{{ localize 'LAME.History.Hint' }}" disabled>
+{{> "modules/lame-messenger/templates/sub-templates/history.hbs"}}
+</textarea>
+
+		<textarea class="message" name="message" placeholder="{{ localize 'LAME.WhisperHint' }}" rows="3"></textarea>
+		<input type="submit" value="{{ localize 'LAME.Send' }}">
+	</div>
+
+</form>

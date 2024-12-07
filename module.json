@@ -1,6 +1,6 @@
 {
-  "id": "lucas-messenger",
-  "title": "Lucas's Almost Magnificent Messenger",
+  "id": "lame-messenger",
+  "title": "Lucas's Awesome Messenger Extension (LAME Messenger)",
   "description": "Provides a simple messenger interface to easily whisper messages.",
   "version": "#{VERSION}#",
   "library": "false",
