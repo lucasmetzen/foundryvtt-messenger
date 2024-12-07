@@ -29,15 +29,16 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	
 	/** @override */
 	static PARTS = {
-		// I don't have any idea how to access these later-on
 		history: {
-			// template: "./modules/foo/templates/form.hbs"
 			// id: "history",
-			template: `${TEMPLATE_PATH}/history.hbs`
-			// template: TEMPLATE_PARTS.history
+			// template: `${TEMPLATE_PATH}/history.hbs`
+			template: TEMPLATE_PARTS.history
 		},
+		/*users: {
+			template: TEMPLATE_PARTS.users
+		},*/
 		form: { // "main window"
-			template: `${TEMPLATE_PATH}/whispers.html`
+			template: `${TEMPLATE_PATH}/messenger.hbs`
 		}
 	}
 
@@ -74,7 +75,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	_configureRenderOptions(options) {
 		super._configureRenderOptions(options);
 		// Completely overriding the parts
-		options.parts = ['form']
+		options.parts = ['form'];
 	}
 
 	constructor(app) {
@@ -90,8 +91,11 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 	static async init() {
 		registerSettings();
-		loadTemplates([TEMPLATE_PARTS.history]); // TODO: figure out how to do this nicely with Application v2's PARTS
-		log('initialised');
+
+		const templatesParts = Object.keys(TEMPLATE_PARTS).map(
+			(key) => TEMPLATE_PARTS[key]
+		);
+		loadTemplates(templatesParts); // TODO: figure out how to do this nicely with Application v2's PARTS
 	}
 
 	static setup() {
@@ -184,13 +188,13 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		}
 	}
 
-	_onKeyPressEvent(event, html) {
+	async _onKeyPressEvent(event, html) {
 		if ((event.keyCode === 10) && event.ctrlKey) { // for `#on("keyup")` it's 13 when combined with Ctrl
-			this.sendMessage(html);
+			await this.sendMessage(html);
 		}
 	}
 
-	sendMessage(html) {
+	async sendMessage(html) {
 		// Get selected users:
 		const checkedUserElements = html.find('input[id^="user-"]:checked');
 		let selectedUserNames = [];
@@ -201,7 +205,8 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 			ui.notifications.error(localize("LAME.Notification.NoRecipientSelected"));
 			return;
 		}
-		
+
+		// Get message text:
 		const messageField = html.find('#lame-messenger .message'),
 			message = messageField.val();
 		if (message.length === 0) {
@@ -212,10 +217,9 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		// Send whisper(s):
 		this.sendWhisperTo(selectedUserNames, message);
 		this.addOutgoingMessageToHistory(selectedUserNames, message);
-		this.renderHistoryPartial();
+		await this.renderHistoryPartial();
 
-		// Uncheck users and clear text area:
-		// checkedUserElements.prop('checked', false);
+		// Clear message input field for next text:
 		messageField.val('');
 	}
 
