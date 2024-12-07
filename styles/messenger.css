@@ -2,11 +2,6 @@
   flex: 0 0 24px;
 }
 
-div.window-app.lame-messenger {
-  width: 660px;
-  height: 576px; /* 4 players: 470, 5 players: 576 */
-}
-
 #lame-messenger {
   /* center all elements */
   text-align: center;
@@ -18,9 +13,12 @@ div.window-app.lame-messenger {
   padding: 0;
 }
 
-#lame-messenger li {
-  display: inline-block;
+#lame-messenger .players li {
   margin-bottom: 10px;
+}
+
+#lame-messenger .players li:last-child {
+  margin-bottom: 0;
 }
 
 #lame-messenger input[type="checkbox"][class~="user-checkmark"] {
@@ -103,14 +101,27 @@ div.window-app.lame-messenger {
 
 #lame-messenger .players {
   float: left;
-  width: 75px;
+  width: 90px; /* could be 75px without scrollbar */
+  max-height: 626px; /* 6 players */
   margin-right: 8px; /* same as application window's inner padding */
+  overflow-y: auto;
 }
 
 #lame-messenger .chat-elements {
-  height: 424px; /* TODO: find a way to make it dynamic again based on the number of players */
   display: flex;
   flex-flow: column;
+  min-height: 626px; /* Applies to 6 players and more. */
+}
+body.vtt:has(#lame-messenger .players li:first-child:nth-last-child(1)) #lame-messenger .chat-elements,
+body.vtt:has(#lame-messenger .players li:first-child:nth-last-child(2)) #lame-messenger .chat-elements,
+body.vtt:has(#lame-messenger .players li:first-child:nth-last-child(3)) #lame-messenger .chat-elements {
+  min-height: 308px;
+}
+body.vtt:has(#lame-messenger .players li:first-child:nth-last-child(4)) #lame-messenger .chat-elements {
+  min-height: 414px;
+}
+body.vtt:has(#lame-messenger .players li:first-child:nth-last-child(5)) #lame-messenger .chat-elements {
+  min-height: 520px;
 }
 
 #lame-messenger textarea {

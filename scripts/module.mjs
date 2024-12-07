@@ -17,7 +17,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		},
 		position: {
 			width: 640,
-			height: "auto",
+			height: "auto", // If set to `auto`, setting history's height to 100% results in a minimal height.
 		},
 		tag: "form",
 		window: {
