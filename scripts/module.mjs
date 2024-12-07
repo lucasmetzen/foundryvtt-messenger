@@ -316,6 +316,9 @@ Hooks.once('init', LAME.init); // this feels VERY early in Foundry's initialisat
 Hooks.once('setup', LAME.setup);
 Hooks.once('ready', LAME.ready);
 
-/* Hooks.on('renderPlayerList', () => {
-	window.LAME.users = window.LAME.computeUsersData(); // update player list when user (dis)connects
-} */
+// Update internal player list when user (dis)connects:
+Hooks.on('userConnected', (_user, _connected) => {
+	// https://foundryvtt.com/api/functions/hookEvents.userConnected.html
+	window.LAME.computeUsersData();
+	// TODO: Re-render visual user list in window if it is open.
+});
