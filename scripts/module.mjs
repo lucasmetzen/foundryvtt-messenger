@@ -209,8 +209,9 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 		log("renderHistoryPartial > this", this);
 		// context.history = this.beautifyHistory();
-		await this._prepareContext({partId: 'history'});
-		this.render(true, { parts: ['history'] });
+		await this.render(false, { parts: ['history'] });
+		// await window.LAME.render(false, { parts: ['users']});
+
 
 		/* https://discord.com/channels/170995199584108546/722559135371231352/1238597872140816576
 		calling render with the parts option is the main idea
@@ -223,8 +224,27 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		}*/
 	}
 
-	render(...args) {
-		if (!this.rendered) return super.render(true, ...args);
+	async render(...args) {
+		/*
+		log(...args)
+		if (args[0] === true) {
+			log("Forcing re-render");
+			return super.render(true, ...args);
+		} // Force re-render.
+
+		if (!this.rendered) {
+			log("Rendering as window is not shown at the moment")
+			return super.render(true, ...args);
+		}
+
+		log("Not rendering")*/
+
+		log("this.rendered", this.rendered)
+		if (!this.rendered) return await super.render(true, ...args);
+
+		await super.render(...args);
+/*		async _render(force=false, options={}) {
+			await super._render(force, options);*/
 	}
 
 	computeUsersData() {
@@ -319,7 +339,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		this.addIncomingMessageToHistory(data);
 		await window.LAME.playNotificationSound();
 
-		if (!this.rendered) return this.render();
+		if (!this.rendered) return this.render(); // Open window. // TODO: Add option for this.
 
 		await this.renderHistoryPartial();
 	}
@@ -413,8 +433,9 @@ Hooks.once('setup', LAME.setup);
 Hooks.once('ready', LAME.ready);
 
 // Update internal player list when user (dis)connects:
-Hooks.on('userConnected', (_user, _connected) => {
+Hooks.on('userConnected', async(_user, _connected) => {
 	// https://foundryvtt.com/api/functions/hookEvents.userConnected.html
 	window.LAME.computeUsersData();
 	// TODO: Re-render visual user list in window if it is open.
+	await window.LAME.render(false, { parts: ['users']});
 });
