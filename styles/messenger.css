@@ -2,7 +2,13 @@
   flex: 0 0 24px;
 }
 
-#lame-messenger {
+/* Counteract parent's `display: flex` which breaks the users section's `float: left`,
+   without the need for another div or section. */
+#lame-messenger.application .window-content {
+  display: block;
+}
+
+#lame-messenger .users {
   /* center all elements */
   text-align: center;
 }

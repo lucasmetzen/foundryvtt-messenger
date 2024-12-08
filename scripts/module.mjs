@@ -58,7 +58,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 	_onFirstRender(context, options) {
 		const chatElements = document.createElement("div");
-		chatElements.classList.add("chat-elements"); // , "flexcol");
+		chatElements.classList.add("chat-elements");
 		chatElements.replaceChildren(...this.element.querySelectorAll(".chat-elements-part"));
 		this.element.querySelector(".users").insertAdjacentElement("afterend", chatElements);
 	}
