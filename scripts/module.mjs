@@ -1,6 +1,6 @@
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
-import {MODULE_ID, TEMPLATE_PATH, TEMPLATE_PARTS, localize, SUB_TEMPLATE_PATH} from "./config.mjs";
+import { MODULE_ID, localize, SUB_TEMPLATE_PATH } from "./config.mjs";
 import { log } from "./helpers/log.mjs";
 import { getSetting, registerSettings } from "./settings.mjs";
 import { registerHandlebarsHelpers } from "./helpers/handlebars-helpers.mjs";
@@ -34,13 +34,12 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		users: {
 			id: "users",
 			classes: ["users"],
-			template: TEMPLATE_PARTS.users
+			template: `${SUB_TEMPLATE_PATH}/users.hbs`
 		},
 		history: {
 			id: "history", // Neither id nor classes is added, due to the way it is rendered, I think.
 			classes: ["history", "chat-elements-part"],
 			template: `${SUB_TEMPLATE_PATH}/history.hbs`,
-			// template: TEMPLATE_PARTS.history
 		},
 		messageInput: {
 			id: "message-input",
@@ -54,13 +53,6 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 			template: `${TEMPLATE_PATH}/messenger.hbs` // The template entry-point for the part
 			// templates: [] // An array of templates that are required to render the part. If omitted, only the entry-point is inferred as required.
 		}*/
-	}
-
-	_onFirstRender(context, options) {
-		const chatElements = document.createElement("div");
-		chatElements.classList.add("chat-elements");
-		chatElements.replaceChildren(...this.element.querySelectorAll(".chat-elements-part"));
-		this.element.querySelector(".users").insertAdjacentElement("afterend", chatElements);
 	}
 
 	/** @inheritDoc */
@@ -79,9 +71,9 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 	/** @inheritDoc */
 	// https://github.com/foundryvtt/dnd5e/blob/d3704554f9a1a539a1a3816742f3733c460f210a/module/applications/compendium-browser.mjs#L463
-	async _preparePartContext(partId, context, options) {
+	/* async _preparePartContext(partId, context, options) {
 		await super._preparePartContext(partId, context, options);
-		log("_preparePartContext > after super", partId, context, options);
+		// log("_preparePartContext > after super", partId, context, options);
 		switch ( partId ) {
 			/*case "documentClass":
 			case "types":
@@ -89,13 +81,13 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 			case "results": return this._prepareResultsContext(context, options);
 			case "footer": return this._prepareFooterContext(context, options);
 			case "tabs": return this._prepareTabsContext(context, options);
-			case "header": return this._prepareHeaderContext(context, options);*/
+			case "header": return this._prepareHeaderContext(context, options);* /
 			case "history": return "this is the context prepared for history in _preparePartContext.";
 		}
 
-		log("_preparePartContext > finished", partId, context, options);
+		//log("_preparePartContext > finished", partId, context, options);
 		return context;
-	}
+	}*/
 
 
 	/**
@@ -133,25 +125,31 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	}*/
 
 	_onRender(_context, _options) {
+	}
+
+	_onFirstRender(context, options) {
+		// Create div and move some of the partial elements into it. This is needed to maintain the ability to re-render
+		//  specific partials on demand. Which would not be possible if a PART simply has multiple `templates` besides
+		//  the main entry point template, as the "child" templates would not have targetable identifiers.
+		const chatElements = document.createElement("div");
+		chatElements.classList.add("chat-elements");
+		chatElements.replaceChildren(...this.element.querySelectorAll(".chat-elements-part"));
+		this.element.querySelector(".users").insertAdjacentElement("afterend", chatElements);
+
+		// Attach actions to elements:
+		// TODO: Adopt AppV2's "actions" instead.
 		const html = $(this.element);
+
 		// TODO: try to avoid using jQuery, e.g.:
 		// this.element.querySelector("input[name=something]").addEventListener("click", /* ... */);
 
 		html.find('button.send').click(async _event => {
 			await this.sendMessage(html);
 		});
-
 		html.find('.message').on("keypress", event => this._onKeyPressEvent(event, html));
 	}
 
 	static async onSubmit(event, form, formData) {}
-
-	/** @override */
-	_configureRenderOptions(options) {
-		super._configureRenderOptions(options);
-		// Completely overriding the parts
-		//options.parts = ['form']; // DEBUG: TEST!
-	}
 
 	constructor(app) {
 		super(app);
@@ -162,10 +160,11 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		registerSettings();
 		registerHandlebarsHelpers();
 
-		const templatesParts = Object.keys(TEMPLATE_PARTS).map(
+		/*const templatesParts = Object.keys(TEMPLATE_PARTS).map(
 			(key) => TEMPLATE_PARTS[key]
 		);
 		loadTemplates(templatesParts); // TODO: figure out how to do this nicely with Application v2's PARTS
+	    */
 	}
 
 	static setup() {
@@ -209,7 +208,10 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 		log("renderHistoryPartial > this", this);
 		// context.history = this.beautifyHistory();
-		await this.render(false, { parts: ['history'] });
+
+		//await this.render(false, { parts: ['history'] });
+		await this.renderPart('history');
+
 		// await window.LAME.render(false, { parts: ['users']});
 
 
@@ -240,11 +242,27 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		log("Not rendering")*/
 
 		log("this.rendered", this.rendered)
-		if (!this.rendered) return await super.render(true, ...args);
+		if (!this.rendered) {
+			log("window not shown. forcing rendering")
+			return await super.render(true, ...args);
+		}
 
-		await super.render(...args);
+		//await super.render(false, ...args);
+		await super.render(false);
 /*		async _render(force=false, options={}) {
 			await super._render(force, options);*/
+	}
+
+	// This is needed as I can't figure out how to stop the window from re-rendering when it's already shown and
+	//  one of the buttons is clicked to open the window. So I simply avoid additional logic and use `force: false`
+	//  in render() if the window is already shown.
+	async renderPart(partId){
+		if (!this.rendered) {
+			log("Trying to render partial while window is not shown. This should not happen.");
+			return false;
+		}
+
+		await super.render(false, { parts: [partId] }); // Note: This calls SUPER directly.
 	}
 
 	computeUsersData() {
@@ -437,5 +455,9 @@ Hooks.on('userConnected', async(_user, _connected) => {
 	// https://foundryvtt.com/api/functions/hookEvents.userConnected.html
 	window.LAME.computeUsersData();
 	// TODO: Re-render visual user list in window if it is open.
-	await window.LAME.render(false, { parts: ['users']});
+	await window.LAME.renderPart('users');
+});
+
+Handlebars.registerHelper("beautifiedHistory", function () {
+	return window.LAME.beautifyHistory();
 });
