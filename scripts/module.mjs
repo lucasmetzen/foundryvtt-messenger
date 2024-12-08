@@ -1,6 +1,6 @@
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
-import { MODULE_ID, TEMPLATE_PATH, TEMPLATE_PARTS, localize } from "./config.mjs";
+import {MODULE_ID, TEMPLATE_PATH, TEMPLATE_PARTS, localize, SUB_TEMPLATE_PATH} from "./config.mjs";
 import { log } from "./helpers/log.mjs";
 import { getSetting, registerSettings } from "./settings.mjs";
 import { registerHandlebarsHelpers } from "./helpers/handlebars-helpers.mjs";
@@ -30,16 +30,22 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	
 	/** @override */
 	static PARTS = {
+		// Can be access like this: this.constructor.PARTS[partId]
 		history: {
-			// id: "history",
-			// template: `${TEMPLATE_PATH}/history.hbs`
-			template: TEMPLATE_PARTS.history
+			id: "history", // Neither id nor classes is added, due to the way it is rendered, I think.
+			classes: ["history-part"],
+			template: `${SUB_TEMPLATE_PATH}/history.hbs`
+			// template: TEMPLATE_PARTS.history
 		},
 		/*users: {
 			template: TEMPLATE_PARTS.users
 		},*/
 		form: { // "main window"
-			template: `${TEMPLATE_PATH}/messenger.hbs`
+			// id: "form", // Results in `lame-messenger-form` for the HTML element. Without, there would be 2 `lame-messenger` elements as the application window has the same id.
+			// id: "form-id-from-parts", // results in `lame-messenger-form-id-from-parts` for the HTML element
+			// classes: ["form-id-from-parts-1", "form-id-from-parts-2"], // classes do get added to the HTML element
+			template: `${TEMPLATE_PATH}/messenger.hbs` // The template entry-point for the part
+			// templates: [] // An array of templates that are required to render the part. If omitted, only the entry-point is inferred as required.
 		}
 	}
 
@@ -57,16 +63,71 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		};
 	}
 
+	/** @inheritDoc */
+	// https://github.com/foundryvtt/dnd5e/blob/d3704554f9a1a539a1a3816742f3733c460f210a/module/applications/compendium-browser.mjs#L463
+	async _preparePartContext(partId, context, options) {
+		await super._preparePartContext(partId, context, options);
+		log("_preparePartContext > after super", partId, context, options);
+		switch ( partId ) {
+			/*case "documentClass":
+			case "types":
+			case "filters": return this._prepareSidebarContext(partId, context, options);
+			case "results": return this._prepareResultsContext(context, options);
+			case "footer": return this._prepareFooterContext(context, options);
+			case "tabs": return this._prepareTabsContext(context, options);
+			case "header": return this._prepareHeaderContext(context, options);*/
+			case "history": return "this is the context prepared for history in _preparePartContext.";
+		}
+
+		log("_preparePartContext > finished", partId, context, options);
+		return context;
+	}
+
+
+	/**
+	 * A record of all rendered template parts.
+	 * @returns {Record<string, HTMLElement>}
+	 * /
+	get parts() {
+		return this.#parts;
+	}
+	#parts = {};*/
+
+	#historyTextEntries = ["abc","def"];
+
+
+	/**
+	 * Prepare the results context.
+	 * @param {ApplicationRenderContext} context     Shared context provided by _prepareContext.
+	 * @param {HandlebarsRenderOptions} options      Options which configure application rendering behavior.
+	 * @returns {Promise<ApplicationRenderContext>}  Context data for a specific part.
+	 * @protected
+	 * /
+	async _prepareResultsContext(context, options) {
+		// TODO: Determine if new set of results need to be fetched, otherwise use old results and re-sort as necessary
+		// Sorting changes alone shouldn't require a re-fetch, but any change to filters will
+		const filters = CompendiumBrowser.applyFilters(context.filterDefinitions, context.filters.additional);
+		// Add the name filter
+		if ( this.#filters.name?.length ) filters.push({ k: "name", o: "icontains", v: this.#filters.name });
+		this.#results = CompendiumBrowser.fetch(CONFIG[context.filters.documentClass].documentClass, {
+			filters,
+			types: context.filters.types,
+			indexFields: new Set(["system.source"])
+		});
+		context.displaySelection = this.displaySelection;
+		return context;
+	}*/
+
 	_onRender(_context, _options) {
 		const html = $(this.element);
 		// TODO: try to avoid using jQuery, e.g.:
 		// this.element.querySelector("input[name=something]").addEventListener("click", /* ... */);
 
-		html.find('button[type="submit"]').click(async _event => {
+		html.find('button.send').click(async _event => {
 			await this.sendMessage(html);
 		});
 
-		html.find('#lame-messenger .message').on("keypress", event => this._onKeyPressEvent(event, html));
+		html.find('.message').on("keypress", event => this._onKeyPressEvent(event, html));
 	}
 
 	static async onSubmit(event, form, formData) {}
@@ -75,7 +136,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	_configureRenderOptions(options) {
 		super._configureRenderOptions(options);
 		// Completely overriding the parts
-		options.parts = ['form'];
+		//options.parts = ['form']; // DEBUG: TEST!
 	}
 
 	constructor(app) {
@@ -128,11 +189,25 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 		// log("renderHistoryPartial > window.LAME", window.LAME) // does not contain PARTS
 		// this.PARTS is not defined as `this` does not refer to the class instance
-		const data = { history: this.beautifyHistory() },
+		/* const data = { history: this.beautifyHistory() },
 			history = await renderTemplate(TEMPLATE_PARTS.history, data);
-		$('#lame-messenger .history').val(history);
-	}
+		$('#lame-messenger .history').val(history);*/
 
+		log("renderHistoryPartial > this", this);
+		// context.history = this.beautifyHistory();
+		await this._prepareContext({partId: 'history'});
+		this.render(true, { parts: ['history'] });
+
+		/* https://discord.com/channels/170995199584108546/722559135371231352/1238597872140816576
+		calling render with the parts option is the main idea
+		this.render(false, {parts: ['composite']});
+
+
+		You can also use this info in _prepareContext to conditionally prepare heavier datasets.
+		if (options.parts.includes('composite')) {
+		  context.heavyData = await foo();
+		}*/
+	}
 
 	render(...args) {
 		if (!this.rendered) return super.render(true, ...args);
@@ -203,7 +278,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		}
 
 		// Get message text:
-		const messageField = html.find('#lame-messenger .message'),
+		const messageField = html.find('.message'),
 			message = messageField.val();
 		if (message.length === 0) {
 			ui.notifications.error(localize("LAME.Notification.NoMessageToSend"));

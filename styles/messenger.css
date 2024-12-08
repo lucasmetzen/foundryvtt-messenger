@@ -95,7 +95,7 @@
   margin: 10px 0;
 }
 
-#lame-messenger button[type="submit"] {
+#lame-messenger button.send {
   border: 2px groove;
 }
 

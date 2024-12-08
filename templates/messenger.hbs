@@ -1,5 +1,4 @@
-<form autocomplete="off" onsubmit="event.preventDefault();" id="lame-messenger">
-
+<div>
     {{#if (isAtLeastOneUserToBeShown)}}
         <div class="users">
             <ul>
@@ -20,9 +19,11 @@
 
 		<textarea class="message" name="message" placeholder="{{ localize 'LAME.WhisperHint' }}" rows="3"></textarea>
 
-		<button type="submit">
+		<button class="send">
+            <!-- > not type="submit" - that triggers "submit the web page as a form". use type="button"
+                  https://discord.com/channels/170995199584108546/722559135371231352/1238597859876540566 -->
 			<i class="far fa-paper-plane"></i> {{ localize 'LAME.Send' }}
 		</button>
 	</div>
 
-</form>
+</div>

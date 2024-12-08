@@ -2,3 +2,4 @@
 notes/
 tmp/
 *.code-workspace
+*.lock
