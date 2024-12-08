@@ -1,10 +1,17 @@
 <form autocomplete="off" onsubmit="event.preventDefault();" id="lame-messenger">
 
-	<div class="players">
-		<ul>
-            {{> "modules/lame-messenger/templates/sub-templates/users.hbs"}}
-		</ul>
-	</div>
+    {{#if (isAtLeastOneUserToBeShown)}}
+        <div class="users">
+            <ul>
+                {{> "modules/lame-messenger/templates/sub-templates/users.hbs"}}
+            </ul>
+        </div>
+    {{else}}
+        <div class="users no-users-to-show">
+            <p> {{ localize 'LAME.NoUsersToShow' }} </p>
+            <p> {{ localize 'LAME.NoUsersToShowExplanation' }} </p>
+        </div>
+    {{/if}}
 
 	<div class="chat-elements">
 <textarea class="history" placeholder="{{ localize 'LAME.History.Hint' }}" disabled>

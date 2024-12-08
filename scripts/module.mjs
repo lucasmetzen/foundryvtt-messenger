@@ -3,6 +3,7 @@ const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 import { MODULE_ID, TEMPLATE_PATH, TEMPLATE_PARTS, localize } from "./config.mjs";
 import { log } from "./helpers/log.mjs";
 import { getSetting, registerSettings } from "./settings.mjs";
+import { registerHandlebarsHelpers } from "./helpers/handlebars-helpers.mjs";
 
 class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
@@ -84,6 +85,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 	static async init() {
 		registerSettings();
+		registerHandlebarsHelpers();
 
 		const templatesParts = Object.keys(TEMPLATE_PARTS).map(
 			(key) => TEMPLATE_PARTS[key]
@@ -137,9 +139,14 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 
 	computeUsersData() {
+		const showInactiveUsers = getSetting('showInactiveUsers');
+
 		let usersData = [];
 		for (let user of game.users) {
-			if (user.isSelf || (user.name === "DM's Helper") || user.isBanned) continue;
+			if (user.isSelf || user.isBanned || (user.name === "DM's Helper")) continue;
+
+			// Skip inactive user unless inactive users should be shown:
+			if (!user.active && !showInactiveUsers) continue;
 
 			let data = {
 				name: user.name,

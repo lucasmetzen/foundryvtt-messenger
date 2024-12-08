@@ -13,11 +13,11 @@
   padding: 0;
 }
 
-#lame-messenger .players li {
+#lame-messenger .users li {
   margin-bottom: 10px;
 }
 
-#lame-messenger .players li:last-child {
+#lame-messenger .users li:last-child {
   margin-bottom: 0;
 }
 
@@ -99,7 +99,7 @@
   border: 2px groove;
 }
 
-#lame-messenger .players {
+#lame-messenger .users {
   float: left;
   width: 90px; /* could be 75px without scrollbar */
   max-height: 626px; /* 6 players */
@@ -112,15 +112,16 @@
   flex-flow: column;
   min-height: 626px; /* Applies to 6 players and more. */
 }
-body.vtt:has(#lame-messenger .players li:first-child:nth-last-child(1)) #lame-messenger .chat-elements,
-body.vtt:has(#lame-messenger .players li:first-child:nth-last-child(2)) #lame-messenger .chat-elements,
-body.vtt:has(#lame-messenger .players li:first-child:nth-last-child(3)) #lame-messenger .chat-elements {
+body.vtt:has(#lame-messenger .users.no-users-to-show) #lame-messenger .chat-elements,
+body.vtt:has(#lame-messenger .users li:first-child:nth-last-child(1)) #lame-messenger .chat-elements,
+body.vtt:has(#lame-messenger .users li:first-child:nth-last-child(2)) #lame-messenger .chat-elements,
+body.vtt:has(#lame-messenger .users li:first-child:nth-last-child(3)) #lame-messenger .chat-elements {
   min-height: 308px;
 }
-body.vtt:has(#lame-messenger .players li:first-child:nth-last-child(4)) #lame-messenger .chat-elements {
+body.vtt:has(#lame-messenger .users li:first-child:nth-last-child(4)) #lame-messenger .chat-elements {
   min-height: 414px;
 }
-body.vtt:has(#lame-messenger .players li:first-child:nth-last-child(5)) #lame-messenger .chat-elements {
+body.vtt:has(#lame-messenger .users li:first-child:nth-last-child(5)) #lame-messenger .chat-elements {
   min-height: 520px;
 }
 
