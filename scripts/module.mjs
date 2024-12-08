@@ -31,22 +31,36 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	/** @override */
 	static PARTS = {
 		// Can be access like this: this.constructor.PARTS[partId]
+		users: {
+			id: "users",
+			classes: ["users"],
+			template: TEMPLATE_PARTS.users
+		},
 		history: {
 			id: "history", // Neither id nor classes is added, due to the way it is rendered, I think.
-			classes: ["history-part"],
-			template: `${SUB_TEMPLATE_PATH}/history.hbs`
+			classes: ["history", "chat-elements-part"],
+			template: `${SUB_TEMPLATE_PATH}/history.hbs`,
 			// template: TEMPLATE_PARTS.history
 		},
-		/*users: {
-			template: TEMPLATE_PARTS.users
-		},*/
-		form: { // "main window"
+		messageInput: {
+			id: "message-input",
+			classes: ["message-input", "chat-elements-part"],
+			template: `${SUB_TEMPLATE_PATH}/message-input.hbs`
+		}
+		/*form: { // "main window"
 			// id: "form", // Results in `lame-messenger-form` for the HTML element. Without, there would be 2 `lame-messenger` elements as the application window has the same id.
 			// id: "form-id-from-parts", // results in `lame-messenger-form-id-from-parts` for the HTML element
 			// classes: ["form-id-from-parts-1", "form-id-from-parts-2"], // classes do get added to the HTML element
 			template: `${TEMPLATE_PATH}/messenger.hbs` // The template entry-point for the part
 			// templates: [] // An array of templates that are required to render the part. If omitted, only the entry-point is inferred as required.
-		}
+		}*/
+	}
+
+	_onFirstRender(context, options) {
+		const chatElements = document.createElement("div");
+		chatElements.classList.add("chat-elements"); // , "flexcol");
+		chatElements.replaceChildren(...this.element.querySelectorAll(".chat-elements-part"));
+		this.element.querySelector(".users").insertAdjacentElement("afterend", chatElements);
 	}
 
 	/** @inheritDoc */
