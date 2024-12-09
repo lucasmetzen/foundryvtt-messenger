@@ -1,8 +1,9 @@
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
-import { MODULE_ID, TEMPLATE_PATH, TEMPLATE_PARTS, localize } from "./config.mjs";
+import { localize, MODULE_ID, MODULE_ICON_CLASSES, TEMPLATE_PARTS_PATH } from "./config.mjs";
 import { log } from "./helpers/log.mjs";
 import { getSetting, registerSettings } from "./settings.mjs";
+import { registerHandlebarsHelpers } from "./helpers/handlebars-helpers.mjs";
 
 class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
@@ -21,24 +22,29 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		},
 		tag: "form",
 		window: {
-			icon: "fas fa-comment-dots",
+			icon: MODULE_ICON_CLASSES,
 			title: "LAME.Module.TitleWithAbbreviation"
 		},
 		classes: ['messenger']
 	}
-	
+
 	/** @override */
 	static PARTS = {
-		history: {
-			// id: "history",
-			// template: `${TEMPLATE_PATH}/history.hbs`
-			template: TEMPLATE_PARTS.history
+		// Can be access like this: this.constructor.PARTS[partId]
+		users: {
+			id: "users",
+			classes: ["users"],
+			template: `${TEMPLATE_PARTS_PATH}/users.hbs`
 		},
-		/*users: {
-			template: TEMPLATE_PARTS.users
-		},*/
-		form: { // "main window"
-			template: `${TEMPLATE_PATH}/messenger.hbs`
+		history: {
+			id: "history",
+			classes: ["history", "chat-elements-part"],
+			template: `${TEMPLATE_PARTS_PATH}/history.hbs`,
+		},
+		messageInput: {
+			id: "message-input",
+			classes: ["message-input", "chat-elements-part"],
+			template: `${TEMPLATE_PARTS_PATH}/message-input.hbs`
 		}
 	}
 
@@ -56,26 +62,32 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		};
 	}
 
-	_onRender(_context, _options) {
+	_onRender(_context, _options) {	}
+
+	_onFirstRender(context, options) {
+		/* Create div and move some of the partial elements into it. This is needed to maintain the ability to re-render
+		 * specific partials on demand. Which would not be possible if a PART simply has multiple `templates` besides
+		 * the main entry point template, as the "child" templates would not have targetable identifiers.
+		 */
+		const chatElements = document.createElement("div");
+		chatElements.classList.add("chat-elements");
+		chatElements.replaceChildren(...this.element.querySelectorAll(".chat-elements-part"));
+		this.element.querySelector(".users").insertAdjacentElement("afterend", chatElements);
+
+		// Attach actions to elements:
+		// TODO: Adopt AppV2's "actions" instead.
 		const html = $(this.element);
+
 		// TODO: try to avoid using jQuery, e.g.:
 		// this.element.querySelector("input[name=something]").addEventListener("click", /* ... */);
 
-		html.find('button[type="submit"]').click(async _event => {
+		html.find('button.send').click(async _event => {
 			await this.sendMessage(html);
 		});
-
-		html.find('#lame-messenger .message').on("keypress", event => this._onKeyPressEvent(event, html));
+		html.find('.message').on("keypress", event => this._onKeyPressEvent(event, html));
 	}
 
 	static async onSubmit(event, form, formData) {}
-
-	/** @override */
-	_configureRenderOptions(options) {
-		super._configureRenderOptions(options);
-		// Completely overriding the parts
-		options.parts = ['form'];
-	}
 
 	constructor(app) {
 		super(app);
@@ -84,11 +96,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 	static async init() {
 		registerSettings();
-
-		const templatesParts = Object.keys(TEMPLATE_PARTS).map(
-			(key) => TEMPLATE_PARTS[key]
-		);
-		loadTemplates(templatesParts); // TODO: figure out how to do this nicely with Application v2's PARTS
+		registerHandlebarsHelpers();
 	}
 
 	static setup() {
@@ -117,29 +125,45 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 
 	async renderHistoryPartial() {
-		/* return await renderTemplate(TEMPLATES.history, {
-			history: this.beautifyHistory()
-		}) */
-
-		// await loadTemplates([TEMPLATES.history]);
-		// let historyHtml = $(await renderTemplate(TEMPLATES.history, data));
-
-		// log("renderHistoryPartial > window.LAME", window.LAME) // does not contain PARTS
-		// this.PARTS is not defined as `this` does not refer to the class instance
-		const data = { history: this.beautifyHistory() },
-			history = await renderTemplate(TEMPLATE_PARTS.history, data);
-		$('#lame-messenger .history').val(history);
+		log("renderHistoryPartial > this", this);
+		await this.renderPart('history');
 	}
 
+	async render(...args) {
+		log("this.rendered", this.rendered)
+		if (!this.rendered) {
+			log("window not shown. forcing rendering")
+			return await super.render(true, ...args);
+		}
 
-	render(...args) {
-		if (!this.rendered) return super.render(true, ...args);
+		//await super.render(false, ...args);
+		await super.render(false);
+/*		async _render(force=false, options={}) {
+			await super._render(force, options);*/
+	}
+
+	/* This is needed as I can't figure out how to stop the window from re-rendering when it's already shown and
+	 * one of the buttons is clicked to open the window. So I simply avoid additional logic and use `force: false`
+	 * in render() if the window is already shown.
+	 */
+	async renderPart(partId){
+		if (!this.rendered) {
+			log("Trying to render partial while window is not shown. This should not happen.");
+			return false;
+		}
+
+		await super.render(false, { parts: [partId] }); // Note: This calls SUPER directly.
 	}
 
 	computeUsersData() {
+		const showInactiveUsers = getSetting('showInactiveUsers');
+
 		let usersData = [];
 		for (let user of game.users) {
-			if (user.isSelf || (user.name === "DM's Helper") || user.isBanned) continue;
+			if (user.isSelf || user.isBanned || (user.name === "DM's Helper")) continue;
+
+			// Skip inactive user unless inactive users should be shown:
+			if (!user.active && !showInactiveUsers) continue;
 
 			let data = {
 				name: user.name,
@@ -151,6 +175,11 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 			usersData.push(data);
 		}
 		window.LAME.users = usersData;
+	}
+
+	async computeUsersDataAndRenderPartial() {
+		window.LAME.computeUsersData();
+		await window.LAME.renderPart('users');
 	}
 
 	getUserNameFromId(id) {
@@ -167,7 +196,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	sendWhisperTo(userNames, msg) {
 		for (let username of userNames) {
 			// chatData needs to be defined for each message as the .whisper assignment is not overwritten on subsequent loops,
-			// resulting in multiple messages with unique document IDs but to the same recipient.
+			//  resulting in multiple messages with unique document IDs but to the same recipient.
 			let chatData = {
 				user: game.user.id,
 				content: msg
@@ -196,7 +225,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		}
 
 		// Get message text:
-		const messageField = html.find('#lame-messenger .message'),
+		const messageField = html.find('.message'),
 			message = messageField.val();
 		if (message.length === 0) {
 			ui.notifications.error(localize("LAME.Notification.NoMessageToSend"));
@@ -219,7 +248,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 				{ permanent: getSetting("permanentNotificationForNewWhisper") },
 			);
 		}
-	
+
 		this.addIncomingMessageToHistory(data);
 		await window.LAME.playNotificationSound();
 
@@ -229,10 +258,11 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 
 	async playNotificationSound() {
-		// Unless played via `autoplay`, the sound is not played on `interface` channel/context but on `music`.
-		//  This seems to be a bug in Foundry itself.
-		//  Therefore, it can not just be created _once_ during initialisation and then #play-ed.
-		//  According to browser network inspection, the file is at least not requested multiple times.
+		/* Unless played via `autoplay`, the sound is not played on `interface` channel/context but on `music`.
+		 * This seems to be a bug in Foundry itself.
+		 * Therefore, it can not just be created _once_ during initialisation and then #play-ed.
+		 * According to browser network inspection, the file is at least not requested multiple times.
+		 */
 		await game.audio.create({
 			src: "modules/lame-messenger/sounds/pst-pst.ogg",
 			context: game.audio.interface,
@@ -273,7 +303,7 @@ Hooks.on('renderSceneControls', (controls, html) => {
 
 	const messengerBtn = $(
 		`<li class="scene-control control-tool toggle">
-			<i class="fas fa-comment-dots" title="${localize("LAME.Module.ShortTitle")}"></i>
+			<i class="${MODULE_ICON_CLASSES}" title="${localize("LAME.Module.ShortTitle")}"></i>
 		</li>`
 	);
 	messengerBtn[0].addEventListener('click', _event => {
@@ -289,7 +319,7 @@ Hooks.on("renderSidebarTab", async (app, html, _data) => {
 
 	const messengerBtn = $(
 		`<a aria-label="${localize("LAME.Module.ShortTitle")}" role="button" class="lame-messenger" data-tooltip="LAME.Module.ShortTitle">
-			<i class="fas fa-comment-dots"></i>
+			<i class="${MODULE_ICON_CLASSES}"></i>
 		</a>`
 	);
 	messengerBtn[0].addEventListener('click', _event => {
@@ -317,8 +347,7 @@ Hooks.once('setup', LAME.setup);
 Hooks.once('ready', LAME.ready);
 
 // Update internal player list when user (dis)connects:
-Hooks.on('userConnected', (_user, _connected) => {
+Hooks.on('userConnected', async(_user, _connected) => {
 	// https://foundryvtt.com/api/functions/hookEvents.userConnected.html
-	window.LAME.computeUsersData();
-	// TODO: Re-render visual user list in window if it is open.
+	await window.LAME.computeUsersDataAndRenderPartial();
 });

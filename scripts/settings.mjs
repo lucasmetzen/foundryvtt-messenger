@@ -45,6 +45,18 @@ export function registerSettings() {
     requiresReload: true
   });
 
+  registerSetting('showInactiveUsers', {
+    name: "LAME.Setting.ShowInactiveUsers",
+    hint: "LAME.Setting.ShowInactiveUsersHint",
+    scope: 'client',
+    config: true,
+    type: Boolean,
+    default: false,
+    onChange: async() => {
+      await window.LAME.computeUsersDataAndRenderPartial();
+    }
+  });
+
   log("Module settings registered."); // DEBUG: Remove after development.
 }
 
