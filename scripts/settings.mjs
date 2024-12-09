@@ -52,9 +52,8 @@ export function registerSettings() {
     config: true,
     type: Boolean,
     default: false,
-    onChange: () => {
-      window.LAME.computeUsersData();
-      // TODO: Also re-render users sub-template on change.
+    onChange: async() => {
+      await window.LAME.computeUsersDataAndRenderPartial();
     }
   });
 

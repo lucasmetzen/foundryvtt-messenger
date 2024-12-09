@@ -1,13 +1,24 @@
 #chat-controls .lame-messenger {
-  flex: 0 0 24px;
+  flex: 0 0 28px; /* 24 px for icon fa-comment-dots */
 }
 
-#lame-messenger {
+/* Shrink fa-comments icon as it's wider than most of the other icons. */
+#chat-controls .lame-messenger i.fa-comments { font-size: var(--font-size-18); }
+#controls .lame-messenger i.fa-comments { font-size: 21px; }
+
+/* Counteract parent's `display: flex` which breaks the users section's `float: left`,
+   without the need for another div or section. */
+#lame-messenger.application .window-content {
+  display: block;
+}
+
+#lame-messenger .users {
   /* center all elements */
   text-align: center;
 }
 
 #lame-messenger ul {
+#lame-messenger .users ul {
   list-style-type: none;
   margin: 0;
   padding: 0;
@@ -21,11 +32,11 @@
   margin-bottom: 0;
 }
 
-#lame-messenger input[type="checkbox"][class~="user-checkmark"] {
+#lame-messenger .users input[type="checkbox"][class~="user-checkmark"] {
   display: none;
 }
 
-#lame-messenger label {
+#lame-messenger .users label {
   display: block;
   position: relative;
   /* padding: 10px;
@@ -33,7 +44,7 @@
   cursor: pointer;
 }
 
-#lame-messenger label:before {
+#lame-messenger .users label:before {
   background-color: white;
   color: white;
   content: " ";
@@ -51,7 +62,7 @@
   z-index: 1;
 }
 
-#lame-messenger label img {
+#lame-messenger .users label img {
   height: 75px;
   width: 75px;
   transform-origin: 50% 50%;
@@ -59,30 +70,30 @@
   border-style: ridge;
 }
 
-#lame-messenger :checked + label {
+#lame-messenger .users :checked + label {
   border-color: #ddd;
 }
 
-#lame-messenger :checked + label:before {
+#lame-messenger .users :checked + label:before {
   content: "✓";
   background-color: green;
   transform: scale(1);
   font-weight: bold;
 }
 
-#lame-messenger :checked + label img {
+#lame-messenger .users :checked + label img {
   transform: scale(0.9);
   box-shadow: 0 0 5px #333;
   z-index: -1;
   border-style: inset;
 }
 
-#lame-messenger .offline label {
+#lame-messenger .users .offline label {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-#lame-messenger .offline label img {
+#lame-messenger .users .offline label img {
   border-style: dotted;
 }
 
@@ -95,7 +106,7 @@
   margin: 10px 0;
 }
 
-#lame-messenger button[type="submit"] {
+#lame-messenger button.send {
   border: 2px groove;
 }
 
