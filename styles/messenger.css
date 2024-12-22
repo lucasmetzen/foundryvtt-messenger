@@ -3,8 +3,13 @@
 }
 
 /* Shrink fa-comments icon as it's wider than most of the other icons. */
-#chat-controls .lame-messenger i.fa-comments { font-size: var(--font-size-18); }
-#controls .lame-messenger i.fa-comments { font-size: 21px; }
+#chat-controls .lame-messenger i.fa-comments {
+    font-size: var(--font-size-18);
+}
+
+#controls .lame-messenger i.fa-comments {
+    font-size: 21px;
+}
 
 /* Counteract parent's `display: flex` which breaks the users section's `float: left`,
    without the need for another div or section. */
@@ -13,10 +18,9 @@
 }
 
 #lame-messenger .users {
-    text-align: center; /* center all elements */
+    display: flex; /* helps with keeping the users list at the same x-position when the scrollbar appears */
 }
 
-#lame-messenger ul {
 #lame-messenger .users ul {
     list-style-type: none;
     margin: 0;
@@ -38,8 +42,7 @@
 #lame-messenger .users label {
     display: block;
     position: relative;
-    /* padding: 10px;
-    margin: 10px; */
+    text-align: center;
     cursor: pointer;
 }
 
@@ -112,7 +115,7 @@
 #lame-messenger .users {
     float: left;
     width: 90px; /* could be 75px without scrollbar */
-    max-height: 626px; /* 6 players */
+    max-height: 633px; /* 6 players */
     margin-right: 8px; /* same as application window's inner padding */
     overflow-y: auto;
 }
@@ -120,7 +123,7 @@
 #lame-messenger .chat-elements {
     display: flex;
     flex-flow: column;
-    min-height: 626px; /* Applies to 6 players and more. */
+    min-height: 633px; /* Applies to 6 players and more. */
 }
 body.vtt:has(#lame-messenger .users.no-users-to-show) #lame-messenger .chat-elements,
 body.vtt:has(#lame-messenger .users li:first-child:nth-last-child(1)) #lame-messenger .chat-elements,
