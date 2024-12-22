@@ -1,9 +1,9 @@
-const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
+const {ApplicationV2, HandlebarsApplicationMixin} = foundry.applications.api;
 
-import { localize, MODULE_ID, MODULE_ICON_CLASSES, TEMPLATE_PARTS_PATH } from "./config.mjs";
-import { log } from "./helpers/log.mjs";
-import { getSetting, registerSettings } from "./settings.mjs";
-import { registerHandlebarsHelpers } from "./helpers/handlebars-helpers.mjs";
+import {localize, MODULE_ID, MODULE_ICON_CLASSES, TEMPLATE_PARTS_PATH} from "./config.mjs";
+import {log} from "./helpers/log.mjs";
+import {getSetting, registerSettings} from "./settings.mjs";
+import {registerHandlebarsHelpers} from "./helpers/handlebars-helpers.mjs";
 
 class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
@@ -62,7 +62,8 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		};
 	}
 
-	_onRender(_context, _options) {	}
+	_onRender(_context, _options) {
+	}
 
 	_onFirstRender(context, options) {
 		/* Create div and move some of the partial elements into it. This is needed to maintain the ability to re-render
@@ -87,7 +88,8 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		html.find('.message').on("keypress", event => this._onKeyPressEvent(event, html));
 	}
 
-	static async onSubmit(event, form, formData) {}
+	static async onSubmit(event, form, formData) {
+	}
 
 	constructor(app) {
 		super(app);
@@ -146,7 +148,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	 * one of the buttons is clicked to open the window. So I simply avoid additional logic and use `force: false`
 	 * in render() if the window is already shown.
 	 */
-	async renderPart(partId){
+	async renderPart(partId) {
 		if (!this.rendered) {
 			log("Trying to render partial while window is not shown. This should not happen.");
 			return false;
@@ -216,7 +218,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		// Get selected users:
 		const checkedUserElements = html.find('input[id^="user-"]:checked');
 		let selectedUserNames = [];
-		checkedUserElements.each(function() {
+		checkedUserElements.each(function () {
 			selectedUserNames.push(this.id.replace('user-', ''));
 		});
 		if (selectedUserNames.length === 0) {
@@ -347,7 +349,7 @@ Hooks.once('setup', LAME.setup);
 Hooks.once('ready', LAME.ready);
 
 // Update internal player list when user (dis)connects:
-Hooks.on('userConnected', async(_user, _connected) => {
+Hooks.on('userConnected', async (_user, _connected) => {
 	// https://foundryvtt.com/api/functions/hookEvents.userConnected.html
 	await window.LAME.computeUsersDataAndRenderPartial();
 });

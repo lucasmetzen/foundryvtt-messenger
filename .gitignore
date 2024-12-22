@@ -1,5 +1,8 @@
 .idea/
 notes/
 tmp/
+._*
 *.code-workspace
+
+# Foundry VTT's file used to lock module, preventing automatic updates:
 *.lock
