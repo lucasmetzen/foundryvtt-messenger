@@ -99,6 +99,10 @@
     border-style: dotted;
 }
 
+#lame-messenger .users .no-users-to-show {
+    display: block;
+}
+
 #lame-messenger .history {
     flex: 1 1 auto;
 }

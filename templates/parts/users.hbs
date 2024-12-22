@@ -14,8 +14,9 @@
             {{/each}}
         </ul>
     {{else}}
-        <!--div class="users no-users-to-show"-->
-        <p> {{ localize 'LAME.NoUsersToShow' }} </p>
-        <p> {{ localize 'LAME.NoUsersToShowExplanation' }} </p>
+        <div class="no-users-to-show">
+            <p> {{ localize 'LAME.NoUsersToShow' }} </p>
+            <p> {{ localize 'LAME.NoUsersToShowExplanation' }} </p>
+        </div>
     {{/if}}
 </section>
