@@ -19,12 +19,19 @@
 
 #lame-messenger .users {
     display: flex; /* helps with keeping the users list at the same x-position when the scrollbar appears */
+    position: relative;
+    top: -5px;
+    float: left;
+    width: 90px; /* could be 75px without scrollbar */
+    max-height: 633px; /* 6 players */
+    margin-right: 8px; /* same as application window's inner padding */
+    overflow-y: auto;
 }
 
 #lame-messenger .users ul {
     list-style-type: none;
-    margin: 0;
     padding: 0;
+    margin: 5px 0 0 0;
 }
 
 #lame-messenger .users li {
@@ -55,7 +62,7 @@
     border: 1px solid green;
     position: absolute;
     top: -5px;
-    left: -5px;
+    right: -2px;
     width: 25px;
     height: 25px;
     text-align: center;
@@ -120,14 +127,6 @@ body.theme-light #lame-messenger .history {
 
 #lame-messenger button.send {
     border: 2px groove;
-}
-
-#lame-messenger .users {
-    float: left;
-    width: 90px; /* could be 75px without scrollbar */
-    max-height: 633px; /* 6 players */
-    margin-right: 8px; /* same as application window's inner padding */
-    overflow-y: auto;
 }
 
 #lame-messenger .chat-elements {
