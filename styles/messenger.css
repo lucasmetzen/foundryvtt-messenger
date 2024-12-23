@@ -74,6 +74,8 @@
 
 #lame-messenger .users :checked + label {
     border-color: #ddd;
+    font-weight: bold;
+    text-shadow: 0 0 10px var(--color-shadow-primary); /* inspired by Foundry's Config */
 }
 
 #lame-messenger .users :checked + label:before {
@@ -106,10 +108,14 @@
 #lame-messenger .history {
     flex: 1 1 auto;
 }
+body.theme-light #lame-messenger .history {
+    color: var(--color-text-dark-secondary);
+}
 
 #lame-messenger .message {
     flex: 0 1 auto;
     margin: 10px 0;
+    font-weight: bold;
 }
 
 #lame-messenger button.send {
