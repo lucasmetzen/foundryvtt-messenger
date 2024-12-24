@@ -30,6 +30,7 @@
     },
     "IncomingWhisperFrom": "Whisper from",
     "NoUsersToShow": "No users to show.",
-    "NoUsersToShowExplanation": "Either you are the only user in the world, all other users are banned, or they are inactive and the setting to show inactive ones is disabled."
+    "NoUsersToShowExplanation": "Either you are the only user in the world, all other users are banned, or they are inactive and the setting to show inactive ones is disabled.",
+    "UserIsOffline": "Can't send to user as they are offline."
   }
 }
