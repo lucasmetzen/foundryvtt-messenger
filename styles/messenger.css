@@ -134,6 +134,10 @@ body.theme-light #lame-messenger .history {
     font-weight: bold;
 }
 
+#lame-messenger .message:focus {
+    box-shadow: 0 0 5px var(--lame-purple);
+}
+
 #lame-messenger button.send {
     border: 2px groove var(--lame-purple);
 }
