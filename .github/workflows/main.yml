@@ -128,3 +128,13 @@ jobs:
           artifacts: './module.json, ./module.zip'
           tag: ${{ github.event.release.tag_name }}
           body: ${{ github.event.release.body }}
+
+      # Publish the release to the Foundry VTT package page and trigger Discord bot to announce it in #package-release.
+      - name: Publish Module to Foundry VTT Website
+        id: publish-to-foundry-website
+        uses: cs96and/FoundryVTT-release-package@v1
+        with:
+          package-token: ${{ secrets.PACKAGE_TOKEN }}
+          manifest-url: https://github.com/${{github.repository}}/releases/download/${{github.event.release.tag_name}}/module.json
+          # TODO: Remove dry-run setting after having confirmed it works the first time:
+          dry-run: true
