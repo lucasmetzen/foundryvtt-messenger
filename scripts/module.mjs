@@ -1,7 +1,7 @@
 const {ApplicationV2, HandlebarsApplicationMixin} = foundry.applications.api;
 
 import {localize, MODULE_ID, MODULE_ICON_CLASSES, TEMPLATE_PARTS_PATH} from "./config.mjs";
-import {log, warn} from "./helpers/log.mjs";
+import {log} from "./helpers/log.mjs";
 import {getSetting, registerSettings} from "./settings.mjs";
 import {registerHandlebarsHelpers} from "./helpers/handlebars-helpers.mjs";
 
@@ -113,10 +113,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		for (let msg of this.history) {
 			let toOrFrom = localize(msg[1] === 'in' ? "LAME.History.From" : "LAME.History.To");
 			beautified.push(
-				msg[0] + // (date &) time
-				` ${toOrFrom} ` + // in or out
-				msg[2] + ': ' + // User name
-				msg[3] // message
+				`[${msg[0]}] ${toOrFrom} ${msg[2]}: ${msg[3]}` // [time] to/from [player name]: [message]
 			);
 		}
 		return beautified;
