@@ -1,11 +1,11 @@
-# ![logo](docs/logo.svg?raw=true) Lucas's Awesome Messenger Extension, or short: LAME Messenger
+# ![logo](https://github.com/lucasmetzen/foundryvtt-messenger/blob/main/docs/logo.svg?raw=true) Lucas's Awesome Messenger Extension, or short: LAME Messenger
 
 ![Supported Foundry VTT version](https://img.shields.io/endpoint?url=https://foundryshields.com/version?url=https://github.com/lucasmetzen/foundryvtt-messenger/releases/latest/download/module.json "Supported Foundry VTT version")
 [![GitHub issues](https://img.shields.io/github/issues/lucasmetzen/foundryvtt-messenger/bug.svg)](https://github.com/lucasmetzen/foundryvtt-messenger/issues/)
 
 LAME Messenger for Foundry VTT provides a simple messenger interface to easily whisper messages.
 
-![LAME Messenger interface introduction](https://github.com/lucasmetzen/foundryvtt-messenger/blob/main/docs/README-introduction.jpg?raw=true)
+![LAME Messenger interface introduction](https://github.com/lucasmetzen/foundryvtt-messenger/blob/main/docs/README-introduction.webp?raw=true)
 
 - Do you keep missing whispers other players send you?
 - Would you like to see a chat history of sent and received private messages without having to scroll through all chat cards in the sidebar?
