@@ -135,10 +135,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	 * in render() if the window is already shown.
 	 */
 	async renderPart(partId) {
-		if (!this.rendered) {
-			warn(`Trying to render partial "${partId}" while window is not shown. This should not happen.`);
-			return false;
-		}
+		if (!this.rendered) return false; // This could happen e.g. when a user (dis)connects and the window is closed.
 
 		await super.render(false, { parts: [partId] }); // Note: This calls SUPER directly.
 	}
