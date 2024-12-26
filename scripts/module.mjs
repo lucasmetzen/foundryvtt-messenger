@@ -1,7 +1,7 @@
 const {ApplicationV2, HandlebarsApplicationMixin} = foundry.applications.api;
 
 import {localize, MODULE_ID, MODULE_ICON_CLASSES, TEMPLATE_PARTS_PATH} from "./config.mjs";
-import {log} from "./helpers/log.mjs";
+import {log, warn} from "./helpers/log.mjs";
 import {getSetting, registerSettings} from "./settings.mjs";
 import {registerHandlebarsHelpers} from "./helpers/handlebars-helpers.mjs";
 
@@ -150,7 +150,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	 */
 	async renderPart(partId) {
 		if (!this.rendered) {
-			log("Trying to render partial while window is not shown. This should not happen.");
+			warn("Trying to render partial while window is not shown. This should not happen.");
 			return false;
 		}
 

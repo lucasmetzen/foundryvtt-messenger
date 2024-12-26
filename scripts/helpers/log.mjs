@@ -7,3 +7,7 @@ const CONSOLE_MESSAGE_PRESET = [`%c${CONSOLE_LOG_PREFIX}%c |`, 'background: #800
 export function log(...args) {
 	console.log(...CONSOLE_MESSAGE_PRESET, ...args);
 }
+
+export function warn(...args) {
+	console.warn(...CONSOLE_MESSAGE_PRESET, ...args);
+}
