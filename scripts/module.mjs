@@ -334,11 +334,13 @@ Hooks.on("renderSidebarTab", async (app, html, _data) => {
 Hooks.on("createChatMessage", async (data, options, senderUserId) => {
 	const isToMe = (data?.whisper ?? []).includes(game.userId),
 		isFromMe = senderUserId === game.userId;
-
 	if (!isToMe || isFromMe) return;
 
-	// Ignore private messages to GM that are player's roll results (e.g. Private/Blind GM rolls):
+	// Ignore private messages to GM that are players' roll results (e.g. Private/Blind GM rolls):
 	if (data.rolls.length > 0) return;
+
+	// Ignore D&D5e system's "character has been awarded ..." messages.
+	if (data.content.includes('<span class=\"award-entry\">')) return;
 
 	// log('incoming whisper', data, options, senderUserId)
 	await window.LAME.handleIncomingPrivateMessage(data);
