@@ -1,5 +1,5 @@
 :root {
-    --lame-purple: #b228cc;
+    --lame-purple: #B236FF;
 }
 
 #chat-controls .lame-messenger {
@@ -136,6 +136,11 @@ body.theme-light #lame-messenger .history {
 
 #lame-messenger button.send {
     border: 2px groove var(--lame-purple);
+}
+
+#lame-messenger button.send:hover {
+    background: var(--lame-purple);
+    box-shadow: 0 0 5px var(--button-hover-text-color); /* grey-ish white */
 }
 
 #lame-messenger .chat-elements {
