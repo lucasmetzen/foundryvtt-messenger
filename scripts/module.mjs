@@ -119,7 +119,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 			beautified.push(
 				msg[0] + // (date &) time
 				` ${toOrFrom} ` + // in or out
-				this.getUserNameFromId(msg[2]) + ': ' + // User name
+				msg[2] + ': ' + // User name
 				msg[3] // message
 			);
 		}
@@ -182,17 +182,6 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	async computeUsersDataAndRenderPartial() {
 		window.LAME.computeUsersData();
 		await window.LAME.renderPart('users');
-	}
-
-	getUserNameFromId(id) {
-		// TODO: this is called way too often
-		/*log('getUserNameFromId > id', id)
-		log('getUserNameFromId > users', window.LAME.users)*/
-		return window.LAME.users.find(user => user.id === id).name;
-	}
-
-	getUserIdFromName(name) {
-		return window.LAME.users.find(user => user.name === name).id;
 	}
 
 	sendWhisperTo(userNames, msg) {
@@ -285,15 +274,13 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 	addIncomingMessageToHistory(data) {
 		const time = this.currentTime();
-		// TODO: data.user.id should be replaced by data.author.name and the whole process simplified
-		// TODO: data.user is also now deprecated since v12 in favor of data.author.
-		this.history.push([time, 'in', data.user.id, data.content]);
+		this.history.push([time, 'in', data.author.name, data.content]);
 	}
 
 	addOutgoingMessageToHistory(recipients, msg) {
 		for (const recipient of recipients) {
 			const time = this.currentTime();
-			this.history.push([time, 'out', this.getUserIdFromName(recipient), msg]);
+			this.history.push([time, 'out', recipient, msg]);
 		}
 	}
 
