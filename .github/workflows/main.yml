@@ -30,20 +30,20 @@
 #     (by default) create a repository tag, a repository tag will not create
 #     or publish a GitHub release.
 #
-#   - Has the module's entry on FoundryVTT's module administration site
+#   - Has the module's entry on Foundry VTT's module administration site
 #     (https://foundryvtt.com/admin) been updated?
 #
 name: Create Module Files For GitHub Release
 
 
 env:
-  # The URL used for the module's "Project URL" link on FoundryVTT's website.
+  # The URL used for the module's "Project URL" link on Foundry VTT's website.
   project_url: "https://github.com/${{github.repository}}"
 
   # A URL that will always point to the latest manifest.
-  # FoundryVTT uses this URL to check whether the current module version that
+  # Foundry VTT uses this URL to check whether the current module version that
   # is installed is the latest version. This URL should NOT change,
-  # otherwise FoundryVTT won't be able to perform this check.
+  # otherwise Foundry VTT won't be able to perform this check.
   latest_manifest_url: "https://github.com/${{github.repository}}/releases/latest/download/module.json"
 
   # The URL to the module archive associated with the module release being
