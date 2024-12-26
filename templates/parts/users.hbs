@@ -6,7 +6,9 @@
                     <li {{#unless active}} class="offline" title="{{ localize 'LAME.UserIsOffline' }}" {{/unless}}>
                         <input type="checkbox" id="user-{{name}}" class="user-checkmark" {{#unless active}} disabled {{/unless}} />
                         <label for="user-{{name}}">
-                            <img src="{{avatar}}" style="border-color: {{ userColor id }}; {{#if active}} background-color: {{ userColor id }}; {{/if}}"/><br/>
+                            <img src="{{avatar}}" style="border-color: {{ userColor id }});
+                                {{~#if active}} background-color: {{ userColor id }}); {{/if~}}
+                            "/> <br/>
                             {{name}}
                         </label>
                     </li>
