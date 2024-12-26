@@ -21,9 +21,9 @@ If you answered at least one of those questions with "Yes", then LAME Messenger 
 
 - Dedicated window for sending and receiving whispers with chat history
 - Send a message to multiple recipients at the same time  
-  ![message sent to two users](docs/README-message-sent-to-two-users.webp?raw=true)
+  ![message sent to two users](https://github.com/lucasmetzen/foundryvtt-messenger/blob/main/docs/README-message-sent-to-two-users.webp?raw=true)
 - Shows a user's avatar or associated actor's image in addition to their name if set in world's user configuration  
-  ![message sent to two users](docs/README-user-avatar.webp?raw=true)
+  ![message sent to two users](https://github.com/lucasmetzen/foundryvtt-messenger/blob/main/docs/README-user-avatar.webp?raw=true)
 - No need to type `/whisper` command and recipient's username
 - Visual and auditory notification for incoming whisper (optional)
 - Messenger window opens upon receiving a whisper (optional) 
@@ -34,7 +34,7 @@ Note: The module is not a replacement for Foundry VTT's built-in whisper messagi
 ## ⚡️ Installation
 
 This module can be installed automatically from the Foundry Virtual Tabletop module browser, or by using the following module manifest url:  
-  https://github.com/lucasmetzen/foundryvtt-messenger/releases/download/latest/module.json
+  https://github.com/lucasmetzen/foundryvtt-messenger/releases/latest/download/module.json
 
 
 ## 🎨 Configurable options
@@ -42,11 +42,11 @@ This module can be installed automatically from the Foundry Virtual Tabletop mod
 - Show notification message for incoming whisper
 - Notification message is displayed until dismissed
 - Show currently disconnected users in user selection  
-  ![disconnected users shown](docs/README-disconnected-users-shown.webp?raw=true)
+  ![disconnected users shown](https://github.com/lucasmetzen/foundryvtt-messenger/blob/main/docs/README-disconnected-users-shown.webp?raw=true)
 - Show button in chat sidebar (next to the roll type selector) to open LAME messenger window (shown by default)  
-  ![button in chat sidebar](docs/README-button-in-chat-sidebar.webp?raw=true)
+  ![button in chat sidebar](https://github.com/lucasmetzen/foundryvtt-messenger/blob/main/docs/README-button-in-chat-sidebar.webp?raw=true)
 - Show button in scene controls toolbar (left side of screen) to open LAME messenger window  
-  ![button in scene controls toolbar](docs/README-button-in-scene-controls-toolbar.webp?raw=true)
+  ![button in scene controls toolbar](https://github.com/lucasmetzen/foundryvtt-messenger/blob/main/docs/README-button-in-scene-controls-toolbar.webp?raw=true)
 
 
 ## 🚧 Current limitations
