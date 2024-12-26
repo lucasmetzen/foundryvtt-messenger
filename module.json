@@ -4,14 +4,13 @@
   "description": "Provides a simple messenger interface to easily whisper messages.",
   "version": "#{VERSION}#",
   "library": "false",
-  "manifestPlusVersion": "1.2.0",
   "compatibility": {
     "minimum": "12",
     "verified": "12"
   },
   "authors": [
     {
-      "name": "Lucas",
+      "name": "Zandaarl",
       "url": "https://github.com/lucasmetzen",
       "discord": "zandaarl"
     }
