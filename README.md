@@ -82,5 +82,4 @@ That's by design, as LAME Messenger handles whispers the same way Foundry VTT do
 
 ## Credits
 
-- Thanks to BerlinAtmospheres (https://youtu.be/syG19v7pJC4?t=26) for the Pst-pst sound.
 - Thanks to Darksmaug, LittleKing205, Aphasmayra, and dawnofdope for additional beta/user-testing.
