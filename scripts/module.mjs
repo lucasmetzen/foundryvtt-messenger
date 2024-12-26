@@ -65,7 +65,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	_onRender(_context, _options) {
 	}
 
-	_onFirstRender(context, options) {
+	_onFirstRender(_context, _options) {
 		/* Create div and move some of the partial elements into it. This is needed to maintain the ability to re-render
 		 * specific partials on demand. Which would not be possible if a PART simply has multiple `templates` besides
 		 * the main entry point template, as the "child" templates would not have targetable identifiers.
@@ -88,8 +88,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		html.find('.message').on("keypress", event => this._onKeyPressEvent(event, html));
 	}
 
-	static async onSubmit(event, form, formData) {
-	}
+	static async onSubmit(_event, _form, _formData) { }
 
 	constructor(app) {
 		super(app);
@@ -99,9 +98,6 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	static async init() {
 		registerSettings();
 		registerHandlebarsHelpers();
-	}
-
-	static setup() {
 		window.LAME = new LAME();
 	}
 
@@ -126,22 +122,12 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		return beautified;
 	}
 
-	async renderHistoryPartial() {
-		log("renderHistoryPartial > this", this);
-		await this.renderPart('history');
-	}
-
 	async render(...args) {
-		log("this.rendered", this.rendered)
 		if (!this.rendered) {
-			log("window not shown. forcing rendering")
 			return await super.render(true, ...args);
 		}
 
-		//await super.render(false, ...args);
 		await super.render(false);
-/*		async _render(force=false, options={}) {
-			await super._render(force, options);*/
 	}
 
 	/* This is needed as I can't figure out how to stop the window from re-rendering when it's already shown and
@@ -150,11 +136,15 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	 */
 	async renderPart(partId) {
 		if (!this.rendered) {
-			warn("Trying to render partial while window is not shown. This should not happen.");
+			warn(`Trying to render partial "${partId}" while window is not shown. This should not happen.`);
 			return false;
 		}
 
 		await super.render(false, { parts: [partId] }); // Note: This calls SUPER directly.
+	}
+
+	async renderHistoryPartial() {
+		await this.renderPart('history');
 	}
 
 	computeUsersData() {
@@ -286,7 +276,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 }
 
 // Add button to scene controls toolbar:
-Hooks.on('renderSceneControls', (controls, html) => {
+Hooks.on('renderSceneControls', (_controls, html) => {
 	if (!getSetting("buttonInSceneControlToolbar")) return;
 
 	const messengerBtn = $(
@@ -317,7 +307,7 @@ Hooks.on("renderSidebarTab", async (app, html, _data) => {
 	html.find("#chat-controls select.roll-type-select").after(messengerBtn);
 });
 
-Hooks.on("createChatMessage", async (data, options, senderUserId) => {
+Hooks.on("createChatMessage", async (data, _options, senderUserId) => {
 	const isToMe = (data?.whisper ?? []).includes(game.userId),
 		isFromMe = senderUserId === game.userId;
 	if (!isToMe || isFromMe) return;
@@ -328,12 +318,11 @@ Hooks.on("createChatMessage", async (data, options, senderUserId) => {
 	// Ignore D&D5e system's "character has been awarded ..." messages.
 	if (data.content.includes('<span class=\"award-entry\">')) return;
 
-	// log('incoming whisper', data, options, senderUserId)
 	await window.LAME.handleIncomingPrivateMessage(data);
 });
 
 Hooks.once('init', LAME.init); // this feels VERY early in Foundry's initialisation...
-Hooks.once('setup', LAME.setup);
+// Hooks.once('setup', LAME.setup);
 Hooks.once('ready', LAME.ready);
 
 // Update internal player list when user (dis)connects:
