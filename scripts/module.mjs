@@ -171,7 +171,6 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 				name: user.name,
 				id: user.id,
 				avatar: user.avatar,
-				color: user.color,
 				active: user.active // user currently connected
 			};
 			usersData.push(data);
