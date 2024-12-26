@@ -1,9 +1,9 @@
-const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
+const {ApplicationV2, HandlebarsApplicationMixin} = foundry.applications.api;
 
-import { localize, MODULE_ID, MODULE_ICON_CLASSES, TEMPLATE_PARTS_PATH } from "./config.mjs";
-import { log } from "./helpers/log.mjs";
-import { getSetting, registerSettings } from "./settings.mjs";
-import { registerHandlebarsHelpers } from "./helpers/handlebars-helpers.mjs";
+import {localize, MODULE_ID, MODULE_ICON_CLASSES, TEMPLATE_PARTS_PATH} from "./config.mjs";
+import {log, warn} from "./helpers/log.mjs";
+import {getSetting, registerSettings} from "./settings.mjs";
+import {registerHandlebarsHelpers} from "./helpers/handlebars-helpers.mjs";
 
 class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
@@ -62,9 +62,10 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		};
 	}
 
-	_onRender(_context, _options) {	}
+	_onRender(_context, _options) {
+	}
 
-	_onFirstRender(context, options) {
+	_onFirstRender(_context, _options) {
 		/* Create div and move some of the partial elements into it. This is needed to maintain the ability to re-render
 		 * specific partials on demand. Which would not be possible if a PART simply has multiple `templates` besides
 		 * the main entry point template, as the "child" templates would not have targetable identifiers.
@@ -87,7 +88,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		html.find('.message').on("keypress", event => this._onKeyPressEvent(event, html));
 	}
 
-	static async onSubmit(event, form, formData) {}
+	static async onSubmit(_event, _form, _formData) { }
 
 	constructor(app) {
 		super(app);
@@ -97,9 +98,6 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	static async init() {
 		registerSettings();
 		registerHandlebarsHelpers();
-	}
-
-	static setup() {
 		window.LAME = new LAME();
 	}
 
@@ -117,42 +115,36 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 			beautified.push(
 				msg[0] + // (date &) time
 				` ${toOrFrom} ` + // in or out
-				this.getUserNameFromId(msg[2]) + ': ' + // User name
+				msg[2] + ': ' + // User name
 				msg[3] // message
 			);
 		}
 		return beautified;
 	}
 
-	async renderHistoryPartial() {
-		log("renderHistoryPartial > this", this);
-		await this.renderPart('history');
-	}
-
 	async render(...args) {
-		log("this.rendered", this.rendered)
 		if (!this.rendered) {
-			log("window not shown. forcing rendering")
 			return await super.render(true, ...args);
 		}
 
-		//await super.render(false, ...args);
 		await super.render(false);
-/*		async _render(force=false, options={}) {
-			await super._render(force, options);*/
 	}
 
 	/* This is needed as I can't figure out how to stop the window from re-rendering when it's already shown and
 	 * one of the buttons is clicked to open the window. So I simply avoid additional logic and use `force: false`
 	 * in render() if the window is already shown.
 	 */
-	async renderPart(partId){
+	async renderPart(partId) {
 		if (!this.rendered) {
-			log("Trying to render partial while window is not shown. This should not happen.");
+			warn(`Trying to render partial "${partId}" while window is not shown. This should not happen.`);
 			return false;
 		}
 
 		await super.render(false, { parts: [partId] }); // Note: This calls SUPER directly.
+	}
+
+	async renderHistoryPartial() {
+		await this.renderPart('history');
 	}
 
 	computeUsersData() {
@@ -169,7 +161,6 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 				name: user.name,
 				id: user.id,
 				avatar: user.avatar,
-				color: user.color,
 				active: user.active // user currently connected
 			};
 			usersData.push(data);
@@ -180,17 +171,6 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	async computeUsersDataAndRenderPartial() {
 		window.LAME.computeUsersData();
 		await window.LAME.renderPart('users');
-	}
-
-	getUserNameFromId(id) {
-		// TODO: this is called way too often
-		/*log('getUserNameFromId > id', id)
-		log('getUserNameFromId > users', window.LAME.users)*/
-		return window.LAME.users.find(user => user.id === id).name;
-	}
-
-	getUserIdFromName(name) {
-		return window.LAME.users.find(user => user.name === name).id;
 	}
 
 	sendWhisperTo(userNames, msg) {
@@ -216,7 +196,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		// Get selected users:
 		const checkedUserElements = html.find('input[id^="user-"]:checked');
 		let selectedUserNames = [];
-		checkedUserElements.each(function() {
+		checkedUserElements.each(function () {
 			selectedUserNames.push(this.id.replace('user-', ''));
 		});
 		if (selectedUserNames.length === 0) {
@@ -283,22 +263,20 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 	addIncomingMessageToHistory(data) {
 		const time = this.currentTime();
-		// TODO: data.user.id should be replaced by data.author.name and the whole process simplified
-		// TODO: data.user is also now deprecated since v12 in favor of data.author.
-		this.history.push([time, 'in', data.user.id, data.content]);
+		this.history.push([time, 'in', data.author.name, data.content]);
 	}
 
 	addOutgoingMessageToHistory(recipients, msg) {
 		for (const recipient of recipients) {
 			const time = this.currentTime();
-			this.history.push([time, 'out', this.getUserIdFromName(recipient), msg]);
+			this.history.push([time, 'out', recipient, msg]);
 		}
 	}
 
 }
 
 // Add button to scene controls toolbar:
-Hooks.on('renderSceneControls', (controls, html) => {
+Hooks.on('renderSceneControls', (_controls, html) => {
 	if (!getSetting("buttonInSceneControlToolbar")) return;
 
 	const messengerBtn = $(
@@ -329,25 +307,26 @@ Hooks.on("renderSidebarTab", async (app, html, _data) => {
 	html.find("#chat-controls select.roll-type-select").after(messengerBtn);
 });
 
-Hooks.on("createChatMessage", async (data, options, senderUserId) => {
+Hooks.on("createChatMessage", async (data, _options, senderUserId) => {
 	const isToMe = (data?.whisper ?? []).includes(game.userId),
 		isFromMe = senderUserId === game.userId;
-
 	if (!isToMe || isFromMe) return;
 
-	// Ignore private messages to GM that are player's roll results (e.g. Private/Blind GM rolls):
+	// Ignore private messages to GM that are players' roll results (e.g. Private/Blind GM rolls):
 	if (data.rolls.length > 0) return;
 
-	// log('incoming whisper', data, options, senderUserId)
+	// Ignore D&D5e system's "character has been awarded ..." messages.
+	if (data.content.includes('<span class=\"award-entry\">')) return;
+
 	await window.LAME.handleIncomingPrivateMessage(data);
 });
 
 Hooks.once('init', LAME.init); // this feels VERY early in Foundry's initialisation...
-Hooks.once('setup', LAME.setup);
+// Hooks.once('setup', LAME.setup);
 Hooks.once('ready', LAME.ready);
 
 // Update internal player list when user (dis)connects:
-Hooks.on('userConnected', async(_user, _connected) => {
+Hooks.on('userConnected', async (_user, _connected) => {
 	// https://foundryvtt.com/api/functions/hookEvents.userConnected.html
 	await window.LAME.computeUsersDataAndRenderPartial();
 });

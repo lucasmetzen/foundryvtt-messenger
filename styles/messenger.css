@@ -1,141 +1,170 @@
+:root {
+    --lame-purple: #B236FF;
+}
+
 #chat-controls .lame-messenger {
-  flex: 0 0 28px; /* 24 px for icon fa-comment-dots */
+    flex: 0 0 28px; /* 24 px for icon fa-comment-dots */
 }
 
 /* Shrink fa-comments icon as it's wider than most of the other icons. */
-#chat-controls .lame-messenger i.fa-comments { font-size: var(--font-size-18); }
-#controls .lame-messenger i.fa-comments { font-size: 21px; }
+#chat-controls .lame-messenger i.fa-comments {
+    font-size: var(--font-size-18);
+}
+
+#controls .lame-messenger i.fa-comments {
+    font-size: 21px;
+}
 
 /* Counteract parent's `display: flex` which breaks the users section's `float: left`,
    without the need for another div or section. */
 #lame-messenger.application .window-content {
-  display: block;
+    display: block;
+}
+
+#lame-messenger i.window-icon {
+    color: var(--lame-purple);
 }
 
 #lame-messenger .users {
-  /* center all elements */
-  text-align: center;
+    display: flex; /* helps with keeping the users list at the same x-position when the scrollbar appears */
+    position: relative;
+    top: -5px;
+    float: left;
+    width: 93px;
+    max-height: 639px; /* 6 players */
+    margin-right: 8px; /* same as application window's inner padding */
+    overflow-y: auto;
 }
 
-#lame-messenger ul {
 #lame-messenger .users ul {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
+    list-style-type: none;
+    padding: 0;
+    margin: 5px 0 0 3px;
 }
 
 #lame-messenger .users li {
-  margin-bottom: 10px;
+    margin-bottom: 10px;
 }
 
 #lame-messenger .users li:last-child {
-  margin-bottom: 0;
+    margin-bottom: 0;
 }
 
 #lame-messenger .users input[type="checkbox"][class~="user-checkmark"] {
-  display: none;
+    display: none;
 }
 
 #lame-messenger .users label {
-  display: block;
-  position: relative;
-  /* padding: 10px;
-  margin: 10px; */
-  cursor: pointer;
+    display: block;
+    position: relative;
+    text-align: center;
+    cursor: pointer;
 }
 
 #lame-messenger .users label:before {
-  background-color: white;
-  color: white;
-  content: " ";
-  display: block;
-  border-radius: 50%;
-  border: 1px solid green;
-  position: absolute;
-  top: -5px;
-  left: -5px;
-  width: 25px;
-  height: 25px;
-  text-align: center;
-  line-height: 28px;
-  transform: scale(0);
-  z-index: 1;
+    background-color: white;
+    color: white;
+    content: " ";
+    display: block;
+    border-radius: 50%;
+    border: 1px solid white;
+    position: absolute;
+    top: -5px;
+    right: -2px;
+    width: 25px;
+    height: 25px;
+    text-align: center;
+    line-height: 28px;
+    transform: scale(0);
+    z-index: 1;
 }
 
 #lame-messenger .users label img {
-  height: 75px;
-  width: 75px;
-  transform-origin: 50% 50%;
-  border-width: 2px;
-  border-style: ridge;
+    height: 75px;
+    width: 75px;
+    transform-origin: 50% 50%;
+    transform: scale(0.9);
+    border-width: 2px;
+    border-style: ridge;
 }
 
 #lame-messenger .users :checked + label {
-  border-color: #ddd;
+    border-color: #ddd;
+    font-weight: bold;
+    text-shadow: 0 0 10px var(--lame-purple);
 }
 
 #lame-messenger .users :checked + label:before {
-  content: "✓";
-  background-color: green;
-  transform: scale(1);
-  font-weight: bold;
+    content: "✓";
+    background-color: var(--lame-purple);
+    transform: scale(1);
+    font-weight: bold;
 }
 
 #lame-messenger .users :checked + label img {
-  transform: scale(0.9);
-  box-shadow: 0 0 5px #333;
-  z-index: -1;
-  border-style: inset;
+    transform: scale(1);
+    box-shadow: 0 0 5px #333;
+    z-index: -1;
+    border-style: inset;
 }
 
 #lame-messenger .users .offline label {
-  opacity: 0.5;
-  cursor: not-allowed;
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 #lame-messenger .users .offline label img {
-  border-style: dotted;
+    border-style: dotted;
+}
+
+#lame-messenger .users .no-users-to-show {
+    display: block;
 }
 
 #lame-messenger .history {
-  flex: 1 1 auto;
+    flex: 1 1 auto;
+}
+body.theme-light #lame-messenger .history {
+    color: var(--color-text-dark-secondary);
 }
 
 #lame-messenger .message {
-  flex: 0 1 auto;
-  margin: 10px 0;
+    flex: 0 1 auto;
+    margin: 10px 0;
+    font-weight: bold;
+}
+
+#lame-messenger .message:focus {
+    box-shadow: 0 0 5px var(--lame-purple);
 }
 
 #lame-messenger button.send {
-  border: 2px groove;
+    border: 2px groove var(--lame-purple);
 }
 
-#lame-messenger .users {
-  float: left;
-  width: 90px; /* could be 75px without scrollbar */
-  max-height: 626px; /* 6 players */
-  margin-right: 8px; /* same as application window's inner padding */
-  overflow-y: auto;
+#lame-messenger button.send:hover {
+    background: var(--lame-purple);
+    box-shadow: 0 0 5px var(--button-hover-text-color); /* grey-ish white */
 }
 
 #lame-messenger .chat-elements {
-  display: flex;
-  flex-flow: column;
-  min-height: 626px; /* Applies to 6 players and more. */
+    display: flex;
+    flex-flow: column;
+    min-height: 638px; /* Applies to 6 players and more. */
 }
 body.vtt:has(#lame-messenger .users.no-users-to-show) #lame-messenger .chat-elements,
 body.vtt:has(#lame-messenger .users li:first-child:nth-last-child(1)) #lame-messenger .chat-elements,
 body.vtt:has(#lame-messenger .users li:first-child:nth-last-child(2)) #lame-messenger .chat-elements,
 body.vtt:has(#lame-messenger .users li:first-child:nth-last-child(3)) #lame-messenger .chat-elements {
-  min-height: 308px;
+    min-height: 317px;
 }
 body.vtt:has(#lame-messenger .users li:first-child:nth-last-child(4)) #lame-messenger .chat-elements {
-  min-height: 414px;
+    min-height: 424px;
 }
 body.vtt:has(#lame-messenger .users li:first-child:nth-last-child(5)) #lame-messenger .chat-elements {
-  min-height: 520px;
+    min-height: 531px;
 }
 
 #lame-messenger textarea {
-  resize: none;
+    resize: none;
 }

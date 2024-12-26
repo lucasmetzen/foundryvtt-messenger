@@ -3,10 +3,12 @@
         <ul>
             {{#each users}}
                 {{#with this}}
-                    <li {{#unless active}} class="offline" {{/unless}}>
+                    <li {{#unless active}} class="offline" title="{{ localize 'LAME.UserIsOffline' }}" {{/unless}}>
                         <input type="checkbox" id="user-{{name}}" class="user-checkmark" {{#unless active}} disabled {{/unless}} />
                         <label for="user-{{name}}">
-                            <img src="{{avatar}}" style="border-color: {{color}}"/><br/>
+                            <img src="{{avatar}}" style="border-color: {{ userColor id }};
+                                {{~#if active}} background-color: {{ userColor id }}; {{/if~}}
+                            " alt="{{name}}"/> <br/>
                             {{name}}
                         </label>
                     </li>
@@ -14,8 +16,9 @@
             {{/each}}
         </ul>
     {{else}}
-        <!--div class="users no-users-to-show"-->
-        <p> {{ localize 'LAME.NoUsersToShow' }} </p>
-        <p> {{ localize 'LAME.NoUsersToShowExplanation' }} </p>
+        <div class="no-users-to-show">
+            <p> {{ localize 'LAME.NoUsersToShow' }} </p>
+            <p> {{ localize 'LAME.NoUsersToShowExplanation' }} </p>
+        </div>
     {{/if}}
 </section>

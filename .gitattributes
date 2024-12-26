@@ -1,0 +1,4 @@
+# Set the default behavior, in case people don't have core.autocrlf set.
+# This is needed to allow for compatibility of line separators between Windows and MacOS.
+# https://github.com/github/docs/blob/main/content/get-started/getting-started-with-git/configuring-git-to-handle-line-endings.md#example
+* text eol=crlf

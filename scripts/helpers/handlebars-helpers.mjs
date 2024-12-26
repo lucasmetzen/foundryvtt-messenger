@@ -7,4 +7,8 @@ export function registerHandlebarsHelpers() {
     Handlebars.registerHelper("beautifiedHistory", function () {
         return window.LAME.beautifyHistory();
     });
+
+    Handlebars.registerHelper("userColor", function (userId) {
+        return `var(--user-color-${userId})`;
+    });
 }
