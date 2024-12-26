@@ -5,7 +5,8 @@
 
 LAME Messenger for Foundry VTT provides a simple messenger interface to easily whisper messages.
 
-[add representative screenshot with absolute URL: https://github.com/lucasmetzen/foundryvtt-messenger/blob/main/images/logo.svg?raw=true]
+![LAME Messenger interface in light theme](https://github.com/lucasmetzen/foundryvtt-messenger/blob/main/docs/README-intro-light.webp?raw=true)
+![LAME Messenger interface in dark theme](https://github.com/lucasmetzen/foundryvtt-messenger/blob/main/docs/README-intro-dark.webp?raw=true)
 
 - Do you keep missing whispers other players send you?
 - Would you like to see a chat history of sent and received private messages without having to scroll through all chat cards in the sidebar?
@@ -17,25 +18,27 @@ If you answered at least one of those questions with "Yes", then LAME Messenger 
 
 ---
 
-## Features
+## ✨ Features
 
 - Dedicated window for sending and receiving whispers with chat history
 - Send a message to multiple recipients at the same time  
   ![message sent to two users](docs/README-message-sent-to-two-users.webp?raw=true)
-- Shows a user's avatar image in addition to their name if set in world's user configuration  
-  ![avatar in user configuration](docs/README-user-avatar.webp?raw=true)
+- Shows a user's avatar or associated actor's image in addition to their name if set in world's user configuration  
+  ![message sent to two users](docs/README-user-avatar.webp?raw=true)
 - No need to type `/whisper` command and recipient's username
 - Visual and auditory notification for incoming whisper (optional)
 - Messenger window opens upon receiving a whisper (optional) 
 
+Note: The module is not a replacement for Foundry VTT's built-in whisper messaging but is an additional graphical interface.
 
-## Installation
+
+## ⚡️ Installation
 
 This module can be installed automatically from the Foundry Virtual Tabletop module browser, or by using the following module manifest url:  
   https://github.com/lucasmetzen/foundryvtt-messenger/releases/download/latest/module.json
 
 
-## Configurable options
+## 🎨 Configurable options
 
 - Show notification message for incoming whisper
 - Notification message is displayed until dismissed
@@ -47,14 +50,21 @@ This module can be installed automatically from the Foundry Virtual Tabletop mod
   ![button in scene controls toolbar](docs/README-button-in-scene-controls-toolbar.webp?raw=true)
 
 
-## Notes
+## 🚧 Current limitations
 
 - LAME Messenger's chat history only shows messages you have sent and received until you either reload the browser window, or log out of Foundry VTT. The module currently does not store messages separately from Foundry VTT (as seen in the sidebar's chat tab), and doesn't compile a history from the whispers existing in the world's database. A persistent solution is planned for future releases.
-- The module is not a replacement for Foundry VTT's built-in whisper messaging. It only provides a handy graphical interface.
 - Messages not sent privately as a whisper (AKA "public" or dice rolls) are not handled by LAME Messenger. Public chat might be included in a future release.
+- When a player connects or disconnects while you have players selected to send to, the selection is cleared as the players list is re-rendered. As a tabbed window solution is planned for the near future which will change most of the UI anyway, this won't be fixed at the moment. Apologies for this initial inconvenience.
+
+## 💡 Planned features
+
+- Tabbed chat for each user
+- Configurable notification sound
+- Configurable keyboard shortcuts (open window, insert line break while typing message, and send message)
+- Option to show the character's portrait image instead of the user's avatar if the user has an associated actor
 
 
-## Troubleshooting
+## 🩹 Troubleshooting
 
 _"I don't hear the notification sound when I receive a whisper."_  
 The sound is played in the `interface` context, so please make sure to set the volume for `Interface` to audible levels.   
@@ -71,15 +81,12 @@ You can only send messages to users that are currently connected. Therefore, off
 _"I can't see messages other users sent to users other than myself."_  
 That's by design, as LAME Messenger handles whispers the same way Foundry VTT does.
 
-
-## Planned features
-
-- Tabbed chat for each user
-- Configurable notification sound file
-- Configurable keyboard shortcuts (opening window, line break in message, sending)
-- Option to show the character's portrait image instead of the user's avatar if the user has an associated actor
+_"I have found a bug."_  
+Please first ensure the problem is reproducible, best with all other modules deactivated. If it still happens, feel free to check the [GitHub issue tracker](https://github.com/lucasmetzen/foundryvtt-messenger/issues) if it is already known. If it isn't, please open a new issue.
 
 
-## Credits
+## 🎉 Credits & Thanks
 
-- Thanks to Darksmaug, LittleKing205, Aphasmayra, and dawnofdope for additional beta/user-testing.
+- Player avatars seen in the screenshots in this README are token artwork by "Stryxin" and [Forgotten Adventures](https://www.forgotten-adventures.net) which are included in Foundry VTT's _Dungeons & Dragons Fifth Edition_ system. The depiction is for demonstrational purposes only and this module does not include any of this artwork.
+- Thanks to Darksmaug, LittleKing205, Aphasmayra, and dawnofdope for additional testing and feedback.
+- Kudos to everyone who read the full README, and thinks the module's name might be just a bit tongue-in-cheek.
