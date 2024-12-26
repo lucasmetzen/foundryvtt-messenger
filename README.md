@@ -5,7 +5,7 @@
 
 LAME Messenger for Foundry VTT provides a simple messenger interface to easily whisper messages.
 
-![LAME Messenger interface introduction](https://github.com/lucasmetzen/foundryvtt-messenger/blob/main/docs/README-introduction.webp)
+![LAME Messenger interface introduction](https://github.com/lucasmetzen/foundryvtt-messenger/blob/main/docs/README-introduction.webp?raw=true)
 
 - Do you keep missing whispers other players send you?
 - Would you like to see a chat history of sent and received private messages without having to scroll through all chat cards in the sidebar?
