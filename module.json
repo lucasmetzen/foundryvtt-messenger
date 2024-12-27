@@ -35,5 +35,6 @@
   "url": "#{URL}#",
   "manifest": "#{MANIFEST}#",
   "download": "#{DOWNLOAD}#",
-  "readme": "README.md"
+  "readme": "https://github.com/lucasmetzen/foundryvtt-messenger/blob/main/README.md",
+  "bugs": "https://github.com/lucasmetzen/foundryvtt-messenger/issues"
 }
