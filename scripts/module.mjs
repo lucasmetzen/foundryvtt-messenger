@@ -103,8 +103,6 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 	static ready() {
 		window.LAME.computeUsersData(); // TODO: Look into this again as this doesn't seem to be the intended way...
-
-		log('ready');
 	}
 
 	beautifyHistory() {

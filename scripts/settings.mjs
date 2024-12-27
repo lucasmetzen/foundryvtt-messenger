@@ -56,8 +56,6 @@ export function registerSettings() {
 			await window.LAME.computeUsersDataAndRenderPartial();
 		}
 	});
-
-	log("Module settings registered."); // DEBUG: Remove after development.
 }
 
 function registerSetting(settingName, options) {
