@@ -1,5 +1,4 @@
 import { MODULE_ID } from "./config.mjs";
-import { log } from "./helpers/log.mjs";
 
 export function registerSettings() {
 	registerSetting('showNotificationForNewWhisper', {
