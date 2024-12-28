@@ -87,6 +87,6 @@ Please first ensure the problem is reproducible, best with all other modules dea
 ## 🎉 Credits & Thanks
 
 - Player avatars seen in the screenshots in this README are token artwork by "Stryxin" and [Forgotten Adventures](https://www.forgotten-adventures.net) which are included in Foundry VTT's _Dungeons & Dragons Fifth Edition_ system. The depiction is for demonstrational purposes only and this module does not include any of this artwork.
-- Thanks to Zaphyr for patiently waiting for this module to become publicly available since I started its development back in Foundry VTT version 0.5.5 in March 2020.
+- Thanks to Zaphyr for patiently waiting for this module to become publicly available since I started its development back in Foundry VTT version 0.5.1 in March 2020.
 - Thanks to Darksmaug, LittleKing205, Aphasmayra, and dawnofdope for additional testing and feedback.
 - Kudos to everyone who read the full README, and thinks the module's name might be just a bit tongue-in-cheek.

@@ -41,5 +41,6 @@
   "manifest": "#{MANIFEST}#",
   "download": "#{DOWNLOAD}#",
   "readme": "https://github.com/lucasmetzen/foundryvtt-messenger/blob/main/README.md",
-  "bugs": "https://github.com/lucasmetzen/foundryvtt-messenger/issues"
+  "bugs": "https://github.com/lucasmetzen/foundryvtt-messenger/issues",
+  "changelog": "https://github.com/lucasmetzen/foundryvtt-messenger/blob/main/CHANGELOG.md"
 }
