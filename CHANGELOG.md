@@ -1,5 +1,9 @@
 # Lucas's Awesome Messenger Extension, or short: LAME Messenger
 
+## 4.1.1 (2024-12-28)
+### Improvement
+- Add customisable keybinding to open Messenger window
+
 ## 4.1.0 (2024-12-28)
 ### Improvements
 - Add German localisation

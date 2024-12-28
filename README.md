@@ -1,7 +1,9 @@
 # ![logo](https://github.com/lucasmetzen/foundryvtt-messenger/blob/main/docs/logo.svg?raw=true) Lucas's Awesome Messenger Extension, or short: LAME Messenger
 
-![Foundry VTT version compatability: v12](https://img.shields.io/badge/Foundry_VTT-v12-informational)
-[![GitHub issues](https://img.shields.io/github/issues/lucasmetzen/foundryvtt-messenger/bug.svg)](https://github.com/lucasmetzen/foundryvtt-messenger/issues/)
+![Foundry VTT version compatibility: v12](https://img.shields.io/badge/Foundry_VTT-v12-informational)
+[![GitHub issues](https://img.shields.io/github/issues/lucasmetzen/foundryvtt-messenger/bug)](https://github.com/lucasmetzen/foundryvtt-messenger/issues/)
+![Latest release ZIP download count](https://img.shields.io/github/downloads/lucasmetzen/foundryvtt-messenger/latest/module.zip)
+![Forge installs](https://img.shields.io/badge/dynamic/json?label=Forge%20Installs&query=package.installs&suffix=%25&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Flame-messenger&colorB=4aa94a)
 
 LAME Messenger for Foundry VTT provides a simple messenger interface to easily whisper messages.
 
@@ -22,10 +24,10 @@ If you answered at least one of those questions with "Yes", then LAME Messenger 
 - Dedicated window for sending and receiving whispers with chat history
 - Send a message to multiple recipients at the same time:  
   ![message sent to two users](https://github.com/lucasmetzen/foundryvtt-messenger/blob/main/docs/README-message-sent-to-two-users.webp?raw=true)
+- Visual and auditory notification for incoming whisper (optional)
+- No need to type `/whisper` command and recipient's username in Foundry VTT's chat box
 - Shows a user's avatar or associated actor's image in addition to their name if set in world's user configuration:  
   ![message sent to two users](https://github.com/lucasmetzen/foundryvtt-messenger/blob/main/docs/README-user-avatar.webp?raw=true)
-- No need to type `/whisper` command and recipient's username
-- Visual and auditory notification for incoming whisper (optional)
 - Messenger window opens upon receiving a whisper (optional) 
 
 Note: The module is not a replacement for Foundry VTT's built-in whisper messaging but is an additional graphical interface.
@@ -61,6 +63,7 @@ This module can be installed automatically from the Foundry Virtual Tabletop mod
 - Configurable notification sound
 - Configurable keyboard shortcuts (insert line break while typing message, and send message)
 - Option to show the character's portrait image instead of the user's avatar if the user has an associated actor
+- Possibly allow user defined RegularExpressions to filter certain received whispers. 
 
 
 ## 🩹 Troubleshooting
