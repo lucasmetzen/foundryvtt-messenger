@@ -31,6 +31,10 @@
     "IncomingWhisperFrom": "Flüsternachricht von",
     "NoUsersToShow": "Kein Nutzer anzuzeigen.",
     "NoUsersToShowExplanation": "Entweder bist du der einzige Nutzer in dieser Welt, alle anderen Nutzen sind deaktiviert, oder sie sind inaktiv und die Einstellung um inaktive Nutzer anzuzeigen ist deaktiviert.",
-    "UserIsOffline": "Kann nur an verbundene Nutzer senden."
+    "UserIsOffline": "Kann nur an verbundene Nutzer senden.",
+    "Keybinding": {
+      "OpenMessengerWindow": "Öffne LAME Messenger-Fenster",
+      "OpenMessengerWindowHint": "Die standardmäßig zugewiesene Strg-Taste ist die linke. Du kannst auch eine Tastenkombination mit der rechten Strg-Taste zuweisen, auch wenn dies im Eingabefeld nicht ersichtlich ist."
+    }
   }
 }

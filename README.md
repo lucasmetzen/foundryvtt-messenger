@@ -47,7 +47,7 @@ This module can be installed automatically from the Foundry Virtual Tabletop mod
   ![button in chat sidebar](https://github.com/lucasmetzen/foundryvtt-messenger/blob/main/docs/README-button-in-chat-sidebar.webp?raw=true)
 - Show button in scene controls toolbar (left side of screen) to open LAME messenger window:  
   ![button in scene controls toolbar](https://github.com/lucasmetzen/foundryvtt-messenger/blob/main/docs/README-button-in-scene-controls-toolbar.webp?raw=true)
-
+- Customisable keyboard shortcut for opening the window (via "Configure Controls" dialogue)
 
 ## 🚧 Current limitations
 
@@ -59,7 +59,7 @@ This module can be installed automatically from the Foundry Virtual Tabletop mod
 
 - Tabbed chat for each user
 - Configurable notification sound
-- Configurable keyboard shortcuts (open window, insert line break while typing message, and send message)
+- Configurable keyboard shortcuts (insert line break while typing message, and send message)
 - Option to show the character's portrait image instead of the user's avatar if the user has an associated actor
 
 
