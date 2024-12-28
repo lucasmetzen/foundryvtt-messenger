@@ -131,9 +131,11 @@ jobs:
           body: ${{ github.event.release.body }}
 
       # Publish the release to the Foundry VTT package page and trigger Discord bot to announce it in #package-release.
+      # https://github.com/cs96and/FoundryVTT-release-package
       - name: Publish Module to Foundry VTT Website
         id: publish-to-foundry-website
         uses: cs96and/FoundryVTT-release-package@v1
         with:
           package-token: ${{ secrets.PACKAGE_TOKEN }}
           manifest-url: https://github.com/${{github.repository}}/releases/download/${{github.event.release.tag_name}}/module.json
+          notes-url: https://github.com/${{github.repository}}/releases/tag/${{github.event.release.tag_name}}
