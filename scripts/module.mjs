@@ -185,7 +185,15 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 
 	async sendMessage(html) {
-		// Get selected users:
+		// Get message text:
+		const messageField = html.find('.message'),
+			message = messageField.val();
+		if (message.length === 0) {
+			ui.notifications.error(localize("LAME.Notification.NoMessageToSend"));
+			return;
+		}
+
+		// Get selected user(s):
 		const checkedUserElements = html.find('input[id^="user-"]:checked');
 		let selectedUserNames = [];
 		checkedUserElements.each(function () {
@@ -193,14 +201,6 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		});
 		if (selectedUserNames.length === 0) {
 			ui.notifications.error(localize("LAME.Notification.NoRecipientSelected"));
-			return;
-		}
-
-		// Get message text:
-		const messageField = html.find('.message'),
-			message = messageField.val();
-		if (message.length === 0) {
-			ui.notifications.error(localize("LAME.Notification.NoMessageToSend"));
 			return;
 		}
 
