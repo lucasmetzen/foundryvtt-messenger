@@ -2,6 +2,7 @@ const {ApplicationV2, HandlebarsApplicationMixin} = foundry.applications.api;
 
 import {localize, MODULE_ID, MODULE_ICON_CLASSES, TEMPLATE_PARTS_PATH} from "./config.mjs";
 import {getSetting, registerSettings} from "./settings.mjs";
+import {registerKeybindings} from "./keybindings.mjs";
 import {registerHandlebarsHelpers} from "./helpers/handlebars-helpers.mjs";
 
 class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
@@ -96,6 +97,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 	static async init() {
 		registerSettings();
+		registerKeybindings();
 		registerHandlebarsHelpers();
 		window.LAME = new LAME();
 	}
