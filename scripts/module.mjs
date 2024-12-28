@@ -1,7 +1,6 @@
 const {ApplicationV2, HandlebarsApplicationMixin} = foundry.applications.api;
 
 import {localize, MODULE_ID, MODULE_ICON_CLASSES, TEMPLATE_PARTS_PATH} from "./config.mjs";
-import {log} from "./helpers/log.mjs";
 import {getSetting, registerSettings} from "./settings.mjs";
 import {registerHandlebarsHelpers} from "./helpers/handlebars-helpers.mjs";
 
@@ -103,8 +102,6 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 	static ready() {
 		window.LAME.computeUsersData(); // TODO: Look into this again as this doesn't seem to be the intended way...
-
-		log('ready');
 	}
 
 	beautifyHistory() {
@@ -187,7 +184,15 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 
 	async sendMessage(html) {
-		// Get selected users:
+		// Get message text:
+		const messageField = html.find('.message'),
+			message = messageField.val();
+		if (message.length === 0) {
+			ui.notifications.error(localize("LAME.Notification.NoMessageToSend"));
+			return;
+		}
+
+		// Get selected user(s):
 		const checkedUserElements = html.find('input[id^="user-"]:checked');
 		let selectedUserNames = [];
 		checkedUserElements.each(function () {
@@ -195,14 +200,6 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		});
 		if (selectedUserNames.length === 0) {
 			ui.notifications.error(localize("LAME.Notification.NoRecipientSelected"));
-			return;
-		}
-
-		// Get message text:
-		const messageField = html.find('.message'),
-			message = messageField.val();
-		if (message.length === 0) {
-			ui.notifications.error(localize("LAME.Notification.NoMessageToSend"));
 			return;
 		}
 

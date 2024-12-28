@@ -1,5 +1,4 @@
 import { MODULE_ID } from "./config.mjs";
-import { log } from "./helpers/log.mjs";
 
 export function registerSettings() {
 	registerSetting('showNotificationForNewWhisper', {
@@ -56,8 +55,6 @@ export function registerSettings() {
 			await window.LAME.computeUsersDataAndRenderPartial();
 		}
 	});
-
-	log("Module settings registered."); // DEBUG: Remove after development.
 }
 
 function registerSetting(settingName, options) {

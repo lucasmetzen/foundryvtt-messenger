@@ -27,6 +27,11 @@
   ],
   "languages": [
     {
+      "lang": "de",
+      "name": "Deutsch",
+      "path": "languages/de.json"
+    },
+    {
       "lang": "en",
       "name": "English",
       "path": "languages/en.json"
@@ -35,5 +40,7 @@
   "url": "#{URL}#",
   "manifest": "#{MANIFEST}#",
   "download": "#{DOWNLOAD}#",
-  "readme": "README.md"
+  "readme": "https://github.com/lucasmetzen/foundryvtt-messenger/blob/main/README.md",
+  "bugs": "https://github.com/lucasmetzen/foundryvtt-messenger/issues",
+  "changelog": "https://github.com/lucasmetzen/foundryvtt-messenger/blob/main/CHANGELOG.md"
 }
