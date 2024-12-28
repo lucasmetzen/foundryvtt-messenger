@@ -1,0 +1,36 @@
+{
+  "LAME": {
+    "Module": {
+      "LongTitle": "Lucas's Awesome Messenger Extension",
+      "ShortTitle": "LAME Messenger",
+      "TitleWithAbbreviation": "Lucas's Awesome Messenger Extension (LAME Messenger)"
+    },
+    "History": {
+      "Hint": "Dies ist dein Nachrichtenverlauf. Gesendete und empfangene Nachrichten werden hier angezeigt, solange du eingeloggt bist und bis du deinen Browser aktualisierst.",
+      "To": "an",
+      "From": "von"
+    },
+    "WhisperHint": "Schreibe deine Flüsternachricht hier. Zum Senden, Ctrl-Enter drücken.",
+    "Send": "Senden",
+    "Notification": {
+      "NoRecipientSelected": "Kein Empfänger ausgewählt.",
+      "NoMessageToSend": "Keine Nachricht zum Senden."
+    },
+    "Setting": {
+      "ShowNotificationForNewWhisper": "Zeige Benachrichtigung bei neuen Flüsternachrichten",
+      "ShowNotificationForNewWhisperHint": "Soll eine visuelle Benachrichtigung angezeigt werden für jede empfangene Flüsternachricht?",
+      "PermanentNotificationForNewWhisper": "Bleibende Benachrichtigung bei neuen Flüsternachrichten",
+      "PermanentNotificationForNewWhisperHint": "Soll die visuelle Benachrichtigung angezeigt werden, bis du sie wegklickst?",
+      "ButtonInSceneControlToolbar": "Knopf zu Szenenkontrolle hinzufügen",
+      "ButtonInSceneControlToolbarHint": "Soll der Knopf zum Öffnen des Messengers in der Werkzeugleiste der Szenenkontrolle an der linken Bildschirmseite angezeigt werden?",
+      "ButtonInChatControl": "Knopf zu Chat-Kontrolle hinzufügen",
+      "ButtonInChatControlHint": "Soll der Knopf zum Öffnen des Messengers in der Chat-Kontrolle (rechts vom Würfeltyp-Selektor) in der Seitenleiste angezeigt werden?",
+      "ShowInactiveUsers": "Zeige inaktive Nutzer",
+      "ShowInactiveUsersHint": "Sollen Nutzer, die momentan nicht verbunden sind, im Messenger angezeigt werden?"
+    },
+    "IncomingWhisperFrom": "Flüsternachricht von",
+    "NoUsersToShow": "Kein Nutzer anzuzeigen.",
+    "NoUsersToShowExplanation": "Entweder bist du der einzige Nutzer in dieser Welt, alle anderen Nutzen sind deaktiviert, oder sie sind inaktiv und die Einstellung um inaktive Nutzer anzuzeigen ist deaktiviert.",
+    "UserIsOffline": "Kann nur an verbundene Nutzer senden."
+  }
+}
