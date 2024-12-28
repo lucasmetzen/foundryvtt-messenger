@@ -1,6 +1,6 @@
 # ![logo](https://github.com/lucasmetzen/foundryvtt-messenger/blob/main/docs/logo.svg?raw=true) Lucas's Awesome Messenger Extension, or short: LAME Messenger
 
-![Supported Foundry VTT version](https://img.shields.io/endpoint?url=https://foundryshields.com/version?url=https://github.com/lucasmetzen/foundryvtt-messenger/releases/latest/download/module.json "Supported Foundry VTT version")
+![Foundry VTT version compatability: v12](https://img.shields.io/badge/Foundry_VTT-v12-informational)
 [![GitHub issues](https://img.shields.io/github/issues/lucasmetzen/foundryvtt-messenger/bug.svg)](https://github.com/lucasmetzen/foundryvtt-messenger/issues/)
 
 LAME Messenger for Foundry VTT provides a simple messenger interface to easily whisper messages.
