@@ -1,11 +1,11 @@
 # ![logo](https://github.com/lucasmetzen/foundryvtt-messenger/blob/main/docs/logo.svg?raw=true) Lucas's Awesome Messenger Extension, or short: LAME Messenger
 
+LAME Messenger for Foundry VTT provides a simple messenger interface to easily whisper messages.
+
 ![Foundry VTT version compatibility: v12](https://img.shields.io/badge/Foundry_VTT-v12-informational)
 [![GitHub issues](https://img.shields.io/github/issues/lucasmetzen/foundryvtt-messenger/bug)](https://github.com/lucasmetzen/foundryvtt-messenger/issues/)
-![Latest release ZIP download count](https://img.shields.io/github/downloads/lucasmetzen/foundryvtt-messenger/latest/module.zip)
+![Latest release download count](https://img.shields.io/github/downloads/lucasmetzen/foundryvtt-messenger/latest/module.zip?label=latest+release+download+count)
 ![Forge installs](https://img.shields.io/badge/dynamic/json?label=Forge%20Installs&query=package.installs&suffix=%25&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Flame-messenger&colorB=4aa94a)
-
-LAME Messenger for Foundry VTT provides a simple messenger interface to easily whisper messages.
 
 ![LAME Messenger interface introduction](https://github.com/lucasmetzen/foundryvtt-messenger/blob/main/docs/README-introduction.webp?raw=true)
 
@@ -56,6 +56,7 @@ This module can be installed automatically from the Foundry Virtual Tabletop mod
 - LAME Messenger's chat history only shows messages you have sent and received until you either reload the browser window, or log out of Foundry VTT. The module currently does not store messages separately from Foundry VTT (as seen in the sidebar's chat tab), and doesn't compile a history from the whispers existing in the world's database. A persistent solution is planned for future releases.
 - Messages not sent privately as a whisper (AKA "public" or dice rolls) are not handled by LAME Messenger. Public chat might be included in a future release.
 - When a player connects or disconnects while you have players selected to send to, the selection is cleared as the players list is re-rendered. As a tabbed window solution is planned for the near future which will change most of the UI anyway, this won't be fixed at the moment. Apologies for this initial inconvenience.
+- Game systems send some status messages privately (e.g. when items or experience are awarded). While all private messages containing dice rolls (e.g. self or GM rolls) are already filtered, there surely will be some which LAME Messenger is going to treat as actual whispers. If you come across any, please report them via the [GitHub issue tracker](https://github.com/lucasmetzen/foundryvtt-messenger/issues).
 
 ## 💡 Planned features
 
