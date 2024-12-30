@@ -1,5 +1,13 @@
 # Lucas's Awesome Messenger Extension, or short: LAME Messenger
 
+## 4.1.2 (2024-12-30)
+### Improvements
+- Scroll history to bottom when receiving whisper
+- Make playing notification sound optional
+
+### Styling
+- Standardise scene control button's tooltip styling
+
 ## 4.1.1 (2024-12-28)
 ### Improvement
 - Add customisable keybinding to open Messenger window
