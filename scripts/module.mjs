@@ -137,7 +137,12 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 
 	async renderHistoryPartial() {
-		await this.renderPart('history');
+		const historyPartialId = "history";
+		await this.renderPart(historyPartialId);
+
+		// Scroll history text area to bottom:
+		const history = document.getElementById(`${MODULE_ID}-${historyPartialId}`);
+		history.scrollTop = history.scrollHeight;
 	}
 
 	computeUsersData() {
