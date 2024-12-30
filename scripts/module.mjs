@@ -310,18 +310,17 @@ Hooks.on("renderSidebarTab", async (app, html, _data) => {
 	html.find("#chat-controls select.roll-type-select").after(messengerBtn);
 });
 
-Hooks.on("createChatMessage", async (data, _options, senderUserId) => {
-	const isToMe = (data?.whisper ?? []).includes(game.userId),
-		isFromMe = senderUserId === game.userId;
-	if (!isToMe || isFromMe) return;
-
-	// Ignore private messages to GM that are players' roll results (e.g. Private/Blind GM rolls):
-	if (data.rolls.length > 0) return;
+Hooks.on("createChatMessage", async (msg, _options, _senderUserId) => {
+	if (!msg.whisper.length  // Ignore public messages,
+		|| msg.isAuthor      // outgoing whispers,
+		|| !msg.visible      // whispers where the current user is neither author nor recipient,
+		|| msg.isRoll)       // and private dice rolls.
+		return;
 
 	// Ignore D&D5e system's "character has been awarded ..." messages.
-	if (data.content.includes('<span class=\"award-entry\">')) return;
+	if (msg.content.includes('<span class=\"award-entry\">')) return;
 
-	await window.LAME.handleIncomingPrivateMessage(data);
+	await window.LAME.handleIncomingPrivateMessage(msg);
 });
 
 Hooks.once('init', LAME.init); // this feels VERY early in Foundry's initialisation...
