@@ -21,6 +21,8 @@
       "ShowNotificationForNewWhisperHint": "Should a visual notification be shown every time a whisper is received?",
       "PermanentNotificationForNewWhisper": "Permanent notification for new whisper",
       "PermanentNotificationForNewWhisperHint": "Should the visual notification stay until you dismiss it?",
+      "PlayNotificationSoundForNewWhisper": "Play notification sound for new whisper",
+      "PlayNotificationSoundForNewWhisperHint": "Should the \"pst-pst\" notification sound be played every time a whisper is received? (It is played via the \"interface\" channel.)",
       "ButtonInSceneControlToolbar": "Add button to scene controls",
       "ButtonInSceneControlToolbarHint": "Should the button to open the messenger be added to the scene controls toolbar on the left side of the screen?",
       "ButtonInChatControl": "Add button to chat controls",

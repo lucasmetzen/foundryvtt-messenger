@@ -69,7 +69,7 @@ This module can be installed automatically from the Foundry Virtual Tabletop mod
 ## 🩹 Troubleshooting
 
 _"I don't hear the notification sound when I receive a whisper."_  
-The sound is played in the `interface` context, so please make sure to set the volume for `Interface` to audible levels.   
+The sound is played in the `interface` context, so please make sure to set the volume of the `Interface` channel to audible levels.   
  
 _"The messenger's history is empty after I reloaded the browser windows, or after logging out and in again."_  
 Solution: LAME Messenger currently does not store messages separately from Foundry VTT (as seen in the sidebar's chat tab), and doesn't compile a history from the whispers existing in the world's database. A persistent solution is planned for future releases.

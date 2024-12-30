@@ -21,6 +21,19 @@ export function registerSettings() {
 		requiresReload: false
 	});
 
+	registerSetting('playNotificationSoundForNewWhisper', {
+		name: "LAME.Setting.PlayNotificationSoundForNewWhisper",
+		hint: "LAME.Setting.PlayNotificationSoundForNewWhisperHint",
+		scope: 'client',
+		config: true,
+		type: Boolean,
+		default: true,
+		requiresReload: false,
+		onChange: value => {
+			window.LAME.settings.playNotificationSound = value;
+		}
+	});
+
 	registerSetting('buttonInSceneControlToolbar', {
 		name: "LAME.Setting.ButtonInSceneControlToolbar",
 		hint: "LAME.Setting.ButtonInSceneControlToolbarHint",
