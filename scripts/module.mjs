@@ -93,6 +93,9 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	constructor(app) {
 		super(app);
 		this.history = [];
+		this.settings = {
+			playNotificationSound: getSetting("playNotificationSoundForNewWhisper")
+		};
 	}
 
 	static async init() {
@@ -236,6 +239,8 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 
 	async playNotificationSound() {
+		if (!this.settings.playNotificationSound) return;
+
 		/* Unless played via `autoplay`, the sound is not played on `interface` channel/context but on `music`.
 		 * This seems to be a bug in Foundry itself.
 		 * Therefore, it can not just be created _once_ during initialisation and then #play-ed.

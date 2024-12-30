@@ -21,6 +21,8 @@
       "ShowNotificationForNewWhisperHint": "Soll eine visuelle Benachrichtigung angezeigt werden für jede empfangene Flüsternachricht?",
       "PermanentNotificationForNewWhisper": "Bleibende Benachrichtigung bei neuen Flüsternachrichten",
       "PermanentNotificationForNewWhisperHint": "Soll die visuelle Benachrichtigung angezeigt werden, bis du sie wegklickst?",
+      "PlayNotificationSoundForNewWhisper": "Spiele Benachrichtigungston bei neuen Flüsternachrichten",
+      "PlayNotificationSoundForNewWhisperHint": "Soll der \"pst-pst\"-Ton abgespielt werden für jede empfangene Flüsternachricht? (Dieser wird über den Kanal \"Interface\" abgespielt.)",
       "ButtonInSceneControlToolbar": "Knopf zu Szenenkontrolle hinzufügen",
       "ButtonInSceneControlToolbarHint": "Soll der Knopf zum Öffnen des Messengers in der Werkzeugleiste der Szenenkontrolle an der linken Bildschirmseite angezeigt werden?",
       "ButtonInChatControl": "Knopf zu Chat-Kontrolle hinzufügen",
