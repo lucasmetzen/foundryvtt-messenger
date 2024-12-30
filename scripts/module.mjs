@@ -278,8 +278,8 @@ Hooks.on('renderSceneControls', (_controls, html) => {
 	if (!getSetting("buttonInSceneControlToolbar")) return;
 
 	const messengerBtn = $(
-		`<li class="scene-control control-tool toggle">
-			<i class="${MODULE_ICON_CLASSES}" title="${localize("LAME.Module.ShortTitle")}"></i>
+		`<li class="scene-control control-tool toggle" data-tooltip="LAME.Module.ShortTitle">
+			<i class="${MODULE_ICON_CLASSES}"></i>
 		</li>`
 	);
 	messengerBtn[0].addEventListener('click', _event => {
