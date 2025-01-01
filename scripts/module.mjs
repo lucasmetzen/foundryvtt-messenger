@@ -154,13 +154,13 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 			// Everything left are public messages.
 		}
-
-		log('Internal history populated from world messages');
 	}
 
 	async render(...args) {
 		if (!this.rendered) {
-			return await super.render(true, ...args);
+			await super.render(true, ...args);
+			this.scrollHistoryToBottom();
+			return;
 		}
 
 		await super.render(false);
@@ -177,11 +177,12 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 
 	async renderHistoryPartial() {
-		const historyPartialId = "history";
-		await this.renderPart(historyPartialId);
+		await this.renderPart("history");
+		this.scrollHistoryToBottom();
+	}
 
-		// Scroll history text area to bottom:
-		const history = document.getElementById(`${MODULE_ID}-${historyPartialId}`);
+	scrollHistoryToBottom() {
+		const history = document.getElementById(`${MODULE_ID}-history`);
 		history.scrollTop = history.scrollHeight;
 	}
 
