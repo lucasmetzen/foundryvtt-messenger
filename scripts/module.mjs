@@ -326,12 +326,10 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 
 	isWhisperForMe(msg) {
-		if (!msg.whisper.length  // Ignore public messages,
-			|| msg.isAuthor      // outgoing whispers,
 		if (msg.isAuthor      // outgoing whispers,
-			|| !msg.visible      // whispers where the current user is neither author nor recipient,
-			|| msg.isRoll)       // and private dice rolls.
-			return false;
+			|| !msg.visible   // whispers where the current user is neither author nor recipient,
+			|| msg.isRoll     // and private dice rolls.
+		) return false;
 
 		return true;
 	}
