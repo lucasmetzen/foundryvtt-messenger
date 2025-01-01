@@ -105,8 +105,9 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		window.LAME = new LAME();
 	}
 
-	static ready() {
+	static async ready() {
 		window.LAME.computeUsersData(); // TODO: Look into this again as this doesn't seem to be the intended way...
+		await window.LAME.populateHistoryFromWorldMessages();
 	}
 
 	static async hookCreateChatMessage(msg, _options, _senderUserId) {
@@ -118,13 +119,45 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	beautifyHistory() {
 		// TODO: I think this is called too often and the output should be cached if it isn't already.
 		let beautified = [];
+		/* Date#toLocaleTimeString calls a "big database of localization strings,
+		 * which is potentially inefficient." Intl.DateTimeFormat is recommended:
+		 * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toLocaleTimeString
+		 */
+		const usersTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+		const dtFormat = new Intl.DateTimeFormat(undefined, {
+			dateStyle: 'short',
+			timeStyle: 'short',
+			hour12: false,
+			timeZone: usersTimeZone
+		});
+
 		for (let msg of this.history) {
-			let toOrFrom = localize(msg[1] === 'in' ? "LAME.History.From" : "LAME.History.To");
+			let toOrFrom = localize(msg[1] === 'in' ? "LAME.History.From" : "LAME.History.To"),
+				time = dtFormat.format(msg[0]); // TODO: Improve date format in history before merging.
 			beautified.push(
-				`[${msg[0]}] ${toOrFrom} ${msg[2]}: ${msg[3]}` // [time] to/from [player name]: [message]
+				`[${time}] ${toOrFrom} ${msg[2]}: ${msg[3]}` // [time] to/from [player name]: [message]
 			);
 		}
 		return beautified;
+	}
+
+	async populateHistoryFromWorldMessages() {
+		const worldMessages = game.collections.get("ChatMessage").contents;
+		for (const msg of worldMessages) {
+			if (this.isMessageASystemMessage(msg)) continue;
+
+			if (msg.isAuthor) {
+				this.addOutgoingMessageToHistory(msg);
+				continue;
+			}
+
+			if (this.isWhisperForMe(msg))
+				this.addIncomingMessageToHistory(msg);
+
+			// Everything left are public messages.
+		}
+
+		log('Internal history populated from world messages');
 	}
 
 	async render(...args) {
@@ -158,7 +191,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		const showInactiveUsers = getSetting('showInactiveUsers'),
 			usersToExclude = getSetting("usersToExclude");
 
-		let usersData = [];
+		let usersData = {};
 		for (let user of game.users) {
 			// TODO: instead of skipping self, banned, excluded, and non-active users here,
 			//  consider including all and simply add attribute(s) like "ignore".
@@ -167,13 +200,12 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 			// Skip inactive user unless inactive users should be shown:
 			if (!user.active && !showInactiveUsers) continue;
 
-			let data = {
+			usersData[user.id] = {
 				name: user.name,
 				id: user.id,
 				avatar: user.avatar,
 				active: user.active // user currently connected
 			};
-			usersData.push(data);
 		}
 		window.LAME.users = usersData;
 	}
@@ -205,8 +237,8 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	async sendMessage(html) {
 		// Get message text:
 		const messageField = html.find('.message'),
-			message = messageField.val();
-		if (message.length === 0) {
+			messageText = messageField.val();
+		if (messageText.length === 0) {
 			ui.notifications.error(localize("LAME.Notification.NoMessageToSend"));
 			return;
 		}
@@ -223,8 +255,8 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		}
 
 		// Send whisper(s):
-		this.sendWhisperTo(selectedUserNames, message);
-		this.addOutgoingMessageToHistory(selectedUserNames, message);
+		this.sendWhisperTo(selectedUserNames, messageText);
+		this.addOutgoingTextToHistory(selectedUserNames, messageText);
 		await this.renderHistoryPartial();
 
 		// Clear message input field for next text:
@@ -264,24 +296,30 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		});
 	}
 
-	currentTime() {
-		function padLeadingZero(num) {
-			return ('00' + num).slice(-2);
+	addIncomingMessageToHistory(msg) {
+		this.addIncomingTextToHistory(msg.author.name, msg.content, msg.timestamp)
+	}
+
+	addIncomingTextToHistory(authorName, text, timestamp) {
+		this.history.push([timestamp, 'in', authorName, text]);
+	}
+
+	addOutgoingMessageToHistory(msg) {
+		function getUserNameFromId(id) {
+			// If user does not exist, it was either deleted in the world, or is excluded via settings.
+			if (!window.LAME.users[id]) return "unknown";
+
+			return window.LAME.users[id].name;
 		}
 
-		const date = new Date();
-		return padLeadingZero(date.getHours()) + ":" + padLeadingZero(date.getMinutes()) + ":" + padLeadingZero(date.getSeconds());
+		const recipientNames = msg.whisper.map(id => getUserNameFromId(id));
+		this.addOutgoingTextToHistory(recipientNames, msg.content, msg.timestamp);
 	}
 
-	addIncomingMessageToHistory(data) {
-		const time = this.currentTime();
-		this.history.push([time, 'in', data.author.name, data.content]);
-	}
-
-	addOutgoingMessageToHistory(recipients, msg) {
-		for (const recipient of recipients) {
-			const time = this.currentTime();
-			this.history.push([time, 'out', recipient, msg]);
+	addOutgoingTextToHistory(recipientNames, text, timestamp = null) {
+		if (!timestamp) timestamp = Date.now();
+		for (const recipientName of recipientNames) {
+			this.history.push([timestamp, 'out', recipientName, text]);
 		}
 	}
 
