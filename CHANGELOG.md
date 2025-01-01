@@ -1,5 +1,17 @@
 # Lucas's Awesome Messenger Extension, or short: LAME Messenger
 
+## 4.2.0 (2025-01-01): New Year's Edition
+### Improvements
+- Populate Messenger's in-memory history from world's messages when user logs in or reloads the browser page (triggered by the `ready` hook)
+- Add world-wide GM setting to exclude users as recipients
+- When history is populated, whispers not received today will display their respective date along with the time
+
+### Translation
+- `whisper` messages are now called `Wisper` in German instead of the unwieldy `Flüsternachricht`
+
+### Documentation
+- Add a link to the README to directly create a new `filter request` GitHub issue (in case you want to report a game system's private message that should be ignored by LAME Messenger)
+
 ## 4.1.2 (2024-12-30)
 ### Improvements
 - Scroll history to bottom when receiving whisper
