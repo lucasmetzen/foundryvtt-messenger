@@ -4,6 +4,8 @@ import {localize, MODULE_ID, MODULE_ICON_CLASSES, TEMPLATE_PARTS_PATH} from "./c
 import {getSetting, registerSettings} from "./settings.mjs";
 import {registerKeybindings} from "./keybindings.mjs";
 import {registerHandlebarsHelpers} from "./helpers/handlebars-helpers.mjs";
+import {formatDateYYYYMMDD, formatTimeHHMMSS, isToday} from "./helpers/date-time-helpers.mjs";
+import {i18nLongConjunct} from "./helpers/i18n.mjs";
 
 class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
@@ -105,25 +107,60 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		window.LAME = new LAME();
 	}
 
-	static ready() {
+	static async ready() {
 		window.LAME.computeUsersData(); // TODO: Look into this again as this doesn't seem to be the intended way...
+		await window.LAME.populateHistoryFromWorldMessages();
+	}
+
+	static async hookCreateChatMessage(msg, _options, _senderUserId) {
+		if (window.LAME.isPublicMessage(msg)
+			|| !window.LAME.isWhisperForMe(msg)
+			|| window.LAME.isMessageGameSystemGenerated(msg)
+		) return;
+
+		await window.LAME.handleIncomingPrivateMessage(msg);
 	}
 
 	beautifyHistory() {
 		// TODO: I think this is called too often and the output should be cached if it isn't already.
 		let beautified = [];
+
 		for (let msg of this.history) {
-			let toOrFrom = localize(msg[1] === 'in' ? "LAME.History.From" : "LAME.History.To");
+			const timestamp = msg[0],
+				date = new Date(timestamp),
+				formattedTime = formatTimeHHMMSS(date),
+				displayTime = (!isToday(date)) ? formatDateYYYYMMDD(date) + " " + formattedTime : formattedTime,
+				toOrFrom = localize(msg[1] === 'in' ? "LAME.History.From" : "LAME.History.To");
+
 			beautified.push(
-				`[${msg[0]}] ${toOrFrom} ${msg[2]}: ${msg[3]}` // [time] to/from [player name]: [message]
+				`[${displayTime}] ${toOrFrom} ${msg[2]}: ${msg[3]}` // [time] to/from [player name]: [message]
 			);
 		}
 		return beautified;
 	}
 
+	async populateHistoryFromWorldMessages() {
+		const worldMessages = game.collections.get("ChatMessage").contents;
+		for (const msg of worldMessages) {
+			if (this.isPublicMessage(msg) || this.isMessageGameSystemGenerated(msg)) continue;
+
+			if (msg.isAuthor) {
+				this.addOutgoingMessageToHistory(msg);
+				continue;
+			}
+
+			if (this.isWhisperForMe(msg))
+				this.addIncomingMessageToHistory(msg);
+
+			// Everything left are public messages.
+		}
+	}
+
 	async render(...args) {
 		if (!this.rendered) {
-			return await super.render(true, ...args);
+			await super.render(true, ...args);
+			this.scrollHistoryToBottom();
+			return;
 		}
 
 		await super.render(false);
@@ -140,11 +177,12 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 
 	async renderHistoryPartial() {
-		const historyPartialId = "history";
-		await this.renderPart(historyPartialId);
+		await this.renderPart("history");
+		this.scrollHistoryToBottom();
+	}
 
-		// Scroll history text area to bottom:
-		const history = document.getElementById(`${MODULE_ID}-${historyPartialId}`);
+	scrollHistoryToBottom() {
+		const history = document.getElementById(`${MODULE_ID}-history`);
 		history.scrollTop = history.scrollHeight;
 	}
 
@@ -152,7 +190,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		const showInactiveUsers = getSetting('showInactiveUsers'),
 			usersToExclude = getSetting("usersToExclude");
 
-		let usersData = [];
+		let usersData = {};
 		for (let user of game.users) {
 			// TODO: instead of skipping self, banned, excluded, and non-active users here,
 			//  consider including all and simply add attribute(s) like "ignore".
@@ -161,13 +199,12 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 			// Skip inactive user unless inactive users should be shown:
 			if (!user.active && !showInactiveUsers) continue;
 
-			let data = {
+			usersData[user.id] = {
 				name: user.name,
 				id: user.id,
 				avatar: user.avatar,
 				active: user.active // user currently connected
 			};
-			usersData.push(data);
 		}
 		window.LAME.users = usersData;
 	}
@@ -199,8 +236,8 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	async sendMessage(html) {
 		// Get message text:
 		const messageField = html.find('.message'),
-			message = messageField.val();
-		if (message.length === 0) {
+			messageText = messageField.val();
+		if (messageText.length === 0) {
 			ui.notifications.error(localize("LAME.Notification.NoMessageToSend"));
 			return;
 		}
@@ -217,23 +254,23 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		}
 
 		// Send whisper(s):
-		this.sendWhisperTo(selectedUserNames, message);
-		this.addOutgoingMessageToHistory(selectedUserNames, message);
+		this.sendWhisperTo(selectedUserNames, messageText);
+		this.addOutgoingTextToHistory(selectedUserNames, messageText);
 		await this.renderHistoryPartial();
 
 		// Clear message input field for next text:
 		messageField.val('');
 	}
 
-	async handleIncomingPrivateMessage(data) {
+	async handleIncomingPrivateMessage(msg) {
 		if (getSetting("showNotificationForNewWhisper")) {
 			ui.notifications.info(
-				`${localize("LAME.IncomingWhisperFrom")} ${data.author.name}`,
+				`${localize("LAME.IncomingWhisperFrom")} ${msg.author.name}`,
 				{ permanent: getSetting("permanentNotificationForNewWhisper") },
 			);
 		}
 
-		this.addIncomingMessageToHistory(data);
+		this.addIncomingMessageToHistory(msg);
 		await window.LAME.playNotificationSound();
 
 		if (!this.rendered) return this.render();
@@ -258,27 +295,52 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		});
 	}
 
-	currentTime() {
-		function padLeadingZero(num) {
-			return ('00' + num).slice(-2);
+	addIncomingMessageToHistory(msg) {
+		this.addIncomingTextToHistory(msg.author.name, msg.content, msg.timestamp)
+	}
+
+	addIncomingTextToHistory(authorName, text, timestamp) {
+		this.history.push([timestamp, 'in', authorName, text]);
+	}
+
+	addOutgoingMessageToHistory(msg) {
+		function getUserNameFromId(id) {
+			// If user does not exist, it was either deleted in the world, or is excluded via settings.
+			if (!window.LAME.users[id]) return "unknown";
+
+			return window.LAME.users[id].name;
 		}
 
-		const date = new Date();
-		return padLeadingZero(date.getHours()) + ":" + padLeadingZero(date.getMinutes()) + ":" + padLeadingZero(date.getSeconds());
+		const recipientNames = msg.whisper.map(id => getUserNameFromId(id));
+		this.addOutgoingTextToHistory(recipientNames, msg.content, msg.timestamp);
 	}
 
-	addIncomingMessageToHistory(data) {
-		const time = this.currentTime();
-		this.history.push([time, 'in', data.author.name, data.content]);
+	addOutgoingTextToHistory(recipientNames, text, timestamp = null) {
+		if (!timestamp) timestamp = Date.now();
+		const conjunctedRecipientNames = i18nLongConjunct(recipientNames);
+		// As Foundry can only send messages to a single recipient, the conjunction is only kept for in-memory history.
+		this.history.push([timestamp, 'out', conjunctedRecipientNames, text]);
 	}
 
-	addOutgoingMessageToHistory(recipients, msg) {
-		for (const recipient of recipients) {
-			const time = this.currentTime();
-			this.history.push([time, 'out', recipient, msg]);
-		}
+	isPublicMessage(msg) {
+		return !msg.whisper.length;
 	}
 
+	isWhisperForMe(msg) {
+		if (msg.isAuthor      // outgoing whispers,
+			|| !msg.visible   // whispers where the current user is neither author nor recipient,
+			|| msg.isRoll     // and private dice rolls.
+		) return false;
+
+		return true;
+	}
+
+	isMessageGameSystemGenerated(msg) {
+		// Ignore D&D5e system's "[character] has been awarded [...]" messages.
+		if (msg.content.includes('<span class=\"award-entry\">')) return true;
+
+		return false;
+	}
 }
 
 // Add button to scene controls toolbar:
@@ -313,18 +375,7 @@ Hooks.on("renderSidebarTab", async (app, html, _data) => {
 	html.find("#chat-controls select.roll-type-select").after(messengerBtn);
 });
 
-Hooks.on("createChatMessage", async (msg, _options, _senderUserId) => {
-	if (!msg.whisper.length  // Ignore public messages,
-		|| msg.isAuthor      // outgoing whispers,
-		|| !msg.visible      // whispers where the current user is neither author nor recipient,
-		|| msg.isRoll)       // and private dice rolls.
-		return;
-
-	// Ignore D&D5e system's "character has been awarded ..." messages.
-	if (msg.content.includes('<span class=\"award-entry\">')) return;
-
-	await window.LAME.handleIncomingPrivateMessage(msg);
-});
+Hooks.on("createChatMessage", LAME.hookCreateChatMessage);
 
 Hooks.once('init', LAME.init); // this feels VERY early in Foundry's initialisation...
 // Hooks.once('setup', LAME.setup);
