@@ -112,7 +112,10 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 
 	static async hookCreateChatMessage(msg, _options, _senderUserId) {
-		if (!window.LAME.isWhisperForMe(msg) || window.LAME.isMessageASystemMessage(msg)) return;
+		if (window.LAME.isPublicMessage(msg)
+			|| !window.LAME.isWhisperForMe(msg)
+			|| window.LAME.isMessageGameSystemGenerated(msg)
+		) return;
 
 		await window.LAME.handleIncomingPrivateMessage(msg);
 	}
@@ -138,7 +141,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	async populateHistoryFromWorldMessages() {
 		const worldMessages = game.collections.get("ChatMessage").contents;
 		for (const msg of worldMessages) {
-			if (this.isMessageASystemMessage(msg)) continue;
+			if (this.isPublicMessage(msg) || this.isMessageGameSystemGenerated(msg)) continue;
 
 			if (msg.isAuthor) {
 				this.addOutgoingMessageToHistory(msg);
@@ -317,9 +320,14 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		}
 	}
 
+	isPublicMessage(msg) {
+		return !msg.whisper.length;
+	}
+
 	isWhisperForMe(msg) {
 		if (!msg.whisper.length  // Ignore public messages,
 			|| msg.isAuthor      // outgoing whispers,
+		if (msg.isAuthor      // outgoing whispers,
 			|| !msg.visible      // whispers where the current user is neither author nor recipient,
 			|| msg.isRoll)       // and private dice rolls.
 			return false;
@@ -327,7 +335,7 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		return true;
 	}
 
-	isMessageASystemMessage(msg) {
+	isMessageGameSystemGenerated(msg) {
 		// Ignore D&D5e system's "[character] has been awarded [...]" messages.
 		if (msg.content.includes('<span class=\"award-entry\">')) return true;
 
