@@ -149,11 +149,14 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 
 	computeUsersData() {
-		const showInactiveUsers = getSetting('showInactiveUsers');
+		const showInactiveUsers = getSetting('showInactiveUsers'),
+			usersToExclude = getSetting("usersToExclude");
 
 		let usersData = [];
 		for (let user of game.users) {
-			if (user.isSelf || user.isBanned || (user.name === "DM's Helper")) continue;
+			// TODO: instead of skipping self, banned, excluded, and non-active users here,
+			//  consider including all and simply add attribute(s) like "ignore".
+			if (user.isSelf || user.isBanned || usersToExclude.includes(user.id)) continue;
 
 			// Skip inactive user unless inactive users should be shown:
 			if (!user.active && !showInactiveUsers) continue;

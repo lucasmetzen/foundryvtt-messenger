@@ -28,7 +28,9 @@
       "ButtonInChatControl": "Add button to chat controls",
       "ButtonInChatControlHint": "Should the button to open the messenger be added to the chat controls (to the right of the roll type selector) in the sidebar?",
       "ShowInactiveUsers": "Show inactive users",
-      "ShowInactiveUsersHint": "Should users which currently aren't connected be shown in the messenger?"
+      "ShowInactiveUsersHint": "Should users which currently aren't connected be shown in the messenger?",
+      "UsersToExclude": "Users to exclude",
+      "UsersToExcludeHint": "Selected users will not be listed as recipients for all users. (world setting, GM only)"
     },
     "IncomingWhisperFrom": "Whisper from",
     "NoUsersToShow": "No users to show.",

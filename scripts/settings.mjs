@@ -68,6 +68,31 @@ export function registerSettings() {
 			await window.LAME.computeUsersDataAndRenderPartial();
 		}
 	});
+
+	registerSetting("usersToExclude", {
+		name: "LAME.Setting.UsersToExclude",
+		hint: "LAME.Setting.UsersToExcludeHint",
+		scope: 'world',
+		config: true,
+		// inspired by: https://github.com/foundryvtt/dnd5e/blob/6035882315ac6223b33cc512f5f4e1ee2726a95f/module/settings.mjs#L503-L508
+		type: new foundry.data.fields.SetField(
+			new foundry.data.fields.StringField({
+				choices: () => {
+					// TODO: Refactor opportunity to use #map.
+					let users = {};
+					for (let user of game.users) {
+						users[user.id] = { "label": user.name };
+					}
+					return users;
+				}
+			})
+		),
+		default: [],
+		requiresReload: false,
+		onChange: async() => {
+			await window.LAME.computeUsersDataAndRenderPartial();
+		}
+	});
 }
 
 function registerSetting(settingName, options) {

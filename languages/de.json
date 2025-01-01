@@ -28,7 +28,9 @@
       "ButtonInChatControl": "Knopf zu Chat-Kontrolle hinzufügen",
       "ButtonInChatControlHint": "Soll der Knopf zum Öffnen des Messengers in der Chat-Kontrolle (rechts vom Würfeltyp-Selektor) in der Seitenleiste angezeigt werden?",
       "ShowInactiveUsers": "Zeige inaktive Nutzer",
-      "ShowInactiveUsersHint": "Sollen Nutzer, die momentan nicht verbunden sind, im Messenger angezeigt werden?"
+      "ShowInactiveUsersHint": "Sollen Nutzer, die momentan nicht verbunden sind, im Messenger angezeigt werden?",
+      "UsersToExclude": "Auszuschließende Nutzer",
+      "UsersToExcludeHint": "Die ausgewählten Nutzer werden nicht als Empfänger für alle Nutzer aufgeführt. (Welt-Einstellung, nur GM)"
     },
     "IncomingWhisperFrom": "Flüsternachricht von",
     "NoUsersToShow": "Kein Nutzer anzuzeigen.",
