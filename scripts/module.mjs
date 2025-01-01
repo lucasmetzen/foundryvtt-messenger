@@ -4,6 +4,7 @@ import {localize, MODULE_ID, MODULE_ICON_CLASSES, TEMPLATE_PARTS_PATH} from "./c
 import {getSetting, registerSettings} from "./settings.mjs";
 import {registerKeybindings} from "./keybindings.mjs";
 import {registerHandlebarsHelpers} from "./helpers/handlebars-helpers.mjs";
+import {formatDateYYYYMMDD, formatTimeHHMMSS, isToday} from "./helpers/date-time-helpers.mjs";
 
 class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
@@ -119,23 +120,16 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	beautifyHistory() {
 		// TODO: I think this is called too often and the output should be cached if it isn't already.
 		let beautified = [];
-		/* Date#toLocaleTimeString calls a "big database of localization strings,
-		 * which is potentially inefficient." Intl.DateTimeFormat is recommended:
-		 * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toLocaleTimeString
-		 */
-		const usersTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-		const dtFormat = new Intl.DateTimeFormat(undefined, {
-			dateStyle: 'short',
-			timeStyle: 'short',
-			hour12: false,
-			timeZone: usersTimeZone
-		});
 
 		for (let msg of this.history) {
-			let toOrFrom = localize(msg[1] === 'in' ? "LAME.History.From" : "LAME.History.To"),
-				time = dtFormat.format(msg[0]); // TODO: Improve date format in history before merging.
+			const timestamp = msg[0],
+				date = new Date(timestamp),
+				formattedTime = formatTimeHHMMSS(date),
+				displayTime = (!isToday(date)) ? formatDateYYYYMMDD(date) + " " + formattedTime : formattedTime,
+				toOrFrom = localize(msg[1] === 'in' ? "LAME.History.From" : "LAME.History.To");
+
 			beautified.push(
-				`[${time}] ${toOrFrom} ${msg[2]}: ${msg[3]}` // [time] to/from [player name]: [message]
+				`[${displayTime}] ${toOrFrom} ${msg[2]}: ${msg[3]}` // [time] to/from [player name]: [message]
 			);
 		}
 		return beautified;
