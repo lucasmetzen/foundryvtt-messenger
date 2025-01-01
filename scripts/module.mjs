@@ -109,6 +109,12 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		window.LAME.computeUsersData(); // TODO: Look into this again as this doesn't seem to be the intended way...
 	}
 
+	static async hookCreateChatMessage(msg, _options, _senderUserId) {
+		if (!window.LAME.isWhisperForMe(msg) || window.LAME.isMessageASystemMessage(msg)) return;
+
+		await window.LAME.handleIncomingPrivateMessage(msg);
+	}
+
 	beautifyHistory() {
 		// TODO: I think this is called too often and the output should be cached if it isn't already.
 		let beautified = [];
@@ -225,15 +231,15 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		messageField.val('');
 	}
 
-	async handleIncomingPrivateMessage(data) {
+	async handleIncomingPrivateMessage(msg) {
 		if (getSetting("showNotificationForNewWhisper")) {
 			ui.notifications.info(
-				`${localize("LAME.IncomingWhisperFrom")} ${data.author.name}`,
+				`${localize("LAME.IncomingWhisperFrom")} ${msg.author.name}`,
 				{ permanent: getSetting("permanentNotificationForNewWhisper") },
 			);
 		}
 
-		this.addIncomingMessageToHistory(data);
+		this.addIncomingMessageToHistory(msg);
 		await window.LAME.playNotificationSound();
 
 		if (!this.rendered) return this.render();
@@ -279,6 +285,22 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		}
 	}
 
+	isWhisperForMe(msg) {
+		if (!msg.whisper.length  // Ignore public messages,
+			|| msg.isAuthor      // outgoing whispers,
+			|| !msg.visible      // whispers where the current user is neither author nor recipient,
+			|| msg.isRoll)       // and private dice rolls.
+			return false;
+
+		return true;
+	}
+
+	isMessageASystemMessage(msg) {
+		// Ignore D&D5e system's "[character] has been awarded [...]" messages.
+		if (msg.content.includes('<span class=\"award-entry\">')) return true;
+
+		return false;
+	}
 }
 
 // Add button to scene controls toolbar:
@@ -313,18 +335,7 @@ Hooks.on("renderSidebarTab", async (app, html, _data) => {
 	html.find("#chat-controls select.roll-type-select").after(messengerBtn);
 });
 
-Hooks.on("createChatMessage", async (msg, _options, _senderUserId) => {
-	if (!msg.whisper.length  // Ignore public messages,
-		|| msg.isAuthor      // outgoing whispers,
-		|| !msg.visible      // whispers where the current user is neither author nor recipient,
-		|| msg.isRoll)       // and private dice rolls.
-		return;
-
-	// Ignore D&D5e system's "character has been awarded ..." messages.
-	if (msg.content.includes('<span class=\"award-entry\">')) return;
-
-	await window.LAME.handleIncomingPrivateMessage(msg);
-});
+Hooks.on("createChatMessage", LAME.hookCreateChatMessage);
 
 Hooks.once('init', LAME.init); // this feels VERY early in Foundry's initialisation...
 // Hooks.once('setup', LAME.setup);
