@@ -5,6 +5,7 @@ import {getSetting, registerSettings} from "./settings.mjs";
 import {registerKeybindings} from "./keybindings.mjs";
 import {registerHandlebarsHelpers} from "./helpers/handlebars-helpers.mjs";
 import {formatDateYYYYMMDD, formatTimeHHMMSS, isToday} from "./helpers/date-time-helpers.mjs";
+import {i18nLongConjunct} from "./helpers/i18n.mjs";
 
 class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
@@ -315,9 +316,9 @@ class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 	addOutgoingTextToHistory(recipientNames, text, timestamp = null) {
 		if (!timestamp) timestamp = Date.now();
-		for (const recipientName of recipientNames) {
-			this.history.push([timestamp, 'out', recipientName, text]);
-		}
+		const conjunctedRecipientNames = i18nLongConjunct(recipientNames);
+		// As Foundry can only send messages to a single recipient, the conjunction is only kept for in-memory history.
+		this.history.push([timestamp, 'out', conjunctedRecipientNames, text]);
 	}
 
 	isPublicMessage(msg) {
