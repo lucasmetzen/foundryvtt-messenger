@@ -10,19 +10,19 @@
       "To": "an",
       "From": "von"
     },
-    "WhisperHint": "Schreibe deine Flüsternachricht hier. Zum Senden, Ctrl-Enter drücken.",
+    "WhisperHint": "Schreibe dein Wispern hier. Zum Senden, Ctrl-Enter drücken.",
     "Send": "Senden",
     "Notification": {
       "NoRecipientSelected": "Kein Empfänger ausgewählt.",
       "NoMessageToSend": "Keine Nachricht zum Senden."
     },
     "Setting": {
-      "ShowNotificationForNewWhisper": "Zeige Benachrichtigung bei neuen Flüsternachrichten",
-      "ShowNotificationForNewWhisperHint": "Soll eine visuelle Benachrichtigung angezeigt werden für jede empfangene Flüsternachricht?",
-      "PermanentNotificationForNewWhisper": "Bleibende Benachrichtigung bei neuen Flüsternachrichten",
+      "ShowNotificationForNewWhisper": "Zeige Benachrichtigung bei neuen Wispern",
+      "ShowNotificationForNewWhisperHint": "Soll eine visuelle Benachrichtigung angezeigt werden für jedes empfangene Wispern?",
+      "PermanentNotificationForNewWhisper": "Bleibende Benachrichtigung bei neuen Wispern",
       "PermanentNotificationForNewWhisperHint": "Soll die visuelle Benachrichtigung angezeigt werden, bis du sie wegklickst?",
-      "PlayNotificationSoundForNewWhisper": "Spiele Benachrichtigungston bei neuen Flüsternachrichten",
-      "PlayNotificationSoundForNewWhisperHint": "Soll der \"pst-pst\"-Ton abgespielt werden für jede empfangene Flüsternachricht? (Dieser wird über den Kanal \"Interface\" abgespielt.)",
+      "PlayNotificationSoundForNewWhisper": "Spiele Benachrichtigungston bei neuen Wispern",
+      "PlayNotificationSoundForNewWhisperHint": "Soll der \"pst-pst\"-Ton abgespielt werden für jedes empfangene Wispern? (Dieser wird über den Kanal \"Interface\" abgespielt.)",
       "ButtonInSceneControlToolbar": "Knopf zu Szenenkontrolle hinzufügen",
       "ButtonInSceneControlToolbarHint": "Soll der Knopf zum Öffnen des Messengers in der Werkzeugleiste der Szenenkontrolle an der linken Bildschirmseite angezeigt werden?",
       "ButtonInChatControl": "Knopf zu Chat-Kontrolle hinzufügen",
@@ -32,7 +32,7 @@
       "UsersToExclude": "Auszuschließende Nutzer",
       "UsersToExcludeHint": "Die ausgewählten Nutzer werden nicht als Empfänger für alle Nutzer aufgeführt. (Welt-Einstellung, nur GM)"
     },
-    "IncomingWhisperFrom": "Flüsternachricht von",
+    "IncomingWhisperFrom": "Wispern von",
     "NoUsersToShow": "Kein Nutzer anzuzeigen.",
     "NoUsersToShowExplanation": "Entweder bist du der einzige Nutzer in dieser Welt, alle anderen Nutzen sind deaktiviert, oder sie sind inaktiv und die Einstellung um inaktive Nutzer anzuzeigen ist deaktiviert.",
     "UserIsOffline": "Kann nur an verbundene Nutzer senden.",
