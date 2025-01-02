@@ -59,9 +59,19 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	/** @override */
 	async _prepareContext() {
 		return {
-			users: this.users,
-			history: this.beautifyHistory()
+			users: this.users
 		};
+	}
+
+	// Provides template parts with scoped dynamic data:
+	/** @override */
+	async _preparePartContext(partId, context) {
+		switch ( partId ) {
+			case "history":
+				context.history = this.beautifyHistory();
+				break;
+		}
+		return context;
 	}
 
 	_onRender(_context, _options) {
