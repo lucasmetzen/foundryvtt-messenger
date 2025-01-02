@@ -3,12 +3,14 @@
 }
 
 #chat-controls .lame-messenger {
-    flex: 0 0 28px; /* 24 px for icon fa-comment-dots */
+    flex: 0 0 28px;
 }
 
 /* Shrink fa-comments icon as it's wider than most of the other icons. */
 #chat-controls .lame-messenger i.fa-comments {
     font-size: var(--font-size-18);
+    position: relative;
+    bottom: 1px;
 }
 
 #controls .lame-messenger i.fa-comments {
