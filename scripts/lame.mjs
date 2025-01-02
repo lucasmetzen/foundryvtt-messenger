@@ -209,7 +209,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		window.LAME.users = usersData;
 	}
 
-	async computeUsersDataAndRenderPartial() {
+	static async computeUsersDataAndRenderPartial() {
 		window.LAME.computeUsersData();
 		await window.LAME.renderPart('users');
 	}

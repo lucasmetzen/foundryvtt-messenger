@@ -40,7 +40,4 @@ Hooks.on("renderSidebarTab", async (app, html, _data) => {
 Hooks.on("createChatMessage", LAME.hookCreateChatMessage);
 
 // Update internal player list when user (dis)connects:
-Hooks.on('userConnected', async (_user, _connected) => {
-	// https://foundryvtt.com/api/functions/hookEvents.userConnected.html
-	await window.LAME.computeUsersDataAndRenderPartial();
-});
+Hooks.on('userConnected', LAME.computeUsersDataAndRenderPartial);
