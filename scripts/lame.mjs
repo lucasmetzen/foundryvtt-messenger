@@ -88,6 +88,8 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 			await this.sendMessage(html);
 		});
 		html.find('.message').on("keypress", event => this._onKeyPressEvent(event, html));
+
+		this.scrollHistoryToBottom();
 	}
 
 	static async onSubmit(_event, _form, _formData) { }
@@ -158,9 +160,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 	async render(...args) {
 		if (!this.rendered) {
-			await super.render(true, ...args);
-			this.scrollHistoryToBottom();
-			return;
+			return await super.render(true, ...args);
 		}
 
 		await super.render(false);
