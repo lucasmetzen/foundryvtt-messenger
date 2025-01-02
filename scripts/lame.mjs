@@ -228,7 +228,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 
 	async _onKeyPressEvent(event, html) {
-		if ((event.keyCode === 10) && event.ctrlKey) { // for `#on("keyup")` it's 13 when combined with Ctrl
+		if ((event.code === "Enter") && event.ctrlKey) {
 			await this.sendMessage(html);
 		}
 	}
