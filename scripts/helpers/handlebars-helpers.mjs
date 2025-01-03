@@ -1,6 +1,6 @@
 export function registerHandlebarsHelpers() {
     Handlebars.registerHelper("isAtLeastOneUserToBeShown", function () {
-        return Object.keys(window.LAME.users).length > 0;
+        return Object.keys(this.users).length > 0;
     });
 
     Handlebars.registerHelper("userColor", function (userId) {
