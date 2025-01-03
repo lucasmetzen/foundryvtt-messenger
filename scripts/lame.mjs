@@ -129,6 +129,8 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	static async ready() {
 		window.LAME.computeUsersData(); // TODO: Look into this again as this doesn't seem to be the intended way...
 		await window.LAME.populateHistoryFromWorldMessages();
+		// TODO: Check if there is a better way for the initial moving of the button to the notification area,
+		//  as we just _assume_ the sidebar is collapsed.
 		// Initially display button in notification area as sidebar is usually collapsed:
 		if (!ui.sidebar.expanded) LAME.onCollapseSidebar(undefined, true);
 	}
@@ -146,6 +148,8 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	static onChangeSidebarTab(app) {
 		if (foundryCoreVersion().major < 13) return;
 
+		// TODO: Check if this can be done differently without triggering so many times, possibly not doing anything at all.
+		//  Consider adding boolean member #chatbarVisible or similar.
 		if (app.id === "chat") {
 			document.querySelector("#roll-privacy").insertAdjacentElement("afterend", LAME.chatbarButton);
 		} else document.getElementById("chat-notifications").append(LAME.chatbarButton);
@@ -225,13 +229,13 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 	computeUsersData() {
 		const showInactiveUsers = getSetting('showInactiveUsers'),
-			usersToExclude = getSetting("usersToExclude");
+			usersToExclude = getSetting("usersToExclude"); // This returns a Set object.
 
 		let usersData = {};
 		for (let user of game.users) {
 			// TODO: instead of skipping self, banned, excluded, and non-active users here,
 			//  consider including all and simply add attribute(s) like "ignore".
-			if (user.isSelf || user.isBanned || usersToExclude.includes(user.id)) continue;
+			if (user.isSelf || user.isBanned || (usersToExclude.size > 0 && usersToExclude.includes(user.id))) continue;
 
 			// Skip inactive user unless inactive users should be shown:
 			if (!user.active && !showInactiveUsers) continue;
