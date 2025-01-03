@@ -57,6 +57,12 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	 */
 	static chatbarButton;
 
+	/**
+	 * TODO: users object
+	 * @type {Object}
+	 */
+	static users;
+
 	/** @inheritDoc */
 	get title() {
 		return localize(this.options.window.title);
@@ -123,16 +129,12 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		registerSettings();
 		registerKeybindings();
 		registerHandlebarsHelpers();
-		window.LAME = new LAME();
+		game.modules.get(MODULE_ID).instance = new LAME();
 	}
 
-	static async ready() {
-		window.LAME.computeUsersData(); // TODO: Look into this again as this doesn't seem to be the intended way...
-		await window.LAME.populateHistoryFromWorldMessages();
-		// TODO: Check if there is a better way for the initial moving of the button to the notification area,
-		//  as we just _assume_ the sidebar is collapsed.
-		// Initially display button in notification area as sidebar is usually collapsed:
-		if (!ui.sidebar.expanded) LAME.onCollapseSidebar(undefined, true);
+	static onSettingChange(settings) {
+		// TODO: move settings calls here
+		log("onSettingChange", this, settings);
 	}
 
 	static onCollapseSidebar(_app, collapsed) {
@@ -140,9 +142,8 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 		// Inspired by ChatLog#_toggleNotifications()
 		const embedInput = (!collapsed && ui.chat.active);
-		if (embedInput) {
-			document.querySelector("#roll-privacy").insertAdjacentElement("afterend", LAME.chatbarButton);
-		} else document.getElementById("chat-notifications").append(LAME.chatbarButton);
+		if (embedInput) LAME.moveChatbarButtonToSidebar()
+		else LAME.moveChatbarButtonToNotificationArea();
 	}
 
 	static onChangeSidebarTab(app) {
@@ -150,18 +151,28 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 		// TODO: Check if this can be done differently without triggering so many times, possibly not doing anything at all.
 		//  Consider adding boolean member #chatbarVisible or similar.
-		if (app.id === "chat") {
-			document.querySelector("#roll-privacy").insertAdjacentElement("afterend", LAME.chatbarButton);
-		} else document.getElementById("chat-notifications").append(LAME.chatbarButton);
+		if (app.id === "chat") LAME.moveChatbarButtonToSidebar()
+		else LAME.moveChatbarButtonToNotificationArea();
 	}
 
-	static async hookCreateChatMessage(msg, _options, _senderUserId) {
-		if (window.LAME.isPublicMessage(msg)
-			|| !window.LAME.isWhisperForMe(msg)
-			|| window.LAME.isMessageGameSystemGenerated(msg)
+	static moveChatbarButtonToSidebar(){
+		const chatbarButton = game.modules.get(MODULE_ID).instance.chatbarButton;
+		document.querySelector("#roll-privacy").insertAdjacentElement("afterend", chatbarButton);
+	}
+
+	static moveChatbarButtonToNotificationArea(){
+		const chatbarButton = game.modules.get(MODULE_ID).instance.chatbarButton;
+		document.getElementById("chat-notifications").append(chatbarButton);
+	}
+
+	static async onCreateChatMessage(msg, _options, _senderUserId) {
+		const instance = game.modules.get(MODULE_ID).instance;
+		if (instance.isPublicMessage(msg)
+			|| !instance.isWhisperForMe(msg)
+			|| instance.isMessageGameSystemGenerated(msg)
 		) return;
 
-		await window.LAME.handleIncomingPrivateMessage(msg);
+		await instance.handleIncomingPrivateMessage(msg);
 	}
 
 	beautifyHistory() {
@@ -222,6 +233,12 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		this.scrollHistoryToBottom();
 	}
 
+	// Without this, when pressing Ctrl+M while window is already shown, the window is incorrectly re-rendered fully.
+	static async show() {
+		const instance = game.modules.get(MODULE_ID).instance;
+		if (!instance.rendered) await instance.render();
+	}
+
 	scrollHistoryToBottom() {
 		const history = document.getElementById(`${MODULE_ID}-history`);
 		history.scrollTop = history.scrollHeight;
@@ -247,12 +264,13 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 				active: user.active // user currently connected
 			};
 		}
-		window.LAME.users = usersData;
+		this.users = usersData;
 	}
 
 	static async computeUsersDataAndRenderPartial() {
-		window.LAME.computeUsersData();
-		await window.LAME.renderPart('users');
+		const instance = game.modules.get(MODULE_ID).instance;
+		instance.computeUsersData();
+		await instance.renderPart('users');
 	}
 
 	sendWhisperTo(userNames, msg) {
@@ -312,7 +330,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		}
 
 		this.addIncomingMessageToHistory(msg);
-		await window.LAME.playNotificationSound();
+		await this.playNotificationSound();
 
 		if (!this.rendered) return this.render();
 
@@ -345,14 +363,14 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 
 	addOutgoingMessageToHistory(msg) {
-		function getUserNameFromId(id) {
+		function getUserNameFromId(id, users) {
 			// If user does not exist, it was either deleted in the world, or is excluded via settings.
-			if (!window.LAME.users[id]) return "unknown";
+			if (!users[id]) return "unknown";
 
-			return window.LAME.users[id].name;
+			return users[id].name;
 		}
 
-		const recipientNames = msg.whisper.map(id => getUserNameFromId(id));
+		const recipientNames = msg.whisper.map(id => getUserNameFromId(id, this.users));
 		this.addOutgoingTextToHistory(recipientNames, msg.content, msg.timestamp);
 	}
 

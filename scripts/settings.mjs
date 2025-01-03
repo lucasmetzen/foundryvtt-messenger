@@ -1,5 +1,6 @@
 import { MODULE_ID } from "./config.mjs";
 import {foundryCoreVersion} from "./helpers/version-helpers.mjs";
+import {LAME} from "./lame.mjs";
 
 export function registerSettings() {
 	const isCoreV12orLower = foundryCoreVersion().major < 13;
@@ -33,7 +34,7 @@ export function registerSettings() {
 		default: true,
 		requiresReload: false,
 		onChange: value => {
-			window.LAME.settings.playNotificationSound = value;
+			game.modules.get(MODULE_ID).instance.settings.playNotificationSound = value;
 		}
 	});
 
@@ -68,7 +69,7 @@ export function registerSettings() {
 		type: Boolean,
 		default: false,
 		onChange: async() => {
-			await window.LAME.computeUsersDataAndRenderPartial();
+			await LAME.computeUsersDataAndRenderPartial();
 		}
 	});
 
@@ -93,7 +94,7 @@ export function registerSettings() {
 		default: [],
 		requiresReload: false,
 		onChange: async() => {
-			await window.LAME.computeUsersDataAndRenderPartial();
+			await LAME.computeUsersDataAndRenderPartial();
 		}
 	});
 }
