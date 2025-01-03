@@ -246,13 +246,15 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 	computeUsersData() {
 		const showInactiveUsers = getSetting('showInactiveUsers'),
-			usersToExclude = getSetting("usersToExclude"); // This returns a Set object.
+			usersToExclude = getSetting("usersToExclude"); // This returns an Array in v12, a Set in v13.
 
 		let usersData = {};
 		for (let user of game.users) {
 			// TODO: instead of skipping self, banned, excluded, and non-active users here,
 			//  consider including all and simply add attribute(s) like "ignore".
-			if (user.isSelf || user.isBanned || (usersToExclude.size > 0 && usersToExclude.includes(user.id))) continue;
+			if (user.isSelf || user.isBanned) continue;
+			if (Array.isArray(usersToExclude) && usersToExclude.length > 0 && usersToExclude.includes(user.id)) continue; // v12
+			if (usersToExclude instanceof Set && usersToExclude.size > 0 && usersToExclude.has(user.id)) continue; // v13
 
 			// Skip inactive user unless inactive users should be shown:
 			if (!user.active && !showInactiveUsers) continue;
