@@ -99,6 +99,10 @@ body.vtt:has(#chat-notifications #roll-privacy) #chat-notifications #lame-messen
     border-style: ridge;
 }
 
+#lame-messenger .users label p {
+    margin: 0;
+}
+
 #lame-messenger .users :checked + label {
     border-color: #ddd;
     font-weight: bold;
