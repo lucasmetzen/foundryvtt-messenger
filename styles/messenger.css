@@ -20,7 +20,7 @@
 /* v13: When the sidebar is collapsed: */
 #chat-notifications #lame-messenger-button {
     position: absolute;
-    inset: auto auto 0px calc(100% + 16px); /* core's "Chat Notifications" is set to `pips` */
+    inset: auto auto 0 calc(100% + 16px); /* core's "Chat Notifications" is set to `pips` */
 }
 body.vtt:has(#chat-notifications #roll-privacy) #chat-notifications #lame-messenger-button {
     inset: auto auto 144px calc(100% + 16px); /* bottom = 4 * --control-size (=32px) + 16px */
@@ -137,6 +137,10 @@ body.vtt:has(#chat-notifications #roll-privacy) #chat-notifications #lame-messen
 }
 body.theme-light #lame-messenger .history {
     color: var(--color-text-dark-secondary);
+}
+
+#lame-messenger section.message-input {
+    display: grid;
 }
 
 #lame-messenger .message {
