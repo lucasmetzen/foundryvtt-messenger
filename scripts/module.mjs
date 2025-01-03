@@ -25,9 +25,7 @@ Hooks.on('renderSceneControls', (_controls, html) => {
 		</li>`
 	);
 	messengerBtn[0].addEventListener('click', _event => {
-		window.LAME.render();
-		// TODO: Test if this still works in v12.
-		this.render();
+		game.modules.get(MODULE_ID).instance.render();
 	});
 
 	html.find('.control-tools').find('.scene-control').last().after(messengerBtn);
@@ -68,7 +66,6 @@ Hooks.on("renderSidebarTab", async (app, html, _data) => {
 		</a>`
 	);
 	messengerBtn[0].addEventListener('click', async (_event) => {
-		// TODO: Test if this still works in v12.
 		await game.modules.get(MODULE_ID).instance.render();
 	});
 
