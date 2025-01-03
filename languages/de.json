@@ -30,7 +30,8 @@
       "ShowInactiveUsers": "Zeige inaktive Nutzer",
       "ShowInactiveUsersHint": "Sollen Nutzer, die momentan nicht verbunden sind, im Messenger angezeigt werden?",
       "UsersToExclude": "Auszuschließende Nutzer",
-      "UsersToExcludeHint": "Die ausgewählten Nutzer werden nicht als Empfänger für alle Nutzer aufgeführt. (Welt-Einstellung, nur GM)"
+      "UsersToExcludeHint": "Die ausgewählten Nutzer werden nicht als Empfänger für alle Nutzer aufgeführt. (Welt-Einstellung, nur GM)",
+      "UsersToExcludeHintV13preview": "Die ausgewählten Nutzer werden nicht als Empfänger für alle Nutzer aufgeführt. (Welt-Einstellung, nur GM) Bitte beachten: Nutzernamen kommen zurück wenn es für Foundry VTT v13 eine stabile Version gibt."
     },
     "IncomingWhisperFrom": "Wispern von",
     "NoUsersToShow": "Kein Nutzer anzuzeigen.",

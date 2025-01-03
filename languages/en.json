@@ -30,7 +30,8 @@
       "ShowInactiveUsers": "Show inactive users",
       "ShowInactiveUsersHint": "Should users which currently aren't connected be shown in the messenger?",
       "UsersToExclude": "Users to exclude",
-      "UsersToExcludeHint": "Selected users will not be listed as recipients for all users. (world setting, GM only)"
+      "UsersToExcludeHint": "Selected users will not be listed as recipients for all users. (world setting, GM only)",
+      "UsersToExcludeHintV13preview": "Selected users will not be listed as recipients for all users. (world setting, GM only) Please note, user names will return when Foundry VTT v13 has a stable release."
     },
     "IncomingWhisperFrom": "Whisper from",
     "NoUsersToShow": "No users to show.",

@@ -73,9 +73,13 @@ export function registerSettings() {
 		}
 	});
 
+	const usersToExcludeHint = isCoreV12orLower
+		? "LAME.Setting.UsersToExcludeHint"
+		: "LAME.Setting.UsersToExcludeHintV13preview";
 	registerSetting("usersToExclude", {
 		name: "LAME.Setting.UsersToExclude",
-		hint: "LAME.Setting.UsersToExcludeHint",
+		// hint: "LAME.Setting.UsersToExcludeHint",
+		hint: usersToExcludeHint,
 		scope: 'world',
 		config: true,
 		// inspired by: https://github.com/foundryvtt/dnd5e/blob/6035882315ac6223b33cc512f5f4e1ee2726a95f/module/settings.mjs#L503-L508
@@ -83,11 +87,11 @@ export function registerSettings() {
 			new foundry.data.fields.StringField({
 				choices: () => {
 					// TODO: Refactor opportunity to use #map.
-					let users = {};
+					let worldUsers = {};
 					for (let user of game.users) {
-						users[user.id] = { "label": user.name };
+						worldUsers[user.id] = { "label": user.name };
 					}
-					return users;
+					return worldUsers;
 				}
 			})
 		),
