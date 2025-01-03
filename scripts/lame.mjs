@@ -6,6 +6,7 @@ import {registerKeybindings} from "./keybindings.mjs";
 import {registerHandlebarsHelpers} from "./helpers/handlebars-helpers.mjs";
 import {formatDateYYYYMMDD, formatTimeHHMMSS, isToday} from "./helpers/date-time-helpers.mjs";
 import {i18nLongConjunct} from "./helpers/i18n.mjs";
+import {foundryCoreVersion} from "./helpers/version-helpers.mjs";
 
 export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
@@ -49,6 +50,12 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 			template: `${TEMPLATE_PARTS_PATH}/message-input.hbs`
 		}
 	}
+
+	/**
+	 * The button in the chat sidebar to open the Messenger.
+	 * @type {HTMLDivElement}
+	 */
+	static chatbarButton;
 
 	/** @inheritDoc */
 	get title() {
@@ -122,6 +129,26 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	static async ready() {
 		window.LAME.computeUsersData(); // TODO: Look into this again as this doesn't seem to be the intended way...
 		await window.LAME.populateHistoryFromWorldMessages();
+		// Initially display button in notification area as sidebar is usually collapsed:
+		if (!ui.sidebar.expanded) LAME.onCollapseSidebar(undefined, true);
+	}
+
+	static onCollapseSidebar(_app, collapsed) {
+		if (foundryCoreVersion().major < 13) return;
+
+		// Inspired by ChatLog#_toggleNotifications()
+		const embedInput = (!collapsed && ui.chat.active);
+		if (embedInput) {
+			document.querySelector("#roll-privacy").insertAdjacentElement("afterend", LAME.chatbarButton);
+		} else document.getElementById("chat-notifications").append(LAME.chatbarButton);
+	}
+
+	static onChangeSidebarTab(app) {
+		if (foundryCoreVersion().major < 13) return;
+
+		if (app.id === "chat") {
+			document.querySelector("#roll-privacy").insertAdjacentElement("afterend", LAME.chatbarButton);
+		} else document.getElementById("chat-notifications").append(LAME.chatbarButton);
 	}
 
 	static async hookCreateChatMessage(msg, _options, _senderUserId) {

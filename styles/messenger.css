@@ -7,14 +7,23 @@
 }
 
 /* Shrink fa-comments icon as it's wider than most of the other icons. */
-#chat-controls .lame-messenger i.fa-comments {
+#lame-messenger-button i.fa-comments {
     font-size: var(--font-size-18);
     position: relative;
     bottom: 1px;
 }
 
-#controls .lame-messenger i.fa-comments {
+#lame-messenger-button i.fa-comments {
     font-size: 21px;
+}
+
+/* v13: When the sidebar is collapsed: */
+#chat-notifications #lame-messenger-button {
+    position: absolute;
+    inset: auto auto 0px calc(100% + 16px); /* core's "Chat Notifications" is set to `pips` */
+}
+body.vtt:has(#chat-notifications #roll-privacy) #chat-notifications #lame-messenger-button {
+    inset: auto auto 144px calc(100% + 16px); /* bottom = 4 * --control-size (=32px) + 16px */
 }
 
 /* Counteract parent's `display: flex` which breaks the users section's `float: left`,

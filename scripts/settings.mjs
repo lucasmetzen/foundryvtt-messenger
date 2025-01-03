@@ -1,6 +1,9 @@
 import { MODULE_ID } from "./config.mjs";
+import {foundryCoreVersion} from "./helpers/version-helpers.mjs";
 
 export function registerSettings() {
+	const isCoreV12orLower = foundryCoreVersion().major < 13;
+
 	registerSetting('showNotificationForNewWhisper', {
 		name: "LAME.Setting.ShowNotificationForNewWhisper",
 		hint: "LAME.Setting.ShowNotificationForNewWhisperHint",
@@ -38,7 +41,7 @@ export function registerSettings() {
 		name: "LAME.Setting.ButtonInSceneControlToolbar",
 		hint: "LAME.Setting.ButtonInSceneControlToolbarHint",
 		scope: 'client',
-		config: true,
+		config: isCoreV12orLower,
 		type: Boolean,
 		default: false,
 		requiresReload: false,
@@ -51,7 +54,7 @@ export function registerSettings() {
 		name: "LAME.Setting.ButtonInChatControl",
 		hint: "LAME.Setting.ButtonInChatControlHint",
 		scope: 'client',
-		config: true,
+		config: isCoreV12orLower,
 		type: Boolean,
 		default: true,
 		requiresReload: true
