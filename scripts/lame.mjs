@@ -377,9 +377,11 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 
 	isMessageGameSystemGenerated(msg) {
-		// Ignore D&D5e system's "[character] has been awarded [...]" messages.
-		if (msg.content.includes('<span class=\"award-entry\">')) return true;
-
-		return false;
+		const systemGens = [
+			'<h3 class="nue">Getting Started</h3>',       // core: welcome to new world
+			'<h3 class="nue">Inviting Your Players</h3>', // core
+			'<span class=\"award-entry\">'                // dnd5e: "[character] has been awarded [...]"
+		]
+		return systemGens.some((item) => msg.content.includes(item));
 	}
 }
