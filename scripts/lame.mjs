@@ -6,6 +6,7 @@ import {registerKeybindings} from "./keybindings.mjs";
 import {registerHandlebarsHelpers} from "./helpers/handlebars-helpers.mjs";
 import {formatDateYYYYMMDD, formatTimeHHMMSS, isToday} from "./helpers/date-time-helpers.mjs";
 import {i18nLongConjunct} from "./helpers/i18n.mjs";
+import {foundryCoreVersion} from "./helpers/version-helpers.mjs";
 
 export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
@@ -49,6 +50,18 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 			template: `${TEMPLATE_PARTS_PATH}/message-input.hbs`
 		}
 	}
+
+	/**
+	 * The button in the chat sidebar to open the Messenger.
+	 * @type {HTMLDivElement}
+	 */
+	static chatbarButton;
+
+	/**
+	 * The internally relevant users' data. Populated by {@link computeUsersData}.
+	 * @type {Object || Array}
+	 */
+	static users;
 
 	/** @inheritDoc */
 	get title() {
@@ -116,21 +129,45 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		registerSettings();
 		registerKeybindings();
 		registerHandlebarsHelpers();
-		window.LAME = new LAME();
+		game.modules.get(MODULE_ID).instance = new LAME();
 	}
 
-	static async ready() {
-		window.LAME.computeUsersData(); // TODO: Look into this again as this doesn't seem to be the intended way...
-		await window.LAME.populateHistoryFromWorldMessages();
+	static onCollapseSidebar(_app, collapsed) {
+		if (foundryCoreVersion().major < 13) return;
+
+		// Inspired by ChatLog#_toggleNotifications()
+		const embedInput = (!collapsed && ui.chat.active);
+		if (embedInput) LAME.moveChatbarButtonToSidebar()
+		else LAME.moveChatbarButtonToNotificationArea();
 	}
 
-	static async hookCreateChatMessage(msg, _options, _senderUserId) {
-		if (window.LAME.isPublicMessage(msg)
-			|| !window.LAME.isWhisperForMe(msg)
-			|| window.LAME.isMessageGameSystemGenerated(msg)
+	static onChangeSidebarTab(app) {
+		if (foundryCoreVersion().major < 13) return;
+
+		// TODO: Check if this can be done differently without triggering so many times, possibly not doing anything at all.
+		//  Consider adding boolean member #chatbarVisible or similar.
+		if (app.id === "chat") LAME.moveChatbarButtonToSidebar()
+		else LAME.moveChatbarButtonToNotificationArea();
+	}
+
+	static moveChatbarButtonToSidebar(){
+		const chatbarButton = game.modules.get(MODULE_ID).instance.chatbarButton;
+		document.querySelector("#roll-privacy").insertAdjacentElement("afterend", chatbarButton);
+	}
+
+	static moveChatbarButtonToNotificationArea(){
+		const chatbarButton = game.modules.get(MODULE_ID).instance.chatbarButton;
+		document.getElementById("chat-notifications").append(chatbarButton);
+	}
+
+	static async onCreateChatMessage(msg, _options, _senderUserId) {
+		const instance = game.modules.get(MODULE_ID).instance;
+		if (instance.isPublicMessage(msg)
+			|| !instance.isWhisperForMe(msg)
+			|| instance.isMessageGameSystemGenerated(msg)
 		) return;
 
-		await window.LAME.handleIncomingPrivateMessage(msg);
+		await instance.handleIncomingPrivateMessage(msg);
 	}
 
 	beautifyHistory() {
@@ -191,20 +228,41 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		this.scrollHistoryToBottom();
 	}
 
+	// Without this, when pressing Ctrl+M while window is already shown, the window is incorrectly re-rendered fully.
+	static async show() {
+		const instance = game.modules.get(MODULE_ID).instance;
+		if (!instance.rendered) await instance.render();
+	}
+
 	scrollHistoryToBottom() {
 		const history = document.getElementById(`${MODULE_ID}-history`);
 		history.scrollTop = history.scrollHeight;
 	}
 
+
+	/** Return object with relevant user data.
+	 *  @type {Object}
+	 *  @example
+	 *     {
+	 *         "GIH5NgrlsQUbympt": {
+	 *             "name": "Lucas",
+	 *             "id": "GIH5NgrlsQUbympt",
+	 *             "avatar": "images/portrait-lucas.webp",
+	 *             "active": true
+	 *         }
+	 *     }
+	 */
 	computeUsersData() {
 		const showInactiveUsers = getSetting('showInactiveUsers'),
-			usersToExclude = getSetting("usersToExclude");
+			usersToExclude = getSetting("usersToExclude"); // This returns an Array in v12, a Set in v13.
 
 		let usersData = {};
 		for (let user of game.users) {
 			// TODO: instead of skipping self, banned, excluded, and non-active users here,
 			//  consider including all and simply add attribute(s) like "ignore".
-			if (user.isSelf || user.isBanned || usersToExclude.includes(user.id)) continue;
+			if (user.isSelf || user.isBanned) continue;
+			if (Array.isArray(usersToExclude) && usersToExclude.length > 0 && usersToExclude.includes(user.id)) continue; // v12
+			if (usersToExclude instanceof Set && usersToExclude.size > 0 && usersToExclude.has(user.id)) continue; // v13
 
 			// Skip inactive user unless inactive users should be shown:
 			if (!user.active && !showInactiveUsers) continue;
@@ -216,12 +274,13 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 				active: user.active // user currently connected
 			};
 		}
-		window.LAME.users = usersData;
+		this.users = usersData;
 	}
 
 	static async computeUsersDataAndRenderPartial() {
-		window.LAME.computeUsersData();
-		await window.LAME.renderPart('users');
+		const instance = game.modules.get(MODULE_ID).instance;
+		instance.computeUsersData();
+		await instance.renderPart('users');
 	}
 
 	sendWhisperTo(userNames, msg) {
@@ -281,7 +340,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		}
 
 		this.addIncomingMessageToHistory(msg);
-		await window.LAME.playNotificationSound();
+		await this.playNotificationSound();
 
 		if (!this.rendered) return this.render();
 
@@ -314,14 +373,14 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 
 	addOutgoingMessageToHistory(msg) {
-		function getUserNameFromId(id) {
+		function getUserNameFromId(id, users) {
 			// If user does not exist, it was either deleted in the world, or is excluded via settings.
-			if (!window.LAME.users[id]) return "unknown";
+			if (!users[id]) return "unknown";
 
-			return window.LAME.users[id].name;
+			return users[id].name;
 		}
 
-		const recipientNames = msg.whisper.map(id => getUserNameFromId(id));
+		const recipientNames = msg.whisper.map(id => getUserNameFromId(id, this.users));
 		this.addOutgoingTextToHistory(recipientNames, msg.content, msg.timestamp);
 	}
 
@@ -346,9 +405,11 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 
 	isMessageGameSystemGenerated(msg) {
-		// Ignore D&D5e system's "[character] has been awarded [...]" messages.
-		if (msg.content.includes('<span class=\"award-entry\">')) return true;
-
-		return false;
+		const systemGens = [
+			'<h3 class="nue">Getting Started</h3>',       // core: welcome to new world
+			'<h3 class="nue">Inviting Your Players</h3>', // core
+			'<span class=\"award-entry\">'                // dnd5e: "[character] has been awarded [...]"
+		]
+		return systemGens.some((item) => msg.content.includes(item));
 	}
 }

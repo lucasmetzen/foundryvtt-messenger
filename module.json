@@ -6,7 +6,8 @@
   "library": "false",
   "compatibility": {
     "minimum": "12",
-    "verified": "12"
+    "verified": "12.331",
+    "maximum": "13.334"
   },
   "authors": [
     {
@@ -15,10 +16,6 @@
       "discord": "zandaarl"
     }
   ],
-  "relationships": {
-    "systems": [],
-    "requires": []
-  },
   "esmodules": [
     "scripts/module.mjs"
   ],

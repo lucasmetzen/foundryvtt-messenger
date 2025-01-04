@@ -24,13 +24,14 @@
       "PlayNotificationSoundForNewWhisper": "Spiele Benachrichtigungston bei neuen Wispern",
       "PlayNotificationSoundForNewWhisperHint": "Soll der \"pst-pst\"-Ton abgespielt werden für jedes empfangene Wispern? (Dieser wird über den Kanal \"Interface\" abgespielt.)",
       "ButtonInSceneControlToolbar": "Knopf zu Szenenkontrolle hinzufügen",
-      "ButtonInSceneControlToolbarHint": "Soll der Knopf zum Öffnen des Messengers in der Werkzeugleiste der Szenenkontrolle an der linken Bildschirmseite angezeigt werden?",
+      "ButtonInSceneControlToolbarHint": "Soll der Knopf zum Öffnen des Messengers in der Werkzeugleiste der Szenenkontrolle an der linken Bildschirmseite angezeigt werden? (nur in Foundry VTT v12)",
       "ButtonInChatControl": "Knopf zu Chat-Kontrolle hinzufügen",
-      "ButtonInChatControlHint": "Soll der Knopf zum Öffnen des Messengers in der Chat-Kontrolle (rechts vom Würfeltyp-Selektor) in der Seitenleiste angezeigt werden?",
+      "ButtonInChatControlHint": "Soll der Knopf zum Öffnen des Messengers in der Chat-Kontrolle (rechts vom Würfeltyp-Selektor) in der Seitenleiste angezeigt werden? (Wird nicht-optional in Foundry VTT v13+.)",
       "ShowInactiveUsers": "Zeige inaktive Nutzer",
       "ShowInactiveUsersHint": "Sollen Nutzer, die momentan nicht verbunden sind, im Messenger angezeigt werden?",
       "UsersToExclude": "Auszuschließende Nutzer",
-      "UsersToExcludeHint": "Die ausgewählten Nutzer werden nicht als Empfänger für alle Nutzer aufgeführt. (Welt-Einstellung, nur GM)"
+      "UsersToExcludeHint": "Die ausgewählten Nutzer werden nicht als Empfänger für alle Nutzer aufgeführt. (Welt-Einstellung, nur GM)",
+      "UsersToExcludeHintV13preview": "Die ausgewählten Nutzer werden nicht als Empfänger für alle Nutzer aufgeführt. (Welt-Einstellung, nur GM) Bitte beachten: Nutzernamen kommen zurück wenn es für Foundry VTT v13 eine stabile Version gibt."
     },
     "IncomingWhisperFrom": "Wispern von",
     "NoUsersToShow": "Kein Nutzer anzuzeigen.",

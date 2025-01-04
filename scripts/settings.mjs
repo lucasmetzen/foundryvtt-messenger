@@ -1,6 +1,10 @@
-import { MODULE_ID } from "./config.mjs";
+import {MODULE_ID} from "./config.mjs";
+import {foundryCoreVersion} from "./helpers/version-helpers.mjs";
+import {LAME} from "./lame.mjs";
 
 export function registerSettings() {
+	const isCoreV12orLower = foundryCoreVersion().major < 13;
+
 	registerSetting('showNotificationForNewWhisper', {
 		name: "LAME.Setting.ShowNotificationForNewWhisper",
 		hint: "LAME.Setting.ShowNotificationForNewWhisperHint",
@@ -30,7 +34,7 @@ export function registerSettings() {
 		default: true,
 		requiresReload: false,
 		onChange: value => {
-			window.LAME.settings.playNotificationSound = value;
+			game.modules.get(MODULE_ID).instance.settings.playNotificationSound = value;
 		}
 	});
 
@@ -38,7 +42,7 @@ export function registerSettings() {
 		name: "LAME.Setting.ButtonInSceneControlToolbar",
 		hint: "LAME.Setting.ButtonInSceneControlToolbarHint",
 		scope: 'client',
-		config: true,
+		config: isCoreV12orLower,
 		type: Boolean,
 		default: false,
 		requiresReload: false,
@@ -51,7 +55,7 @@ export function registerSettings() {
 		name: "LAME.Setting.ButtonInChatControl",
 		hint: "LAME.Setting.ButtonInChatControlHint",
 		scope: 'client',
-		config: true,
+		config: isCoreV12orLower,
 		type: Boolean,
 		default: true,
 		requiresReload: true
@@ -65,13 +69,17 @@ export function registerSettings() {
 		type: Boolean,
 		default: false,
 		onChange: async() => {
-			await window.LAME.computeUsersDataAndRenderPartial();
+			await LAME.computeUsersDataAndRenderPartial();
 		}
 	});
 
+	const usersToExcludeHint = isCoreV12orLower
+		? "LAME.Setting.UsersToExcludeHint"
+		: "LAME.Setting.UsersToExcludeHintV13preview";
 	registerSetting("usersToExclude", {
 		name: "LAME.Setting.UsersToExclude",
-		hint: "LAME.Setting.UsersToExcludeHint",
+		// hint: "LAME.Setting.UsersToExcludeHint",
+		hint: usersToExcludeHint,
 		scope: 'world',
 		config: true,
 		// inspired by: https://github.com/foundryvtt/dnd5e/blob/6035882315ac6223b33cc512f5f4e1ee2726a95f/module/settings.mjs#L503-L508
@@ -79,18 +87,18 @@ export function registerSettings() {
 			new foundry.data.fields.StringField({
 				choices: () => {
 					// TODO: Refactor opportunity to use #map.
-					let users = {};
+					let worldUsers = {};
 					for (let user of game.users) {
-						users[user.id] = { "label": user.name };
+						worldUsers[user.id] = { "label": user.name };
 					}
-					return users;
+					return worldUsers;
 				}
 			})
 		),
 		default: [],
 		requiresReload: false,
 		onChange: async() => {
-			await window.LAME.computeUsersDataAndRenderPartial();
+			await LAME.computeUsersDataAndRenderPartial();
 		}
 	});
 }

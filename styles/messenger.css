@@ -7,14 +7,23 @@
 }
 
 /* Shrink fa-comments icon as it's wider than most of the other icons. */
-#chat-controls .lame-messenger i.fa-comments {
+#lame-messenger-button i.fa-comments {
     font-size: var(--font-size-18);
     position: relative;
     bottom: 1px;
 }
 
-#controls .lame-messenger i.fa-comments {
+#lame-messenger-button i.fa-comments {
     font-size: 21px;
+}
+
+/* v13: When the sidebar is collapsed: */
+#chat-notifications #lame-messenger-button {
+    position: absolute;
+    inset: auto auto 0 calc(100% + 16px); /* core's "Chat Notifications" is set to `pips` */
+}
+body.vtt:has(#chat-notifications #roll-privacy) #chat-notifications #lame-messenger-button {
+    inset: auto auto 144px calc(100% + 16px); /* bottom = 4 * --control-size (=32px) + 16px */
 }
 
 /* Counteract parent's `display: flex` which breaks the users section's `float: left`,
@@ -90,6 +99,10 @@
     border-style: ridge;
 }
 
+#lame-messenger .users label p {
+    margin: 0;
+}
+
 #lame-messenger .users :checked + label {
     border-color: #ddd;
     font-weight: bold;
@@ -130,6 +143,12 @@ body.theme-light #lame-messenger .history {
     color: var(--color-text-dark-secondary);
 }
 
+/* TODO: Rename `message-input` as it's not the input itself but a section also containing the Send button. */
+#lame-messenger section.message-input {
+    display: grid;
+}
+
+/* TODO: Consider renaming to `message-input`. */
 #lame-messenger .message {
     flex: 0 1 auto;
     margin: 10px 0;
