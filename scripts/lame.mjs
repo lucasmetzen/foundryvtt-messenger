@@ -1,3 +1,5 @@
+import {log} from "./helpers/log.mjs";
+
 const {ApplicationV2, HandlebarsApplicationMixin} = foundry.applications.api;
 
 import {localize, MODULE_ID, MODULE_ICON_CLASSES, TEMPLATE_PARTS_PATH} from "./config.mjs";
@@ -48,8 +50,50 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 			id: "message-input",
 			classes: ["message-input", "chat-elements-part"],
 			template: `${TEMPLATE_PARTS_PATH}/message-input.hbs`
+		},
+		/*tabs: {
+			id: "tabs",
+			classes: ["tabs"],
+			template: `${TEMPLATE_PARTS_PATH}/tabs.hbs`
+		}*/
+		tabs: {
+			template: `${TEMPLATE_PARTS_PATH}/tabs.hbs`
 		}
 	}
+
+
+
+
+	/*
+	// from support-details.mjs:
+	static PARTS = {
+		support: {
+			template: "templates/sidebar/apps/support-details/support.hbs",
+			templates: ["templates/sidebar/apps/support-details/report.hbs"]
+		},
+		documents: {template: "templates/sidebar/apps/support-details/documents.hbs"},
+		client: {template: "templates/sidebar/apps/support-details/client.hbs"},
+		modules: {template: "templates/sidebar/apps/support-details/modules.hbs"}
+	};
+	*/
+
+	/** @override */
+	static TABS = {
+		main: {
+			tabs: [
+				{id: "user1", icon: "fa-solid fa-hands-helping"},
+				/*{id: "support", icon: "fa-solid fa-hands-helping"},
+				{id: "documents", icon: "fa-solid file-circle-exclamation"},
+				{id: "client", icon: "fa-regular fa-window"},
+				{id: "modules", icon: "fa-solid box-open"}*/
+			],
+			initial: "support",
+			labelPrefix: "SUPPORT.TABS"
+		}
+	};
+
+
+
 
 	/**
 	 * The button in the chat sidebar to open the Messenger.
@@ -78,7 +122,11 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 	// Provides template parts with scoped dynamic data:
 	/** @override */
-	async _preparePartContext(partId, context) {
+	async _preparePartContext(partId, context, _options) {
+		// await super._preparePartContext(partId, context, _options);
+		log("_preparePartContext", partId, context, _options);
+		// const tab = context.tabs[partId];
+		// if ( tab ) context.tab = tab;
 		switch ( partId ) {
 			case "history":
 				context.history = this.beautifyHistory();
