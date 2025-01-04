@@ -1,5 +1,24 @@
 # Lucas's Awesome Messenger Extension, or short: LAME Messenger
 
+## 4.3.0 (2025-01-04): Foundry VTT v13 support
+### Improvements
+- ✨ Add support for UI changes in Foundry VTT v13
+  - Core v13 introduces changes to the UI which prevented LAME Messenger from adding the button to open its window. This is fixed (tested on the latest `13.334`).
+  - The button to open the LAME Messenger window is always visible. (see [release note](https://github.com/lucasmetzen/foundryvtt-messenger/releases/tag/4.2.0) for screenshots and details).
+  - The _option_ to not add the button the UI or not has been removed.
+  - As the button in/next to the sidebar is always accessible, the option to add a second one to the scene controls toolbar on the left side of the screen is not available starting with Core v13. It is still available in v12.
+- Additional filtering of system generated whisper messages: both welcome messages in new worlds, `Getting Started` and `Inviting Your Players`, are now ignored by LAME and will not show up in its history.
+
+### Known issue in v13
+
+In the current preview version of v13 (namely `13.334`), there seem to be changes under way to the  `SetField` type which is used in the configuration to select users to be excluded in LAME. This causes the users to be listed by their ID instead of their name.  
+To avoid premature work fixing this, this won't be worked on until a more stable version of v13 is released.  
+The feature to exclude users still works though (if you know the user's ID or by trial and error).
+
+### Maintenance
+
+- Refactoring work has begun in order to make the code easier to adjust to future changes and additions, as well as adhere more to best practices for Foundry modules.
+
 ## 4.2.0 (2025-01-01): New Year's Edition
 ### Improvements
 - Populate Messenger's in-memory history from world's messages when user logs in or reloads the browser page (triggered by the `ready` hook)

@@ -48,9 +48,9 @@ This module can be installed automatically from the Foundry Virtual Tabletop mod
 - Notification message is displayed until dismissed
 - Show currently disconnected users in user selection:  
   ![disconnected users shown](https://github.com/lucasmetzen/foundryvtt-messenger/blob/main/docs/README-disconnected-users-shown.webp?raw=true)
-- Show button in chat sidebar (next to the roll type selector) to open LAME messenger window (shown by default):  
+- v12 only: Show button in chat sidebar (next to the roll type selector) to open LAME messenger window (shown by default):  
   ![button in chat sidebar](https://github.com/lucasmetzen/foundryvtt-messenger/blob/main/docs/README-button-in-chat-sidebar.webp?raw=true)
-- Show button in scene controls toolbar (left side of screen) to open LAME messenger window:  
+- v12 only: Show button in scene controls toolbar (left side of screen) to open LAME messenger window:  
   ![button in scene controls toolbar](https://github.com/lucasmetzen/foundryvtt-messenger/blob/main/docs/README-button-in-scene-controls-toolbar.webp?raw=true)
 - Customisable keyboard shortcut for opening the window (via "Configure Controls" dialogue)
 
