@@ -1,4 +1,4 @@
-import { MODULE_ID } from "./config.mjs";
+import {MODULE_ID} from "./config.mjs";
 import {foundryCoreVersion} from "./helpers/version-helpers.mjs";
 import {LAME} from "./lame.mjs";
 

@@ -143,10 +143,12 @@ body.theme-light #lame-messenger .history {
     color: var(--color-text-dark-secondary);
 }
 
+/* TODO: Rename `message-input` as it's not the input itself but a section also containing the Send button. */
 #lame-messenger section.message-input {
     display: grid;
 }
 
+/* TODO: Consider renaming to `message-input`. */
 #lame-messenger .message {
     flex: 0 1 auto;
     margin: 10px 0;

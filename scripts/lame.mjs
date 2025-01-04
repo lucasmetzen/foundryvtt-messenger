@@ -58,8 +58,8 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	static chatbarButton;
 
 	/**
-	 * TODO: users object
-	 * @type {Object}
+	 * The internally relevant users' data. Populated by {@link computeUsersData}.
+	 * @type {Object || Array}
 	 */
 	static users;
 
@@ -130,11 +130,6 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		registerKeybindings();
 		registerHandlebarsHelpers();
 		game.modules.get(MODULE_ID).instance = new LAME();
-	}
-
-	static onSettingChange(settings) {
-		// TODO: move settings calls here
-		log("onSettingChange", this, settings);
 	}
 
 	static onCollapseSidebar(_app, collapsed) {
@@ -244,6 +239,19 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		history.scrollTop = history.scrollHeight;
 	}
 
+
+	/** Return object with relevant user data.
+	 *  @type {Object}
+	 *  @example
+	 *     {
+	 *         "GIH5NgrlsQUbympt": {
+	 *             "name": "Lucas",
+	 *             "id": "GIH5NgrlsQUbympt",
+	 *             "avatar": "images/portrait-lucas.webp",
+	 *             "active": true
+	 *         }
+	 *     }
+	 */
 	computeUsersData() {
 		const showInactiveUsers = getSetting('showInactiveUsers'),
 			usersToExclude = getSetting("usersToExclude"); // This returns an Array in v12, a Set in v13.
