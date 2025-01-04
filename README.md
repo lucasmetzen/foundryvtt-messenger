@@ -2,7 +2,7 @@
 
 LAME Messenger for Foundry VTT provides a simple messenger interface to easily whisper messages.
 
-![Foundry VTT version compatibility: v12](https://img.shields.io/badge/Foundry_VTT-v12-informational)
+![Foundry VTT version compatibility: v12-13](https://img.shields.io/badge/Foundry_VTT-v12--13-informational?logo=foundryvirtualtabletop)
 [![GitHub issues](https://img.shields.io/github/issues/lucasmetzen/foundryvtt-messenger/bug)](https://github.com/lucasmetzen/foundryvtt-messenger/issues/)
 ![Latest release download count](https://img.shields.io/github/downloads/lucasmetzen/foundryvtt-messenger/latest/module.zip?label=latest+release+downloads)
 ![Forge installs](https://img.shields.io/badge/dynamic/json?label=Forge%20Installs&query=package.installs&suffix=%25&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Flame-messenger&colorB=4aa94a)
