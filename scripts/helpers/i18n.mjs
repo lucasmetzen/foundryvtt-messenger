@@ -2,13 +2,13 @@ import {MODULE_ID} from "../config.mjs";
 
 const fallbackLocale = "en";
 
-export function i18nLongConjunct(text) {
+export function i18nLongConjunct(arrayOfTexts) {
 	const conjunctionFormatter = new Intl.ListFormat(computeEffectiveLocale(), {
 		style: "long",
 		type: "conjunction",
 	});
 
-	return conjunctionFormatter.format(text);
+	return conjunctionFormatter.format(arrayOfTexts);
 }
 
 function computeEffectiveLocale() {

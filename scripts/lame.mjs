@@ -179,10 +179,14 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 				date = new Date(timestamp),
 				formattedTime = formatTimeHHMMSS(date),
 				displayTime = (!isToday(date)) ? formatDateYYYYMMDD(date) + " " + formattedTime : formattedTime,
-				toOrFrom = localize(msg[1] === 'in' ? "LAME.History.From" : "LAME.History.To");
+				toOrFrom = localize(msg[1] === 'in' ? "LAME.History.From" : "LAME.History.To"),
+				author = msg[2],
+				msgText = msg[3],
+				alsoTo = (msg[4]) ? " (also to " + msg[4] + ")" : "";
 
 			beautified.push(
-				`[${displayTime}] ${toOrFrom} ${msg[2]}: ${msg[3]}` // [time] to/from [player name]: [message]
+				// [time] to/from [author name](also to [recipient name(s)]): [message]
+				`[${displayTime}] ${toOrFrom} ${author}${alsoTo}: ${msgText}`
 			);
 		}
 		return beautified;
@@ -199,7 +203,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 			}
 
 			if (this.isWhisperForMe(msg))
-				this.addIncomingMessageToHistory(msg);
+				this.#addIncomingMessageToHistory(msg);
 
 			// Everything left are public messages.
 		}
@@ -283,17 +287,13 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		await instance.renderPart('users');
 	}
 
-	sendWhisperTo(userNames, msg) {
-		for (let username of userNames) {
-			// chatData needs to be defined for each message as the .whisper assignment is not overwritten on subsequent loops,
-			//  resulting in multiple messages with unique document IDs but to the same recipient.
-			let chatData = {
-				user: game.user.id,
-				content: msg
-			};
-			chatData.whisper = ChatMessage.getWhisperRecipients(username);
-			ChatMessage.create(chatData);
-		}
+	sendWhisperTo(userIds, msg) {
+		const chatData = {
+			user: game.user.id,
+			content: msg,
+			whisper: userIds
+		};
+		ChatMessage.create(chatData);
 	}
 
 	async _onKeyPressEvent(event, html) {
@@ -312,18 +312,19 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		}
 
 		// Get selected user(s):
-		const checkedUserElements = html.find('input[id^="user-"]:checked');
-		let selectedUserNames = [];
+		const checkedUserElements = html.find('input[id^="lame-messenger-user-"]:checked');
+		let selectedUserIds = [];
 		checkedUserElements.each(function () {
-			selectedUserNames.push(this.id.replace('user-', ''));
+			selectedUserIds.push(this.id.replace('lame-messenger-user-', ''));
 		});
-		if (selectedUserNames.length === 0) {
+		if (selectedUserIds.length === 0) {
 			ui.notifications.error(localize("LAME.Notification.NoRecipientSelected"));
 			return;
 		}
 
 		// Send whisper(s):
-		this.sendWhisperTo(selectedUserNames, messageText);
+		this.sendWhisperTo(selectedUserIds, messageText);
+		const selectedUserNames = this.#mapUsersIdsToNames(selectedUserIds);
 		this.addOutgoingTextToHistory(selectedUserNames, messageText);
 		await this.renderHistoryPartial();
 
@@ -339,7 +340,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 			);
 		}
 
-		this.addIncomingMessageToHistory(msg);
+		this.#addIncomingMessageToHistory(msg);
 		await this.playNotificationSound();
 
 		if (!this.rendered) return this.render();
@@ -364,15 +365,18 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		});
 	}
 
-	addIncomingMessageToHistory(msg) {
-		this.addIncomingTextToHistory(msg.author.name, msg.content, msg.timestamp)
+	#addIncomingMessageToHistory(msg) {
+		const alsoToIds = msg.whisper.filter(userId => userId !== game.user.id),
+			alsoToNames = this.#mapUsersIdsToNames(alsoToIds),
+			conjunctedAlsoToNames = i18nLongConjunct(alsoToNames)
+		this.#addIncomingTextToHistory(msg.author.name, msg.content, msg.timestamp, conjunctedAlsoToNames);
 	}
 
-	addIncomingTextToHistory(authorName, text, timestamp) {
-		this.history.push([timestamp, 'in', authorName, text]);
+	#addIncomingTextToHistory(authorName, text, timestamp, alsoTo = null) {
+		this.history.push([timestamp, 'in', authorName, text, alsoTo]);
 	}
 
-	addOutgoingMessageToHistory(msg) {
+	#mapUsersIdsToNames(ids) {
 		function getUserNameFromId(id, users) {
 			// If user does not exist, it was either deleted in the world, or is excluded via settings.
 			if (!users[id]) return "unknown";
@@ -380,7 +384,11 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 			return users[id].name;
 		}
 
-		const recipientNames = msg.whisper.map(id => getUserNameFromId(id, this.users));
+		return ids.map(id => getUserNameFromId(id, this.users));
+	}
+
+	addOutgoingMessageToHistory(msg) {
+		const recipientNames = this.#mapUsersIdsToNames(msg.whisper);
 		this.addOutgoingTextToHistory(recipientNames, msg.content, msg.timestamp);
 	}
 
