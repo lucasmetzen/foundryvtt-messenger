@@ -13,7 +13,7 @@ export function registerKeybindings() {
 			}
 		],
 		onDown: async() => {
-			await LAME.show();
+			await game.modules.get(MODULE_ID).instance.show();
 			return true; // Consume event and prevent execution of other keybind actions.
 		},
 		precedence: CONST.KEYBINDING_PRECEDENCE.NORMAL

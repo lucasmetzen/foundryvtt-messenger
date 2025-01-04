@@ -233,7 +233,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 
 	// Without this, when pressing Ctrl+M while window is already shown, the window is incorrectly re-rendered fully.
-	static async show() {
+	async show() {
 		const instance = game.modules.get(MODULE_ID).instance;
 		if (!instance.rendered) await instance.render();
 	}
