@@ -1,5 +1,12 @@
 # Lucas's Awesome Messenger Extension, or short: LAME Messenger
 
+## 4.3.1 (2025-01-04)
+### Improvements
+- Improve handling and visual identification of incoming and outgoing whispers with multiple recipients
+
+### Maintenance
+- Prevent full redraw (which clears user selection and new message input) if window is open
+
 ## 4.3.0 (2025-01-04): Foundry VTT v13 support
 ### Improvements
 - ✨ Add support for UI changes in Foundry VTT v13
