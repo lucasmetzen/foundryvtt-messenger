@@ -4,8 +4,8 @@
             {{#each users}}
                 {{#with this}}
                     <li {{#unless active}} class="offline" title="{{ localize 'LAME.UserIsOffline' }}" {{/unless}}>
-                        <input type="checkbox" id="user-{{name}}" class="user-checkmark" {{#unless active}} disabled {{/unless}} />
-                        <label for="user-{{name}}">
+                        <input type="checkbox" id="lame-messenger-user-{{id}}" class="user-checkmark" {{#unless active}} disabled {{/unless}} />
+                        <label for="lame-messenger-user-{{id}}">
                             <img src="{{avatar}}" style="border-color: {{ userColor id }};
                                 {{~#if active}} background-color: {{ userColor id }}; {{/if~}}
                             " alt="{{name}}"/>
