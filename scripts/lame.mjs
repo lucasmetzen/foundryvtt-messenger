@@ -179,10 +179,14 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 				date = new Date(timestamp),
 				formattedTime = formatTimeHHMMSS(date),
 				displayTime = (!isToday(date)) ? formatDateYYYYMMDD(date) + " " + formattedTime : formattedTime,
-				toOrFrom = localize(msg[1] === 'in' ? "LAME.History.From" : "LAME.History.To");
+				toOrFrom = localize(msg[1] === 'in' ? "LAME.History.From" : "LAME.History.To"),
+				author = msg[2],
+				msgText = msg[3],
+				alsoTo = (msg[4]) ? " (also to " + msg[4] + ")" : "";
 
 			beautified.push(
-				`[${displayTime}] ${toOrFrom} ${msg[2]}: ${msg[3]}` // [time] to/from [player name]: [message]
+				// [time] to/from [author name](also to [recipient name(s)]): [message]
+				`[${displayTime}] ${toOrFrom} ${author}${alsoTo}: ${msgText}`
 			);
 		}
 		return beautified;
@@ -199,7 +203,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 			}
 
 			if (this.isWhisperForMe(msg))
-				this.addIncomingMessageToHistory(msg);
+				this.#addIncomingMessageToHistory(msg);
 
 			// Everything left are public messages.
 		}
@@ -320,7 +324,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 		// Send whisper(s):
 		this.sendWhisperTo(selectedUserIds, messageText);
-		const selectedUserNames = this.mapUsersIdsToNames(selectedUserIds);
+		const selectedUserNames = this.#mapUsersIdsToNames(selectedUserIds);
 		this.addOutgoingTextToHistory(selectedUserNames, messageText);
 		await this.renderHistoryPartial();
 
@@ -336,7 +340,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 			);
 		}
 
-		this.addIncomingMessageToHistory(msg);
+		this.#addIncomingMessageToHistory(msg);
 		await this.playNotificationSound();
 
 		if (!this.rendered) return this.render();
@@ -361,15 +365,18 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		});
 	}
 
-	addIncomingMessageToHistory(msg) {
-		this.addIncomingTextToHistory(msg.author.name, msg.content, msg.timestamp)
+	#addIncomingMessageToHistory(msg) {
+		const alsoToIds = msg.whisper.filter(userId => userId !== game.user.id),
+			alsoToNames = this.#mapUsersIdsToNames(alsoToIds),
+			conjunctedAlsoToNames = i18nLongConjunct(alsoToNames)
+		this.#addIncomingTextToHistory(msg.author.name, msg.content, msg.timestamp, conjunctedAlsoToNames);
 	}
 
-	addIncomingTextToHistory(authorName, text, timestamp) {
-		this.history.push([timestamp, 'in', authorName, text]);
+	#addIncomingTextToHistory(authorName, text, timestamp, alsoTo = null) {
+		this.history.push([timestamp, 'in', authorName, text, alsoTo]);
 	}
 
-	mapUsersIdsToNames(ids) {
+	#mapUsersIdsToNames(ids) {
 		function getUserNameFromId(id, users) {
 			// If user does not exist, it was either deleted in the world, or is excluded via settings.
 			if (!users[id]) return "unknown";
@@ -381,7 +388,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 
 	addOutgoingMessageToHistory(msg) {
-		const recipientNames = this.mapUsersIdsToNames(msg.whisper);
+		const recipientNames = this.#mapUsersIdsToNames(msg.whisper);
 		this.addOutgoingTextToHistory(recipientNames, msg.content, msg.timestamp);
 	}
 
