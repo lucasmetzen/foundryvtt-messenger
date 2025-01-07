@@ -1,8 +1,8 @@
 <section>
     {{#if (isAtLeastOneUserToBeShown)}}
         <ul>
-            {{#each users}}
-                {{#with this}}
+            {{#each users}}{{#with this}}
+                {{#unless exclude}}
                     <li {{#unless active}} class="offline" title="{{ localize 'LAME.UserIsOffline' }}" {{/unless}}>
                         <input type="checkbox" id="lame-messenger-user-{{id}}" class="user-checkmark" {{#unless active}} disabled {{/unless}} />
                         <label for="lame-messenger-user-{{id}}">
@@ -12,8 +12,8 @@
                             <p>{{name}}</p>
                         </label>
                     </li>
-                {{/with}}
-            {{/each}}
+                {{/unless}}
+            {{/with}}{{/each}}
         </ul>
     {{else}}
         <div class="no-users-to-show">
