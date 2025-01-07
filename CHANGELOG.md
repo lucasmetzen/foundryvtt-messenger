@@ -1,5 +1,10 @@
 # Lucas's Awesome Messenger Extension, or short: LAME Messenger
 
+## 4.3.2 (2025-01-07)
+### Maintenance
+- Fix history listing `unknown` sender if user was disconnected or set to be excluded while history was populated (when current user logged in or refreshed browser).
+- Change module's icon to its outlined counterpart in order to avoid confusion with Foundry VTT's chat button in the UI.
+
 ## 4.3.1 (2025-01-04)
 ### Improvements
 - Improve handling and visual identification of incoming and outgoing whispers with multiple recipients
