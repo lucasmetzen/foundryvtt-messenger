@@ -43,7 +43,7 @@ Hooks.on("renderChatLog", async (_app, htmlPassed, _data_ChatInput) => {
 		instance = game.modules.get(MODULE_ID).instance;
 
 	let messengerBtnHtml = `<div id="lame-messenger-button" class="split-button">
-		<button type="button" class="ui-control icon fas fa-comments" data-tooltip="LAME.Module.ShortTitle"
+		<button type="button" class="ui-control icon ${MODULE_ICON_CLASSES}" data-tooltip="LAME.Module.ShortTitle"
 		data-action="TODO" aria-pressed="false" aria-label=""></button>
 	</div>`;
 	instance.chatbarButton = foundry.applications.parseHTML(messengerBtnHtml);

@@ -1,4 +1,4 @@
-# ![logo](https://github.com/lucasmetzen/foundryvtt-messenger/blob/main/docs/logo.svg?raw=true) Lucas's Awesome Messenger Extension, or short: LAME Messenger
+# ![logo](https://github.com/lucasmetzen/foundryvtt-messenger/blob/main/docs/logo-outlined.svg?raw=true) Lucas's Awesome Messenger Extension, or short: LAME Messenger
 
 LAME Messenger for Foundry VTT provides a simple messenger interface to easily whisper messages.
 

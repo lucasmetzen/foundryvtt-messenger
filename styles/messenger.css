@@ -7,14 +7,11 @@
 }
 
 /* Shrink fa-comments icon as it's wider than most of the other icons. */
-#lame-messenger-button i.fa-comments {
+#chat-controls .lame-messenger i.fa-comments {
     font-size: var(--font-size-18);
+    line-height: 28px;
     position: relative;
     bottom: 1px;
-}
-
-#lame-messenger-button i.fa-comments {
-    font-size: 21px;
 }
 
 /* v13: When the sidebar is collapsed: */
