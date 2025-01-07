@@ -71,9 +71,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	// Provides template with dynamic data:
 	/** @override */
 	async _prepareContext() {
-		return {
-			users: this.users
-		};
+		return {};
 	}
 
 	// Provides template parts with scoped dynamic data:
@@ -82,6 +80,9 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		switch ( partId ) {
 			case "history":
 				context.history = this.beautifyHistory();
+				break;
+			case "users":
+				context.users = this.users;
 				break;
 		}
 		return context;
@@ -252,30 +253,44 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	 *             "name": "Lucas",
 	 *             "id": "GIH5NgrlsQUbympt",
 	 *             "avatar": "images/portrait-lucas.webp",
-	 *             "active": true
+	 *             "active": true,
+	 *             "exclude": false
 	 *         }
 	 *     }
 	 */
 	computeUsersData() {
+		function toExclude(user, showInactiveUsers, usersToExclude) {
+			// Exclude inactive user unless inactive users should be shown:
+			if (!user.active && !showInactiveUsers) return true;
+
+			// Foundry v12:
+			if (Array.isArray(usersToExclude)
+				&& usersToExclude.length > 0
+				&& usersToExclude.includes(user.id)
+			) return true;
+
+			// Foundry v13:
+			if (usersToExclude instanceof Set
+				&& usersToExclude.size > 0
+				&& usersToExclude.has(user.id)
+			) return true;
+
+			return false;
+		}
+
 		const showInactiveUsers = getSetting('showInactiveUsers'),
-			usersToExclude = getSetting("usersToExclude"); // This returns an Array in v12, a Set in v13.
+			usersToExclude = getSetting("usersToExclude");
 
 		let usersData = {};
 		for (let user of game.users) {
-			// TODO: instead of skipping self, banned, excluded, and non-active users here,
-			//  consider including all and simply add attribute(s) like "ignore".
 			if (user.isSelf || user.isBanned) continue;
-			if (Array.isArray(usersToExclude) && usersToExclude.length > 0 && usersToExclude.includes(user.id)) continue; // v12
-			if (usersToExclude instanceof Set && usersToExclude.size > 0 && usersToExclude.has(user.id)) continue; // v13
-
-			// Skip inactive user unless inactive users should be shown:
-			if (!user.active && !showInactiveUsers) continue;
 
 			usersData[user.id] = {
 				name: user.name,
 				id: user.id,
 				avatar: user.avatar,
-				active: user.active // user currently connected
+				active: user.active, // user currently connected
+				exclude: toExclude(user, showInactiveUsers, usersToExclude)
 			};
 		}
 		this.users = usersData;
