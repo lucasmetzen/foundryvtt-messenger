@@ -1,5 +1,10 @@
 # Lucas's Awesome Messenger Extension, or short: LAME Messenger
 
+## 4.3.3 (2025-01-11)
+### Maintenance
+- Fix showing "no users to show" hint (which broke with refactoring in version 4.3.3)
+- Decrease the window height if no users are shown
+
 ## 4.3.2 (2025-01-07)
 ### Maintenance
 - Fix history listing `unknown` sender if user was disconnected or set to be excluded while history was populated (when current user logged in or refreshed browser).
