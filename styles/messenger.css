@@ -170,7 +170,7 @@ body.theme-light #lame-messenger .history {
     flex-flow: column;
     min-height: 638px; /* Applies to 6 players and more. */
 }
-body.vtt:has(#lame-messenger .users.no-users-to-show) #lame-messenger .chat-elements,
+body.vtt:has(#lame-messenger .users .no-users-to-show) #lame-messenger .chat-elements,
 body.vtt:has(#lame-messenger .users li:first-child:nth-last-child(1)) #lame-messenger .chat-elements,
 body.vtt:has(#lame-messenger .users li:first-child:nth-last-child(2)) #lame-messenger .chat-elements,
 body.vtt:has(#lame-messenger .users li:first-child:nth-last-child(3)) #lame-messenger .chat-elements {
