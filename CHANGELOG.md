@@ -1,5 +1,9 @@
 # Lucas's Awesome Messenger Extension, or short: LAME Messenger
 
+## 4.3.4 (2025-04-24)
+### Improvements
+- Add functional support for game system [Warhammer Fantasy Roleplay 4e](https://github.com/moo-man/WFRP4e-FoundryVTT) (`WFRP4e`): filter messages of unopposed and opposed tests, and opposed test handlers (thanks @Cereast for reporting) 
+
 ## 4.3.3 (2025-01-11)
 ### Maintenance
 - Fix showing "no users to show" hint (which broke with refactoring in version 4.3.3)
