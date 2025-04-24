@@ -166,6 +166,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		if (instance.isPublicMessage(msg)
 			|| !instance.isWhisperForMe(msg)
 			|| instance.isMessageGameSystemGenerated(msg)
+			|| instance.isMessageGameSystemSpecificRoll(msg)
 		) return;
 
 		await instance.handleIncomingPrivateMessage(msg);
@@ -196,7 +197,10 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	async populateHistoryFromWorldMessages() {
 		const worldMessages = game.collections.get("ChatMessage").contents;
 		for (const msg of worldMessages) {
-			if (this.isPublicMessage(msg) || this.isMessageGameSystemGenerated(msg)) continue;
+			if (this.isPublicMessage(msg)
+				|| this.isMessageGameSystemGenerated(msg)
+				|| this.isMessageGameSystemSpecificRoll(msg)
+			) continue;
 
 			if (msg.isAuthor) {
 				this.addOutgoingMessageToHistory(msg);
@@ -206,7 +210,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 			if (this.isWhisperForMe(msg))
 				this.#addIncomingMessageToHistory(msg);
 
-			// Everything left are public messages.
+			// Everything left are public messages and are not processed.
 		}
 	}
 
@@ -431,8 +435,19 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		const systemGens = [
 			'<h3 class="nue">Getting Started</h3>',       // core: welcome to new world
 			'<h3 class="nue">Inviting Your Players</h3>', // core
-			'<span class=\"award-entry\">'                // dnd5e: "[character] has been awarded [...]"
+			'<span class=\"award-entry\">',               // dnd5e: "[character] has been awarded [...]"
+			'<p class="requestmessage">'                  // wfrp4e: skill tests
 		]
 		return systemGens.some((item) => msg.content.includes(item));
+	}
+
+	isMessageGameSystemSpecificRoll(msg) {
+		if (msg._stats?.systemId === 'wfrp4e' && ( // Warhammer Fantasy 4e (system doesn't implement #isRoll)
+			msg.type === 'test' // skill or attribute tests
+			|| msg.type === 'handler' // opposed test handler messages
+			|| msg.type === 'opposed' // opposed test results
+		)) return true;
+
+		return false;
 	}
 }
