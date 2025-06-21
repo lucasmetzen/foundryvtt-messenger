@@ -1,5 +1,13 @@
 # Lucas's Awesome Messenger Extension, or short: LAME Messenger
 
+## 4.4.0 (2025-06-21): Now _really_ Foundry VTT v13 compatible
+### Improvements
+- Finalise compatibility verification for Core v13 after its stable release
+- Ignore welcome messages of two modules
+
+### Maintenance
+- Remove `#foundryCoreVersion` function by using Core member attribute
+
 ## 4.3.4 (2025-04-24)
 ### Improvements
 - Add functional support for game system [Warhammer Fantasy Roleplay 4e](https://github.com/moo-man/WFRP4e-FoundryVTT) (`WFRP4e`): filter messages of unopposed and opposed tests, and opposed test handlers (thanks @Cereast for reporting) 
