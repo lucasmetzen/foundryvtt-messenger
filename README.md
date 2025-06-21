@@ -63,7 +63,6 @@ This module can be installed automatically from the Foundry Virtual Tabletop mod
 - Messages not sent privately as a whisper (AKA "public" or dice rolls) are not handled by LAME Messenger. Public chat might be included in a future release.
 - When a player connects or disconnects while you have players selected to send to, the selection is cleared as the players list is re-rendered. As a tabbed window solution is planned for the near future which will change most of the UI anyway, this won't be fixed at the moment. Apologies for this initial inconvenience.
 - Game systems send some status messages privately (e.g. when items or experience are awarded). While all private messages containing dice rolls (e.g. self or GM rolls) are already filtered, there surely will be some which LAME Messenger is going to treat as actual whispers. If you come across any, please report them via the [GitHub issue tracker](https://github.com/lucasmetzen/foundryvtt-messenger/issues/new?assignees=lucasmetzen&labels=filter+system+message&projects=&template=request--filter-game-system-message.md&title=%5BFILTER+REQUEST%5D).
-- Whispers sent from the sidebar's chat box are not included in LAME Messenger's history (unless you reload the browser which populates the history based on the messages saved in the world).
 
 
 ## 💡 Planned features
