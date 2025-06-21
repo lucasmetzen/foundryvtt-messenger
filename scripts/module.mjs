@@ -1,7 +1,6 @@
 import {LAME} from "./lame.mjs";
 import {getSetting} from "./settings.mjs";
 import {localize, MODULE_ICON_CLASSES, MODULE_ID} from "./config.mjs";
-import {foundryCoreVersion} from "./helpers/version-helpers.mjs";
 
 Hooks.once('init', LAME.init); // this feels VERY early in Foundry's initialisation...
 
@@ -17,7 +16,7 @@ Hooks.once('ready', async() => {
 
 // v12: Add button to scene controls toolbar:
 Hooks.on('renderSceneControls', (_controls, html) => {
-	if (!getSetting("buttonInSceneControlToolbar") || foundryCoreVersion().major > 12) return;
+	if (!getSetting("buttonInSceneControlToolbar") || game.release.generation > 12) return;
 
 	const messengerBtn = $(
 		`<li class="scene-control control-tool toggle" data-tooltip="LAME.Module.ShortTitle">
@@ -37,7 +36,7 @@ Hooks.on("changeSidebarTab", LAME.onChangeSidebarTab);
 
 // v13+: Add button to chat controls:
 Hooks.on("renderChatLog", async (_app, htmlPassed, _data_ChatInput) => {
-	if (foundryCoreVersion().major < 13) return;
+	if (game.release.generation < 13) return;
 
 	const html = htmlPassed instanceof jQuery ? htmlPassed[0] : htmlPassed,
 		instance = game.modules.get(MODULE_ID).instance;
@@ -56,7 +55,7 @@ Hooks.on("renderChatLog", async (_app, htmlPassed, _data_ChatInput) => {
 
 // v12: Add button to chat controls:
 Hooks.on("renderSidebarTab", async (app, html, _data) => {
-	if (foundryCoreVersion().major > 12) return;
+	if (game.release.generation > 12) return;
 
 	if (app.tabName !== "chat" || !getSetting("buttonInChatControls")) return;
 

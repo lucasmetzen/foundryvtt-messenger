@@ -6,7 +6,6 @@ import {registerKeybindings} from "./keybindings.mjs";
 import {registerHandlebarsHelpers} from "./helpers/handlebars-helpers.mjs";
 import {formatDateYYYYMMDD, formatTimeHHMMSS, isToday} from "./helpers/date-time-helpers.mjs";
 import {i18nLongConjunct} from "./helpers/i18n.mjs";
-import {foundryCoreVersion} from "./helpers/version-helpers.mjs";
 
 export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
@@ -134,7 +133,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 
 	static onCollapseSidebar(_app, collapsed) {
-		if (foundryCoreVersion().major < 13) return;
+		if (game.release.generation < 13) return;
 
 		// Inspired by ChatLog#_toggleNotifications()
 		const embedInput = (!collapsed && ui.chat.active);
@@ -143,7 +142,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 
 	static onChangeSidebarTab(app) {
-		if (foundryCoreVersion().major < 13) return;
+		if (game.release.generation < 13) return;
 
 		// TODO: Check if this can be done differently without triggering so many times, possibly not doing anything at all.
 		//  Consider adding boolean member #chatbarVisible or similar.
