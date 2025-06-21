@@ -6,7 +6,6 @@ import {registerKeybindings} from "./keybindings.mjs";
 import {registerHandlebarsHelpers} from "./helpers/handlebars-helpers.mjs";
 import {formatDateYYYYMMDD, formatTimeHHMMSS, isToday} from "./helpers/date-time-helpers.mjs";
 import {i18nLongConjunct} from "./helpers/i18n.mjs";
-import {foundryCoreVersion} from "./helpers/version-helpers.mjs";
 
 export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
@@ -134,7 +133,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 
 	static onCollapseSidebar(_app, collapsed) {
-		if (foundryCoreVersion().major < 13) return;
+		if (game.release.generation < 13) return;
 
 		// Inspired by ChatLog#_toggleNotifications()
 		const embedInput = (!collapsed && ui.chat.active);
@@ -143,7 +142,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 
 	static onChangeSidebarTab(app) {
-		if (foundryCoreVersion().major < 13) return;
+		if (game.release.generation < 13) return;
 
 		// TODO: Check if this can be done differently without triggering so many times, possibly not doing anything at all.
 		//  Consider adding boolean member #chatbarVisible or similar.
@@ -167,6 +166,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 			|| !instance.isWhisperForMe(msg)
 			|| instance.isMessageGameSystemGenerated(msg)
 			|| instance.isMessageGameSystemSpecificRoll(msg)
+			|| instance.isMessageModuleGenerated(msg)
 		) return;
 
 		await instance.handleIncomingPrivateMessage(msg);
@@ -200,6 +200,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 			if (this.isPublicMessage(msg)
 				|| this.isMessageGameSystemGenerated(msg)
 				|| this.isMessageGameSystemSpecificRoll(msg)
+				|| this.isMessageModuleGenerated(msg)
 			) continue;
 
 			if (msg.isAuthor) {
@@ -437,7 +438,8 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 			'<h3 class="nue">Inviting Your Players</h3>', // core
 			'<span class=\"award-entry\">',               // dnd5e: "[character] has been awarded [...]"
 			'<p class="requestmessage">'                  // wfrp4e: skill tests
-		]
+		];
+
 		return systemGens.some((item) => msg.content.includes(item));
 	}
 
@@ -449,5 +451,14 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		)) return true;
 
 		return false;
+	}
+
+	isMessageModuleGenerated(msg) {
+		const moduleWelcomes = [
+			'<div class="dice-so-nice">',  // Dice So Nice
+			'<p>Welcome to Plutonium!</p>' // Plutonium
+		];
+
+		return moduleWelcomes.some((item) => msg.content.includes(item));
 	}
 }

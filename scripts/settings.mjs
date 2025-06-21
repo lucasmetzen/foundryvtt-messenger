@@ -1,9 +1,8 @@
 import {MODULE_ID} from "./config.mjs";
-import {foundryCoreVersion} from "./helpers/version-helpers.mjs";
 import {LAME} from "./lame.mjs";
 
 export function registerSettings() {
-	const isCoreV12orLower = foundryCoreVersion().major < 13;
+	const isCoreV12orLower = game.release.generation < 13;
 
 	registerSetting('showNotificationForNewWhisper', {
 		name: "LAME.Setting.ShowNotificationForNewWhisper",
