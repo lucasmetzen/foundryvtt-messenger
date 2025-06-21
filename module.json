@@ -6,14 +6,14 @@
   "library": "false",
   "compatibility": {
     "minimum": "12",
-    "verified": "12.331",
-    "maximum": "13.334"
+    "verified": "13.344"
   },
   "authors": [
     {
       "name": "Zandaarl",
       "url": "https://github.com/lucasmetzen",
-      "discord": "zandaarl"
+      "discord": "zandaarl",
+      "flags": {}
     }
   ],
   "esmodules": [
@@ -26,12 +26,14 @@
     {
       "lang": "de",
       "name": "Deutsch",
-      "path": "languages/de.json"
+      "path": "languages/de.json",
+      "flags": {}
     },
     {
       "lang": "en",
       "name": "English",
-      "path": "languages/en.json"
+      "path": "languages/en.json",
+      "flags": {}
     }
   ],
   "url": "#{URL}#",
