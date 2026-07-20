@@ -1,5 +1,3 @@
-import {log} from "./helpers/log.mjs";
-
 const {ApplicationV2, HandlebarsApplicationMixin} = foundry.applications.api;
 
 import {localize, MODULE_ID, MODULE_ICON_CLASSES, TEMPLATE_PARTS_PATH} from "./config.mjs";
@@ -131,27 +129,36 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		registerSettings();
 		registerKeybindings();
 		registerHandlebarsHelpers();
+
 		const instance = new LAME();
-
-		if (game.release.generation > 12) {
-			const additionStylingClass = (game.release.generation === 13) ? 'lame-styling-v13' : 'lame-styling-post-v13';
-			let messengerBtnHtml = `<div id="lame-messenger-button" class="split-button ${additionStylingClass}">
-				<button type="button" class="ui-control icon ${MODULE_ICON_CLASSES}" data-tooltip="LAME.Module.ShortTitle"
-				data-action="TODO" aria-pressed="false" aria-label=""></button>
-			</div>`; // TODO: Either fill in or remove `data-action` attribute if unused.
-			instance.chatbarButton = (game.release.generation < 13)
-				? foundry.applications.parseHTML(messengerBtnHtml)
-				: foundry.utils.parseHTML(messengerBtnHtml);
-			instance.chatbarButton.addEventListener('click', async (_event) => {
-				await game.modules.get(MODULE_ID).instance.show();
-			});
-		}
-
+		instance.chatbarButton = LAME.generateChatbarButton();
 		game.modules.get(MODULE_ID).instance = instance;
-		log('init done')
 	}
 
+	static generateChatbarButton() {
+		let chatbarButtonHtml;
+		if (game.release.generation < 13) {
+			chatbarButtonHtml = `
+				<a aria-label="${localize("LAME.Module.ShortTitle")}" role="button" class="lame-messenger" data-tooltip="LAME.Module.ShortTitle">
+					<i class="${MODULE_ICON_CLASSES}"></i>
+				</a>`;
+		} else {
+			chatbarButtonHtml = `<div id="lame-messenger-button" class="split-button">
+					<button type="button" class="ui-control icon ${MODULE_ICON_CLASSES}" data-tooltip="LAME.Module.ShortTitle"
+					aria-pressed="false"></button>
+				</div>`;
+		}
+		
+		let chatbarButton = (game.release.generation < 13)
+			? foundry.applications.parseHTML(chatbarButtonHtml)
+			: foundry.utils.parseHTML(chatbarButtonHtml);
+		chatbarButton.addEventListener('click', async (_event) => {
+			await game.modules.get(MODULE_ID).instance.show();
+		});
 
+		return chatbarButton;
+	}
+	
 	static onCollapseSidebar(_app, collapsed) {
 		if (game.release.generation < 13) return;
 

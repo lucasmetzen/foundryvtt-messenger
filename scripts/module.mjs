@@ -1,6 +1,6 @@
 import {LAME} from "./lame.mjs";
 import {getSetting} from "./settings.mjs";
-import {localize, MODULE_ICON_CLASSES, MODULE_ID} from "./config.mjs";
+import {MODULE_ICON_CLASSES, MODULE_ID} from "./config.mjs";
 import {log} from "./helpers/log.mjs";
 
 Hooks.once('init', LAME.init); // this feels VERY early in Foundry's initialisation...
@@ -9,9 +9,10 @@ Hooks.once('ready', async () => {
 	const instance = game.modules.get(MODULE_ID).instance;
 	instance.computeUsersData(); // TODO: Look into this again as this doesn't seem to be the intended way...
 	await instance.populateHistoryFromWorldMessages();
-	// TODO: Check if there is a better way for the initial moving of the button to the notification area,
-	//  as we just _assume_ the sidebar is collapsed.
-	// Initially display button in notification area as sidebar is usually collapsed:
+
+	// TODO: Check if there is a better way for the initial adding of the button to the notification area.
+	//   Could use `renderChatLog` (or check if e.g. `renderChatNotification` exists). But I'd say it's fine for now.
+	// Initial display button in notification area if sidebar is collapsed:
 	if (!ui.sidebar.expanded) LAME.onCollapseSidebar(undefined, true);
 });
 
@@ -19,58 +20,30 @@ Hooks.once('ready', async () => {
 Hooks.on('renderSceneControls', (_controls, html) => {
 	if (!getSetting("buttonInSceneControlToolbar") || game.release.generation > 12) return;
 	
-	const messengerBtn = $(
-		`<li class="scene-control control-tool toggle" data-tooltip="LAME.Module.ShortTitle">
-			<i class="${MODULE_ICON_CLASSES}"></i>
-		</li>`
-	);
-	messengerBtn[0].addEventListener('click', async (_event) => {
+	const scenecontrolButtonHtml = `<li class="scene-control control-tool toggle" data-tooltip="LAME.Module.ShortTitle">
+				<i class="${MODULE_ICON_CLASSES}"></i>
+			</li>`;
+	let scenecontrolButton = foundry.applications.parseHTML(scenecontrolButtonHtml);
+	scenecontrolButton.addEventListener('click', async (_event) => {
 		await game.modules.get(MODULE_ID).instance.show();
 	});
 	
-	html.find('.control-tools').find('.scene-control').last().after(messengerBtn);
-});
-
-Hooks.on("collapseSidebar", LAME.onCollapseSidebar);
-Hooks.on("changeSidebarTab", LAME.onChangeSidebarTab);
-
-// v13+: Add button to chat controls (in expanded sidebar element):
-Hooks.on("renderChatLog", async (_app, htmlPassed, _data_ChatInput) => {
-	// This seems to be called only once.
-	
-	if (game.release.generation < 13) return;
-	
-	const html = htmlPassed instanceof jQuery ? htmlPassed[0] : htmlPassed,
-		chatbarButton = game.modules.get(MODULE_ID).instance.chatbarButton;
-	
-	if (game.release.generation === 13) {
-		html.querySelector(".chat-controls").insertAdjacentElement("afterbegin", chatbarButton);
-	} else {
-		// document.querySelector("#chat-controls").before(instance.chatbarButton);
-		document.querySelector("#message-modes").after(chatbarButton); // CORRECT position in sidebar!
-		log('renderChatLog > added button')
-		// TODO: if this works, simplify by only changing the selector as variable.
-	}
+	html.find('.control-tools').find('.scene-control').last().after(scenecontrolButton);
+	log('renderSceneControls > button added')
 });
 
 // v12: Add button to chat controls:
 Hooks.on("renderSidebarTab", async (app, html, _data) => {
 	if (game.release.generation > 12) return;
-	
+
 	if (app.tabName !== "chat" || !getSetting("buttonInChatControls")) return;
 	
-	const messengerBtn = $(
-		`<a aria-label="${localize("LAME.Module.ShortTitle")}" role="button" class="lame-messenger" data-tooltip="LAME.Module.ShortTitle">
-			<i class="${MODULE_ICON_CLASSES}"></i>
-		</a>`
-	);
-	messengerBtn[0].addEventListener('click', async (_event) => {
-		await game.modules.get(MODULE_ID).instance.show();
-	});
-	
-	html.find("#chat-controls select.roll-type-select").after(messengerBtn);
+	const chatbarButton = game.modules.get(MODULE_ID).instance.chatbarButton;
+	html.find("#chat-controls select.roll-type-select").after(chatbarButton);
 });
 
+Hooks.on("collapseSidebar", LAME.onCollapseSidebar);
+Hooks.on("changeSidebarTab", LAME.onChangeSidebarTab);
 Hooks.on("createChatMessage", LAME.onCreateChatMessage);
 
 // Update internal player list when user (dis)connects:
