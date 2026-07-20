@@ -1,3 +1,5 @@
+import {log} from "./helpers/log.mjs";
+
 const {ApplicationV2, HandlebarsApplicationMixin} = foundry.applications.api;
 
 import {localize, MODULE_ID, MODULE_ICON_CLASSES, TEMPLATE_PARTS_PATH} from "./config.mjs";
@@ -129,8 +131,26 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		registerSettings();
 		registerKeybindings();
 		registerHandlebarsHelpers();
-		game.modules.get(MODULE_ID).instance = new LAME();
+		const instance = new LAME();
+
+		if (game.release.generation > 12) {
+			const additionStylingClass = (game.release.generation === 13) ? 'lame-styling-v13' : 'lame-styling-post-v13';
+			let messengerBtnHtml = `<div id="lame-messenger-button" class="split-button ${additionStylingClass}">
+				<button type="button" class="ui-control icon ${MODULE_ICON_CLASSES}" data-tooltip="LAME.Module.ShortTitle"
+				data-action="TODO" aria-pressed="false" aria-label=""></button>
+			</div>`; // TODO: Either fill in or remove `data-action` attribute if unused.
+			instance.chatbarButton = (game.release.generation < 13)
+				? foundry.applications.parseHTML(messengerBtnHtml)
+				: foundry.utils.parseHTML(messengerBtnHtml);
+			instance.chatbarButton.addEventListener('click', async (_event) => {
+				await game.modules.get(MODULE_ID).instance.show();
+			});
+		}
+
+		game.modules.get(MODULE_ID).instance = instance;
+		log('init done')
 	}
+
 
 	static onCollapseSidebar(_app, collapsed) {
 		if (game.release.generation < 13) return;
@@ -152,12 +172,14 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 	static moveChatbarButtonToSidebar(){
 		const chatbarButton = game.modules.get(MODULE_ID).instance.chatbarButton;
-		document.querySelector("#roll-privacy").insertAdjacentElement("afterend", chatbarButton);
+		// TODO: Check if there is a Foundry way to avoid manipulating the WHOLE document...
+		const selector = (game.release.generation < 14) ? "#roll-privacy" : "#message-modes";
+		document.querySelector(selector).after(chatbarButton);
 	}
 
 	static moveChatbarButtonToNotificationArea(){
 		const chatbarButton = game.modules.get(MODULE_ID).instance.chatbarButton;
-		document.getElementById("chat-notifications").append(chatbarButton);
+		document.getElementById("chat-controls").prepend(chatbarButton);
 	}
 
 	static async onCreateChatMessage(msg, _options, _senderUserId) {
@@ -243,6 +265,8 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		const instance = game.modules.get(MODULE_ID).instance;
 		if (!instance.rendered) await instance.render();
 	}
+
+	_canDetach() { return false; }
 
 	scrollHistoryToBottom() {
 		const history = document.getElementById(`${MODULE_ID}-history`);
