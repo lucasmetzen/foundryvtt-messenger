@@ -15,8 +15,15 @@
 }
 
 /* core v13+: When the sidebar is collapsed: */
-#chat-notifications #lame-messenger-button {
+#lame-messenger-button {
     margin-bottom: 8px; /* same as `gap` of core's sidebar menus */
+}
+
+/* core v13+: When chat notifications are set to "pip" and Button is added as standalone: */
+#lame-messenger-button.standalone-for-pip {
+    position: absolute;
+    inset: auto auto 0 calc(100% + 16px);
+    margin-bottom: 0;
 }
 
 /* Counteract parent's `display: flex` which breaks the users section's `float: left`,
