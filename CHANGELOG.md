@@ -1,5 +1,15 @@
 # Lucas's Awesome Messenger Extension, or short: LAME Messenger
 
+## 4.5.0 (2026-07-21): "Is it Foundry VTT v14 already?!"
+### Improvements
+- ✨ Add support for UI changes in Foundry VTT v14
+  - Core v14 changes the DOM structure regarding the position and CSS classes of the sidebar's chat controls (both in expanded and collapsed state which was introduced in v13), breaking the insertion logic of the Messenger button. This is fixed.
+- Since Foundry v13, there is a UI option to set the chat notification to either "chat cards" or "notification pip" (a red dot on the sidebar's chat icon) to notify about incoming messages when the sidebar is collapsed. When set to "chat cards", there are 4 chat control buttons in the bottom left corner next to the sidebar. That's where the messenger button is added when the sidebar is collapsed. When set to "notification pip", these controls are not present when the sidebar is collapsed - which prevented the Messenger button from being shown. It is now always visible in that position for easy access. 
+
+### Maintenance
+- The Messenger button is now more appropriately positioned in the DOM to take advantage of Foundry's flexible visual positioning and styling when the sidebar is collapsed. This allows the button to accommodate possible presences of other module's icons without overlapping and situations were there are less icons than the default "message mode" icons a GM sees.
+- Some refactoring has been made to reduce code duplication which was present to handle differences between v13 and v14.
+
 ## 4.4.0 (2025-06-21): Now _really_ Foundry VTT v13 compatible
 ### Improvements
 - Finalise compatibility verification for Core v13 after its stable release
