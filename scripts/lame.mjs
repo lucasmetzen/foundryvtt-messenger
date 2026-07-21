@@ -1,3 +1,5 @@
+import {log} from "./helpers/log.mjs";
+
 const {ApplicationV2, HandlebarsApplicationMixin} = foundry.applications.api;
 
 import {localize, MODULE_ID, MODULE_ICON_CLASSES, TEMPLATE_PARTS_PATH} from "./config.mjs";
@@ -179,6 +181,8 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 	static moveChatbarButtonToSidebar() {
 		const chatbarButton = game.modules.get(MODULE_ID).instance.chatbarButton;
+		chatbarButton.classList.remove('standalone-for-pip'); // In case this is present.
+		
 		// TODO: Check if there is a Foundry way to use a scoped sidebar part of the DOM instead of document.
 		const selector = (game.release.generation < 14) ? "#roll-privacy" : "#message-modes";
 		document.querySelector(selector).after(chatbarButton);
@@ -186,7 +190,36 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 	static moveChatbarButtonToNotificationArea() {
 		const chatbarButton = game.modules.get(MODULE_ID).instance.chatbarButton;
-		document.getElementById("chat-controls").prepend(chatbarButton);
+		if (game.settings.get('core', 'uiConfig').chatNotifications === 'pip') {
+			LAME.addChatbarButtonToNotificationAreaAsStandalone();
+		} else {
+			document.getElementById("chat-controls").prepend(chatbarButton);
+		}
+	}
+
+	// v13+: Add/Remove standalone Messenger button when chat notification is set to pip/cards, respectively.
+	static onClientSettingChanged(settingPath, options) {
+		if (settingPath !== "core.uiConfig" || game.release.generation < 13) return;
+		
+		const instance = game.modules.get(MODULE_ID).instance,
+			chatbarButton = instance.chatbarButton;
+		
+		if (options.chatNotifications === "pip") {
+			LAME.addChatbarButtonToNotificationAreaAsStandalone();
+			log("Chat Notifications setting changed to 'pip': added Messenger button as standalone to notifications area.")
+		} else if (options.chatNotifications === "cards") {
+			chatbarButton.classList.remove('standalone-for-pip');
+			// Foundry calls `renderChatInput` hook before `clientSettingChanged` to render the `#chat-controls` element.
+			//   We can therefore move the button ourselves without using `Hooking.once("renderChatInput")` for timing.
+			LAME.moveChatbarButtonToNotificationArea();
+			log("Chat Notifications setting changed to 'cards': removed standalone Messenger button from notifications area.")
+		}
+	}
+
+	static addChatbarButtonToNotificationAreaAsStandalone() {
+		const chatbarButton = game.modules.get(MODULE_ID).instance.chatbarButton;
+		document.getElementById("chat-notifications").append(chatbarButton);
+		chatbarButton.classList.add('standalone-for-pip');
 	}
 
 	static async onCreateChatMessage(msg, _options, _senderUserId) {
