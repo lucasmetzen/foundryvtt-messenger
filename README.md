@@ -2,7 +2,7 @@
 
 LAME Messenger for Foundry VTT provides a simple messenger interface to easily whisper messages.
 
-![Foundry VTT version compatibility: v12-13](https://img.shields.io/badge/Foundry_VTT-v12--13-informational?logo=foundryvirtualtabletop)
+![Foundry VTT version compatibility: v12-14](https://img.shields.io/badge/Foundry_VTT-v12--14-informational?logo=foundryvirtualtabletop)
 [![GitHub issues](https://img.shields.io/github/issues/lucasmetzen/foundryvtt-messenger/bug)](https://github.com/lucasmetzen/foundryvtt-messenger/issues/)
 ![Latest release download count](https://img.shields.io/github/downloads/lucasmetzen/foundryvtt-messenger/latest/module.zip?label=latest+release+downloads)
 ![Forge installs](https://img.shields.io/badge/dynamic/json?label=Forge%20Installs&query=package.installs&suffix=%25&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Flame-messenger&colorB=4aa94a)
@@ -22,17 +22,21 @@ If you answered at least one of those questions with "Yes", then LAME Messenger 
 
 ## ✨ Features
 
-- Dedicated window for sending and receiving whispers with chat history
+- Dedicated messenger-style window for sending and receiving whispers with chat history
 - Send a message to multiple recipients at the same time:  
   ![message sent to two users](https://github.com/lucasmetzen/foundryvtt-messenger/blob/main/docs/README-message-sent-to-two-users.webp?raw=true)
-- Visual and auditory notification for incoming whisper (optional)
-- No need to type `/whisper` command and recipient's username in Foundry VTT's chat box
+- Visual and optional acoustic notifications (`pst-pst` sound) for incoming whisper
+- Fast access to the messenger window when you need it:
+  - Via configurable keyboard shortcut, `Ctrl-M` by default (`Cmd-M` on MacOS)
+  - Via button in the chat sidebar:
+    ![button in chat sidebar](https://github.com/lucasmetzen/foundryvtt-messenger/blob/main/docs/README-button-in-chat-sidebar.webp?raw=true)
+  - The button is always accessible even if the sidebar is collapsed or shows a tab other than Chat, as it is moved to the bottom left besides the sidebar.
+- Messenger window opens upon receiving a whisper (optional)
 - Shows a user's avatar or associated actor's image in addition to their name if set in world's user configuration:  
   ![message sent to two users](https://github.com/lucasmetzen/foundryvtt-messenger/blob/main/docs/README-user-avatar.webp?raw=true)
-- Messenger window opens upon receiving a whisper (optional)
 - Messages are only stored once (by core Foundry VTT), and processed by LAME Messenger to populate its history in memory: no additional disc space is used.
 
-Note: The module is not a replacement for Foundry VTT's built-in whisper messaging but is an additional graphical interface.
+Please note: The module is not a replacement for Foundry VTT's built-in whisper messaging but is an additional graphical interface.
 
 
 ## ⚡️ Installation
@@ -46,16 +50,18 @@ This module can be installed automatically from the Foundry Virtual Tabletop mod
 
 - Show notification message for incoming whisper
 - Notification message is displayed until dismissed
-- Show currently disconnected users in user selection:  
+- Play notification `pst-pst` sound for incoming whisper
+- Show currently disconnected users in user selection (grayed out):  
   ![disconnected users shown](https://github.com/lucasmetzen/foundryvtt-messenger/blob/main/docs/README-disconnected-users-shown.webp?raw=true)
-- v12 only: Show button in chat sidebar (next to the roll type selector) to open LAME messenger window (shown by default):  
-  ![button in chat sidebar](https://github.com/lucasmetzen/foundryvtt-messenger/blob/main/docs/README-button-in-chat-sidebar.webp?raw=true)
-- v12 only: Show button in scene controls toolbar (left side of screen) to open LAME messenger window:  
-  ![button in scene controls toolbar](https://github.com/lucasmetzen/foundryvtt-messenger/blob/main/docs/README-button-in-scene-controls-toolbar.webp?raw=true)
 - Customisable keyboard shortcut for opening the window (via "Configure Controls" dialogue)
 
+#### Foundry VTT v12 only:
+- Show button in chat sidebar (next to the roll type selector) to open LAME messenger window (shown by default, and non-optional starting with Foundry v13)  
+- Show button in scene controls toolbar (left side of screen) to open LAME messenger window:  
+  ![button in scene controls toolbar](https://github.com/lucasmetzen/foundryvtt-messenger/blob/main/docs/README-button-in-scene-controls-toolbar.webp?raw=true)
+
 ### GM setting
-- Select users to be excluded as recipients for all users (e.g. if a user is used to record screen for streaming)
+- Select users to be excluded as recipients for all users (e.g. if a dedicated user is used to record the screen for streaming)
 
 
 ## 🚧 Current limitations
@@ -69,6 +75,7 @@ This module can be installed automatically from the Foundry Virtual Tabletop mod
 
 - Tabbed chat for each user
 - Configurable notification sound
+- Detachable messenger window (pop-out browser window)
 - Configurable keyboard shortcuts (insert line break while typing message, and send message)
 - Option to show the character's portrait image instead of the user's avatar if the user has an associated actor
 - Possibly allow user defined RegularExpressions to filter certain received whispers. 
