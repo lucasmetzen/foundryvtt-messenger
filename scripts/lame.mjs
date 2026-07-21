@@ -177,14 +177,14 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		else LAME.moveChatbarButtonToNotificationArea();
 	}
 
-	static moveChatbarButtonToSidebar(){
+	static moveChatbarButtonToSidebar() {
 		const chatbarButton = game.modules.get(MODULE_ID).instance.chatbarButton;
-		// TODO: Check if there is a Foundry way to avoid manipulating the WHOLE document...
+		// TODO: Check if there is a Foundry way to use a scoped sidebar part of the DOM instead of document.
 		const selector = (game.release.generation < 14) ? "#roll-privacy" : "#message-modes";
 		document.querySelector(selector).after(chatbarButton);
 	}
 
-	static moveChatbarButtonToNotificationArea(){
+	static moveChatbarButtonToNotificationArea() {
 		const chatbarButton = game.modules.get(MODULE_ID).instance.chatbarButton;
 		document.getElementById("chat-controls").prepend(chatbarButton);
 	}
