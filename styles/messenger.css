@@ -14,13 +14,9 @@
     bottom: 1px;
 }
 
-/* v13: When the sidebar is collapsed: */
+/* core v13+: When the sidebar is collapsed: */
 #chat-notifications #lame-messenger-button {
-    position: absolute;
-    inset: auto auto 0 calc(100% + 16px); /* core's "Chat Notifications" is set to `pips` */
-}
-body.vtt:has(#chat-notifications #roll-privacy) #chat-notifications #lame-messenger-button {
-    inset: auto auto 144px calc(100% + 16px); /* bottom = 4 * --control-size (=32px) + 16px */
+    margin-bottom: 8px; /* same as `gap` of core's sidebar menus */
 }
 
 /* Counteract parent's `display: flex` which breaks the users section's `float: left`,

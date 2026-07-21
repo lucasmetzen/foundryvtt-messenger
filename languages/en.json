@@ -39,7 +39,7 @@
     "UserIsOffline": "Can't send to user as they are offline.",
     "Keybinding": {
       "OpenMessengerWindow": "Open LAME Messenger window",
-      "OpenMessengerWindowHint": "By default, the assigned Ctrl key is the left one. You can hover also assign a key combination with Right Ctrl, even though it might look the same in the input field."
+      "OpenMessengerWindowHint": "By default, the assigned Ctrl key is the left one. You can also assign a key combination with Right Ctrl, even though it might look the same in the input field."
     }
   }
 }
