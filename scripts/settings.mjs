@@ -1,5 +1,5 @@
 import {MODULE_ID} from "./config.mjs";
-import {LAME} from "./lame.mjs";
+import {Lame, LAME} from "./lame.mjs";
 
 export function registerSettings() {
 	const isCoreV12orLower = game.release.generation < 13;
@@ -97,7 +97,7 @@ export function registerSettings() {
 		default: [],
 		requiresReload: false,
 		onChange: async() => {
-			await LAME.computeUsersDataAndRenderPartial();
+			await Lame.computeUsersDataAndRenderPartial();
 		}
 	});
 }

@@ -1,5 +1,5 @@
 import {localize, MODULE_ID} from "./config.mjs";
-import {LAME} from "./lame.mjs";
+import {Lame} from "./lame.mjs";
 
 export function registerKeybindings() {
 	registerKeybinding("openMessengerWindow", {
@@ -13,7 +13,7 @@ export function registerKeybindings() {
 			}
 		],
 		onDown: async() => {
-			await game.modules.get(MODULE_ID).instance.show();
+			await Lame.show();
 			return true; // Consume event and prevent execution of other keybind actions.
 		},
 		precedence: CONST.KEYBINDING_PRECEDENCE.NORMAL

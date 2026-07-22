@@ -1,4 +1,4 @@
-import {localize, MODULE_ID, MODULE_ICON_CLASSES, TEMPLATE_PARTS_PATH, SOUNDS_PATH} from "./config.mjs";
+import {localize, MODULE_ICON_CLASSES, TEMPLATE_PARTS_PATH, SOUNDS_PATH} from "./config.mjs";
 import {getSetting, registerSettings} from "./settings.mjs";
 import {registerKeybindings} from "./keybindings.mjs";
 import {registerHandlebarsHelpers} from "./helpers/handlebars-helpers.mjs";
@@ -7,6 +7,13 @@ import {i18nLongConjunct} from "./helpers/i18n.mjs";
 import {log} from "./helpers/log.mjs";
 
 const {ApplicationV2, HandlebarsApplicationMixin} = foundry.applications.api;
+
+/**
+ * Expose the LAME HandlebarsApplication instance.
+ * This simplifies accessing it via `game.modules.get(MODULE_ID).instance`.
+ * @type {LAME}
+ */
+export let Lame;
 
 export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
@@ -52,16 +59,16 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 
 	/**
-	 * The button in the chat sidebar to open the Messenger.
-	 * @type {HTMLDivElement}
+	 * The object holding HTML elements of LAME's UI for easy access.
+	 * @type {{chatbarButton: HTMLDivElement}}
 	 */
-	static chatbarButton;
+	ui = {};
 
 	/**
 	 * The internally relevant users' data. Populated by {@link computeUsersData}.
 	 * @type {Object || Array}
 	 */
-	static users;
+	users;
 
 	/** @inheritDoc */
 	get title() {
@@ -131,12 +138,11 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		registerKeybindings();
 		registerHandlebarsHelpers();
 
-		const instance = new LAME();
-		instance.chatbarButton = LAME.generateChatbarButton();
-		game.modules.get(MODULE_ID).instance = instance;
+		Lame = new LAME();
+		Lame.ui.chatbarButton = Lame.generateChatbarButton(); // TODO: Rename it as it's not always in the chatbar.
 	}
 
-	static generateChatbarButton() {
+	generateChatbarButton() {
 		let chatbarButtonHtml;
 		if (game.release.generation < 13) {
 			chatbarButtonHtml = `
@@ -154,83 +160,77 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 			? foundry.applications.parseHTML(chatbarButtonHtml)
 			: foundry.utils.parseHTML(chatbarButtonHtml);
 		chatbarButton.addEventListener('click', async (_event) => {
-			await game.modules.get(MODULE_ID).instance.show();
+			await Lame.show();
 		});
 
 		return chatbarButton;
 	}
 
-	static onCollapseSidebar(_app, collapsed) {
+	onCollapseSidebar(_app, collapsed) {
 		if (game.release.generation < 13) return;
 
 		// Inspired by ChatLog#_toggleNotifications()
 		const embedInput = (!collapsed && ui.chat.active);
-		if (embedInput) LAME.moveChatbarButtonToSidebar()
-		else LAME.moveChatbarButtonToNotificationArea();
+		// Here, as in all static functions (needed for Hooks), `this` is the Hook object.
+		if (embedInput) Lame.moveChatbarButtonToSidebar()
+		else Lame.moveChatbarButtonToNotificationArea();
 	}
 
-	static onChangeSidebarTab(app) {
+	onChangeSidebarTab(app) {
 		if (game.release.generation < 13) return;
 
 		// TODO: Check if this can be done differently without triggering so many times, possibly not doing anything at all.
 		//  Consider adding boolean member #chatbarVisible or similar.
-		if (app.id === "chat") LAME.moveChatbarButtonToSidebar()
-		else LAME.moveChatbarButtonToNotificationArea();
+		if (app.id === "chat") Lame.moveChatbarButtonToSidebar()
+		else Lame.moveChatbarButtonToNotificationArea();
 	}
 
-	static moveChatbarButtonToSidebar() {
-		const chatbarButton = game.modules.get(MODULE_ID).instance.chatbarButton;
-		chatbarButton.classList.remove('standalone-for-pip'); // In case this is present.
+	moveChatbarButtonToSidebar() {
+		this.ui.chatbarButton.classList.remove('standalone-for-pip'); // In case this is present.
 
 		// TODO: Check if there is a Foundry way to use a scoped sidebar part of the DOM instead of document.
 		const selector = (game.release.generation < 14) ? "#roll-privacy" : "#message-modes";
-		document.querySelector(selector).after(chatbarButton);
+		document.querySelector(selector).after(this.ui.chatbarButton);
 	}
 
-	static moveChatbarButtonToNotificationArea() {
-		const chatbarButton = game.modules.get(MODULE_ID).instance.chatbarButton;
+	moveChatbarButtonToNotificationArea() {
 		if (game.settings.get('core', 'uiConfig').chatNotifications === 'pip') {
-			LAME.addChatbarButtonToNotificationAreaAsStandalone();
+			Lame.addChatbarButtonToNotificationAreaAsStandalone();
 		} else {
-			document.getElementById("chat-controls").prepend(chatbarButton);
+			document.getElementById("chat-controls").prepend(this.ui.chatbarButton);
 		}
 	}
 
 	// v13+: Add/Remove standalone Messenger button when chat notification is set to pip/cards, respectively.
-	static onClientSettingChanged(settingPath, options) {
+	onClientSettingChanged(settingPath, options) {
 		if (settingPath !== "core.uiConfig" || game.release.generation < 13) return;
 
-		const instance = game.modules.get(MODULE_ID).instance,
-			chatbarButton = instance.chatbarButton;
-
 		if (options.chatNotifications === "pip") {
-			LAME.addChatbarButtonToNotificationAreaAsStandalone();
+			Lame.addChatbarButtonToNotificationAreaAsStandalone();
 			log("Chat Notifications setting changed to 'pip': added Messenger button as standalone to notifications area.")
 		} else if (options.chatNotifications === "cards") {
-			chatbarButton.classList.remove('standalone-for-pip');
+			Lame.ui.chatbarButton.classList.remove('standalone-for-pip'); // Works.
 			// Foundry calls `renderChatInput` hook before `clientSettingChanged` to render the `#chat-controls` element.
 			//   We can therefore move the button ourselves without using `Hooking.once("renderChatInput")` for timing.
-			LAME.moveChatbarButtonToNotificationArea();
+			Lame.moveChatbarButtonToNotificationArea();
 			log("Chat Notifications setting changed to 'cards': removed standalone Messenger button from notifications area.")
 		}
 	}
 
-	static addChatbarButtonToNotificationAreaAsStandalone() {
-		const chatbarButton = game.modules.get(MODULE_ID).instance.chatbarButton;
-		document.getElementById("chat-notifications").append(chatbarButton);
-		chatbarButton.classList.add('standalone-for-pip');
+	addChatbarButtonToNotificationAreaAsStandalone() {
+		document.getElementById("chat-notifications").append(Lame.ui.chatbarButton);
+		Lame.ui.chatbarButton.classList.add('standalone-for-pip');
 	}
 
-	static async onCreateChatMessage(msg, _options, _senderUserId) {
-		const instance = game.modules.get(MODULE_ID).instance;
-		if (instance.isPublicMessage(msg)
-			|| !instance.isWhisperForMe(msg)
-			|| instance.isMessageGameSystemGenerated(msg)
-			|| instance.isMessageGameSystemSpecificRoll(msg)
-			|| instance.isMessageModuleGenerated(msg)
+	async onCreateChatMessage(msg, _options, _senderUserId) {
+		if (Lame.isPublicMessage(msg)
+			|| !Lame.isWhisperForMe(msg)
+			|| Lame.isMessageGameSystemGenerated(msg)
+			|| Lame.isMessageGameSystemSpecificRoll(msg)
+			|| Lame.isMessageModuleGenerated(msg)
 		) return;
 
-		await instance.handleIncomingPrivateMessage(msg);
+		await Lame.handleIncomingPrivateMessage(msg);
 	}
 
 	beautifyHistory() {
@@ -301,14 +301,13 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 	// Without this, when pressing Ctrl+M while window is already shown, the window is incorrectly re-rendered fully.
 	async show() {
-		const instance = game.modules.get(MODULE_ID).instance;
-		if (!instance.rendered) await instance.render();
+		if (!this.rendered) await this.render();
 	}
 
 	_canDetach() { return false; }
 
 	scrollHistoryToBottom() {
-		const history = document.getElementById(`${MODULE_ID}-history`);
+		const history = this.parts.history;
 		history.scrollTop = history.scrollHeight;
 	}
 
@@ -364,10 +363,9 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		this.users = usersData;
 	}
 
-	static async computeUsersDataAndRenderPartial() {
-		const instance = game.modules.get(MODULE_ID).instance;
-		instance.computeUsersData();
-		await instance.renderPart('users');
+	async computeUsersDataAndRenderPartial() {
+		Lame.computeUsersData();
+		await Lame.renderPart('users');
 	}
 
 	sendWhisperTo(userIds, msg) {
