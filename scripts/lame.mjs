@@ -1,13 +1,12 @@
-import {log} from "./helpers/log.mjs";
-
-const {ApplicationV2, HandlebarsApplicationMixin} = foundry.applications.api;
-
-import {localize, MODULE_ID, MODULE_ICON_CLASSES, TEMPLATE_PARTS_PATH} from "./config.mjs";
+import {localize, MODULE_ID, MODULE_ICON_CLASSES, TEMPLATE_PARTS_PATH, SOUNDS_PATH} from "./config.mjs";
 import {getSetting, registerSettings} from "./settings.mjs";
 import {registerKeybindings} from "./keybindings.mjs";
 import {registerHandlebarsHelpers} from "./helpers/handlebars-helpers.mjs";
 import {formatDateYYYYMMDD, formatTimeHHMMSS, isToday} from "./helpers/date-time-helpers.mjs";
 import {i18nLongConjunct} from "./helpers/i18n.mjs";
+import {log} from "./helpers/log.mjs";
+
+const {ApplicationV2, HandlebarsApplicationMixin} = foundry.applications.api;
 
 export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
@@ -150,7 +149,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 					aria-pressed="false"></button>
 				</div>`;
 		}
-		
+
 		let chatbarButton = (game.release.generation < 13)
 			? foundry.applications.parseHTML(chatbarButtonHtml)
 			: foundry.utils.parseHTML(chatbarButtonHtml);
@@ -160,7 +159,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 		return chatbarButton;
 	}
-	
+
 	static onCollapseSidebar(_app, collapsed) {
 		if (game.release.generation < 13) return;
 
@@ -182,7 +181,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	static moveChatbarButtonToSidebar() {
 		const chatbarButton = game.modules.get(MODULE_ID).instance.chatbarButton;
 		chatbarButton.classList.remove('standalone-for-pip'); // In case this is present.
-		
+
 		// TODO: Check if there is a Foundry way to use a scoped sidebar part of the DOM instead of document.
 		const selector = (game.release.generation < 14) ? "#roll-privacy" : "#message-modes";
 		document.querySelector(selector).after(chatbarButton);
@@ -200,10 +199,10 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	// v13+: Add/Remove standalone Messenger button when chat notification is set to pip/cards, respectively.
 	static onClientSettingChanged(settingPath, options) {
 		if (settingPath !== "core.uiConfig" || game.release.generation < 13) return;
-		
+
 		const instance = game.modules.get(MODULE_ID).instance,
 			chatbarButton = instance.chatbarButton;
-		
+
 		if (options.chatNotifications === "pip") {
 			LAME.addChatbarButtonToNotificationAreaAsStandalone();
 			log("Chat Notifications setting changed to 'pip': added Messenger button as standalone to notifications area.")
@@ -441,7 +440,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		 * According to browser network inspection, the file is at least not requested multiple times.
 		 */
 		await game.audio.create({
-			src: "modules/lame-messenger/sounds/pst-pst.ogg",
+			src: `${SOUNDS_PATH}/pst-pst.ogg`,
 			context: game.audio.interface,
 			singleton: false,
 			preload: true,
