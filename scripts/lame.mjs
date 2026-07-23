@@ -60,7 +60,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 	/**
 	 * The object holding HTML elements of LAME's UI for easy access.
-	 * @type {{chatbarButton: HTMLDivElement}}
+	 * @type {{chatbarButton: HTMLDivElement, messageField: HTMLDivElement}}
 	 */
 	ui = {};
 
@@ -110,15 +110,14 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 		// Attach actions to elements:
 		// TODO: Adopt AppV2's "actions" instead.
-		const html = $(this.element);
-
-		// TODO: try to avoid using jQuery, e.g.:
-		// this.element.querySelector("input[name=something]").addEventListener("click", /* ... */);
-
-		html.find('button.send').click(async _event => {
-			await this.sendMessage(html);
+		this.element.querySelector('button.send').addEventListener('click', async () => {
+			await this.sendMessage();
 		});
-		html.find('.message').on("keypress", event => this._onKeyPressEvent(event, html));
+
+		Lame.ui.messageField = this.element.querySelector('.message');
+		Lame.ui.messageField.addEventListener('keypress', async (event) => {
+			await this._onKeyPressEvent(event);
+		});
 
 		this.scrollHistoryToBottom();
 	}
@@ -377,26 +376,25 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		ChatMessage.create(chatData);
 	}
 
-	async _onKeyPressEvent(event, html) {
+	async _onKeyPressEvent(event) {
 		if ((event.code === "Enter") && event.ctrlKey) {
-			await this.sendMessage(html);
+			await this.sendMessage();
 		}
 	}
 
-	async sendMessage(html) {
+	async sendMessage() {
 		// Get message text:
-		const messageField = html.find('.message'),
-			messageText = messageField.val();
+		const messageText = Lame.ui.messageField.value;
 		if (messageText.length === 0) {
 			ui.notifications.error(localize("LAME.Notification.NoMessageToSend"));
 			return;
 		}
 
 		// Get selected user(s):
-		const checkedUserElements = html.find('input[id^="lame-messenger-user-"]:checked');
+		const checkedUserElements = document.querySelectorAll('input[id^="lame-messenger-user-"]:checked');
 		let selectedUserIds = [];
-		checkedUserElements.each(function () {
-			selectedUserIds.push(this.id.replace('lame-messenger-user-', ''));
+		checkedUserElements.forEach((user) => {
+			selectedUserIds.push(user.id.replace('lame-messenger-user-', ''));
 		});
 		if (selectedUserIds.length === 0) {
 			ui.notifications.error(localize("LAME.Notification.NoRecipientSelected"));
@@ -410,7 +408,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		await this.renderHistoryPartial();
 
 		// Clear message input field for next text:
-		messageField.val('');
+		Lame.ui.messageField.value = '';
 	}
 
 	async handleIncomingPrivateMessage(msg) {
