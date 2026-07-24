@@ -1,5 +1,5 @@
 import {MODULE_ID} from "./config.mjs";
-import {LAME} from "./lame.mjs";
+import {Lame} from "./lame.mjs";
 
 export function registerSettings() {
 	const isCoreV12orLower = game.release.generation < 13;
@@ -33,7 +33,7 @@ export function registerSettings() {
 		default: true,
 		requiresReload: false,
 		onChange: value => {
-			game.modules.get(MODULE_ID).instance.settings.playNotificationSound = value;
+			Lame.settings.playNotificationSound = value;
 		}
 	});
 
@@ -68,7 +68,7 @@ export function registerSettings() {
 		type: Boolean,
 		default: false,
 		onChange: async() => {
-			await LAME.computeUsersDataAndRenderPartial();
+			await Lame.computeUsersDataAndRenderPartial();
 		}
 	});
 
@@ -97,7 +97,7 @@ export function registerSettings() {
 		default: [],
 		requiresReload: false,
 		onChange: async() => {
-			await LAME.computeUsersDataAndRenderPartial();
+			await Lame.computeUsersDataAndRenderPartial();
 		}
 	});
 }

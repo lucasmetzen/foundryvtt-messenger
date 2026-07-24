@@ -1,13 +1,19 @@
-import {log} from "./helpers/log.mjs";
-
-const {ApplicationV2, HandlebarsApplicationMixin} = foundry.applications.api;
-
-import {localize, MODULE_ID, MODULE_ICON_CLASSES, TEMPLATE_PARTS_PATH} from "./config.mjs";
+import {localize, MODULE_ICON_CLASSES, TEMPLATE_PARTS_PATH, SOUNDS_PATH} from "./config.mjs";
 import {getSetting, registerSettings} from "./settings.mjs";
 import {registerKeybindings} from "./keybindings.mjs";
 import {registerHandlebarsHelpers} from "./helpers/handlebars-helpers.mjs";
 import {formatDateYYYYMMDD, formatTimeHHMMSS, isToday} from "./helpers/date-time-helpers.mjs";
 import {i18nLongConjunct} from "./helpers/i18n.mjs";
+import {log} from "./helpers/log.mjs";
+
+const {ApplicationV2, HandlebarsApplicationMixin} = foundry.applications.api;
+
+/**
+ * Expose the LAME HandlebarsApplication instance.
+ * This simplifies accessing it via `game.modules.get(MODULE_ID).instance`.
+ * @type {LAME}
+ */
+export let Lame;
 
 export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
@@ -53,16 +59,16 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 
 	/**
-	 * The button in the chat sidebar to open the Messenger.
-	 * @type {HTMLDivElement}
+	 * The object holding HTML elements of LAME's UI for easy access.
+	 * @type {{chatbarButton: HTMLDivElement, messageField: HTMLDivElement}}
 	 */
-	static chatbarButton;
+	ui = {};
 
 	/**
 	 * The internally relevant users' data. Populated by {@link computeUsersData}.
 	 * @type {Object || Array}
 	 */
-	static users;
+	users;
 
 	/** @inheritDoc */
 	get title() {
@@ -80,7 +86,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	async _preparePartContext(partId, context) {
 		switch ( partId ) {
 			case "history":
-				context.history = this.beautifyHistory();
+				context.history = this.#beautifyHistory();
 				break;
 			case "users":
 				context.users = this.users;
@@ -104,17 +110,16 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 		// Attach actions to elements:
 		// TODO: Adopt AppV2's "actions" instead.
-		const html = $(this.element);
-
-		// TODO: try to avoid using jQuery, e.g.:
-		// this.element.querySelector("input[name=something]").addEventListener("click", /* ... */);
-
-		html.find('button.send').click(async _event => {
-			await this.sendMessage(html);
+		this.element.querySelector('button.send').addEventListener('click', async () => {
+			await this.#sendMessage();
 		});
-		html.find('.message').on("keypress", event => this._onKeyPressEvent(event, html));
 
-		this.scrollHistoryToBottom();
+		Lame.ui.messageField = this.element.querySelector('.message');
+		Lame.ui.messageField.addEventListener('keypress', async (event) => {
+			await this._onKeyPressEvent(event);
+		});
+
+		this.#scrollHistoryToBottom();
 	}
 
 	static async onSubmit(_event, _form, _formData) { }
@@ -132,12 +137,11 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		registerKeybindings();
 		registerHandlebarsHelpers();
 
-		const instance = new LAME();
-		instance.chatbarButton = LAME.generateChatbarButton();
-		game.modules.get(MODULE_ID).instance = instance;
+		Lame = new LAME();
+		Lame.ui.chatbarButton = Lame.#generateChatbarButton(); // TODO: Rename it as it's not always in the chatbar.
 	}
 
-	static generateChatbarButton() {
+	#generateChatbarButton() {
 		let chatbarButtonHtml;
 		if (game.release.generation < 13) {
 			chatbarButtonHtml = `
@@ -150,91 +154,85 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 					aria-pressed="false"></button>
 				</div>`;
 		}
-		
+
 		let chatbarButton = (game.release.generation < 13)
 			? foundry.applications.parseHTML(chatbarButtonHtml)
 			: foundry.utils.parseHTML(chatbarButtonHtml);
 		chatbarButton.addEventListener('click', async (_event) => {
-			await game.modules.get(MODULE_ID).instance.show();
+			await Lame.show();
 		});
 
 		return chatbarButton;
 	}
-	
-	static onCollapseSidebar(_app, collapsed) {
+
+	onCollapseSidebar(_app, collapsed) {
 		if (game.release.generation < 13) return;
 
 		// Inspired by ChatLog#_toggleNotifications()
 		const embedInput = (!collapsed && ui.chat.active);
-		if (embedInput) LAME.moveChatbarButtonToSidebar()
-		else LAME.moveChatbarButtonToNotificationArea();
+		// Here, as in all static functions (needed for Hooks), `this` is the Hook object.
+		if (embedInput) Lame.#moveChatbarButtonToSidebar()
+		else Lame.#moveChatbarButtonToNotificationArea();
 	}
 
-	static onChangeSidebarTab(app) {
+	onChangeSidebarTab(app) {
 		if (game.release.generation < 13) return;
 
 		// TODO: Check if this can be done differently without triggering so many times, possibly not doing anything at all.
 		//  Consider adding boolean member #chatbarVisible or similar.
-		if (app.id === "chat") LAME.moveChatbarButtonToSidebar()
-		else LAME.moveChatbarButtonToNotificationArea();
+		if (app.id === "chat") Lame.#moveChatbarButtonToSidebar()
+		else Lame.#moveChatbarButtonToNotificationArea();
 	}
 
-	static moveChatbarButtonToSidebar() {
-		const chatbarButton = game.modules.get(MODULE_ID).instance.chatbarButton;
-		chatbarButton.classList.remove('standalone-for-pip'); // In case this is present.
-		
+	#moveChatbarButtonToSidebar() {
+		this.ui.chatbarButton.classList.remove('standalone-for-pip'); // In case this is present.
+
 		// TODO: Check if there is a Foundry way to use a scoped sidebar part of the DOM instead of document.
 		const selector = (game.release.generation < 14) ? "#roll-privacy" : "#message-modes";
-		document.querySelector(selector).after(chatbarButton);
+		document.querySelector(selector).after(this.ui.chatbarButton);
 	}
 
-	static moveChatbarButtonToNotificationArea() {
-		const chatbarButton = game.modules.get(MODULE_ID).instance.chatbarButton;
+	#moveChatbarButtonToNotificationArea() {
 		if (game.settings.get('core', 'uiConfig').chatNotifications === 'pip') {
-			LAME.addChatbarButtonToNotificationAreaAsStandalone();
+			Lame.addChatbarButtonToNotificationAreaAsStandalone();
 		} else {
-			document.getElementById("chat-controls").prepend(chatbarButton);
+			document.getElementById("chat-controls").prepend(this.ui.chatbarButton);
 		}
 	}
 
 	// v13+: Add/Remove standalone Messenger button when chat notification is set to pip/cards, respectively.
-	static onClientSettingChanged(settingPath, options) {
+	onClientSettingChanged(settingPath, options) {
 		if (settingPath !== "core.uiConfig" || game.release.generation < 13) return;
-		
-		const instance = game.modules.get(MODULE_ID).instance,
-			chatbarButton = instance.chatbarButton;
-		
+
 		if (options.chatNotifications === "pip") {
-			LAME.addChatbarButtonToNotificationAreaAsStandalone();
+			Lame.addChatbarButtonToNotificationAreaAsStandalone();
 			log("Chat Notifications setting changed to 'pip': added Messenger button as standalone to notifications area.")
 		} else if (options.chatNotifications === "cards") {
-			chatbarButton.classList.remove('standalone-for-pip');
+			Lame.ui.chatbarButton.classList.remove('standalone-for-pip'); // Works.
 			// Foundry calls `renderChatInput` hook before `clientSettingChanged` to render the `#chat-controls` element.
 			//   We can therefore move the button ourselves without using `Hooking.once("renderChatInput")` for timing.
-			LAME.moveChatbarButtonToNotificationArea();
+			Lame.#moveChatbarButtonToNotificationArea();
 			log("Chat Notifications setting changed to 'cards': removed standalone Messenger button from notifications area.")
 		}
 	}
 
-	static addChatbarButtonToNotificationAreaAsStandalone() {
-		const chatbarButton = game.modules.get(MODULE_ID).instance.chatbarButton;
-		document.getElementById("chat-notifications").append(chatbarButton);
-		chatbarButton.classList.add('standalone-for-pip');
+	addChatbarButtonToNotificationAreaAsStandalone() {
+		document.getElementById("chat-notifications").append(Lame.ui.chatbarButton);
+		Lame.ui.chatbarButton.classList.add('standalone-for-pip');
 	}
 
-	static async onCreateChatMessage(msg, _options, _senderUserId) {
-		const instance = game.modules.get(MODULE_ID).instance;
-		if (instance.isPublicMessage(msg)
-			|| !instance.isWhisperForMe(msg)
-			|| instance.isMessageGameSystemGenerated(msg)
-			|| instance.isMessageGameSystemSpecificRoll(msg)
-			|| instance.isMessageModuleGenerated(msg)
+	async onCreateChatMessage(msg, _options, _senderUserId) {
+		if (Lame.#isPublicMessage(msg)
+			|| !Lame.#isWhisperForMe(msg)
+			|| Lame.#isMessageGameSystemGenerated(msg)
+			|| Lame.#isMessageGameSystemSpecificRoll(msg)
+			|| Lame.#isMessageModuleGenerated(msg)
 		) return;
 
-		await instance.handleIncomingPrivateMessage(msg);
+		await Lame.#handleIncomingPrivateMessage(msg);
 	}
 
-	beautifyHistory() {
+	#beautifyHistory() {
 		// TODO: I think this is called too often and the output should be cached if it isn't already.
 		let beautified = [];
 
@@ -259,18 +257,18 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	async populateHistoryFromWorldMessages() {
 		const worldMessages = game.collections.get("ChatMessage").contents;
 		for (const msg of worldMessages) {
-			if (this.isPublicMessage(msg)
-				|| this.isMessageGameSystemGenerated(msg)
-				|| this.isMessageGameSystemSpecificRoll(msg)
-				|| this.isMessageModuleGenerated(msg)
+			if (this.#isPublicMessage(msg)
+				|| this.#isMessageGameSystemGenerated(msg)
+				|| this.#isMessageGameSystemSpecificRoll(msg)
+				|| this.#isMessageModuleGenerated(msg)
 			) continue;
 
 			if (msg.isAuthor) {
-				this.addOutgoingMessageToHistory(msg);
+				this.#addOutgoingMessageToHistory(msg);
 				continue;
 			}
 
-			if (this.isWhisperForMe(msg))
+			if (this.#isWhisperForMe(msg))
 				this.#addIncomingMessageToHistory(msg);
 
 			// Everything left are public messages and are not processed.
@@ -295,21 +293,20 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		await super.render(false, { parts: [partId] }); // Note: This calls SUPER directly.
 	}
 
-	async renderHistoryPartial() {
+	async #renderHistoryPartial() {
 		await this.renderPart("history");
-		this.scrollHistoryToBottom();
+		this.#scrollHistoryToBottom();
 	}
 
 	// Without this, when pressing Ctrl+M while window is already shown, the window is incorrectly re-rendered fully.
 	async show() {
-		const instance = game.modules.get(MODULE_ID).instance;
-		if (!instance.rendered) await instance.render();
+		if (!this.rendered) await this.render();
 	}
 
 	_canDetach() { return false; }
 
-	scrollHistoryToBottom() {
-		const history = document.getElementById(`${MODULE_ID}-history`);
+	#scrollHistoryToBottom() {
+		const history = this.parts.history;
 		history.scrollTop = history.scrollHeight;
 	}
 
@@ -365,13 +362,12 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		this.users = usersData;
 	}
 
-	static async computeUsersDataAndRenderPartial() {
-		const instance = game.modules.get(MODULE_ID).instance;
-		instance.computeUsersData();
-		await instance.renderPart('users');
+	async computeUsersDataAndRenderPartial() {
+		Lame.computeUsersData();
+		await Lame.renderPart('users');
 	}
 
-	sendWhisperTo(userIds, msg) {
+	#sendWhisperTo(userIds, msg) {
 		const chatData = {
 			user: game.user.id,
 			content: msg,
@@ -380,26 +376,25 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		ChatMessage.create(chatData);
 	}
 
-	async _onKeyPressEvent(event, html) {
+	async _onKeyPressEvent(event) {
 		if ((event.code === "Enter") && event.ctrlKey) {
-			await this.sendMessage(html);
+			await this.#sendMessage();
 		}
 	}
 
-	async sendMessage(html) {
+	async #sendMessage() {
 		// Get message text:
-		const messageField = html.find('.message'),
-			messageText = messageField.val();
+		const messageText = Lame.ui.messageField.value;
 		if (messageText.length === 0) {
 			ui.notifications.error(localize("LAME.Notification.NoMessageToSend"));
 			return;
 		}
 
 		// Get selected user(s):
-		const checkedUserElements = html.find('input[id^="lame-messenger-user-"]:checked');
+		const checkedUserElements = document.querySelectorAll('input[id^="lame-messenger-user-"]:checked');
 		let selectedUserIds = [];
-		checkedUserElements.each(function () {
-			selectedUserIds.push(this.id.replace('lame-messenger-user-', ''));
+		checkedUserElements.forEach((user) => {
+			selectedUserIds.push(user.id.replace('lame-messenger-user-', ''));
 		});
 		if (selectedUserIds.length === 0) {
 			ui.notifications.error(localize("LAME.Notification.NoRecipientSelected"));
@@ -407,16 +402,16 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		}
 
 		// Send whisper(s):
-		this.sendWhisperTo(selectedUserIds, messageText);
+		this.#sendWhisperTo(selectedUserIds, messageText);
 		const selectedUserNames = this.#mapUsersIdsToNames(selectedUserIds);
-		this.addOutgoingTextToHistory(selectedUserNames, messageText);
-		await this.renderHistoryPartial();
+		this.#addOutgoingTextToHistory(selectedUserNames, messageText);
+		await this.#renderHistoryPartial();
 
 		// Clear message input field for next text:
-		messageField.val('');
+		Lame.ui.messageField.value = '';
 	}
 
-	async handleIncomingPrivateMessage(msg) {
+	async #handleIncomingPrivateMessage(msg) {
 		if (getSetting("showNotificationForNewWhisper")) {
 			ui.notifications.info(
 				`${localize("LAME.IncomingWhisperFrom")} ${msg.author.name}`,
@@ -429,7 +424,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 		if (!this.rendered) return this.render();
 
-		await this.renderHistoryPartial();
+		await this.#renderHistoryPartial();
 	}
 
 	async playNotificationSound() {
@@ -441,7 +436,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		 * According to browser network inspection, the file is at least not requested multiple times.
 		 */
 		await game.audio.create({
-			src: "modules/lame-messenger/sounds/pst-pst.ogg",
+			src: `${SOUNDS_PATH}/pst-pst.ogg`,
 			context: game.audio.interface,
 			singleton: false,
 			preload: true,
@@ -471,23 +466,23 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		return ids.map(id => getUserNameFromId(id, this.users));
 	}
 
-	addOutgoingMessageToHistory(msg) {
+	#addOutgoingMessageToHistory(msg) {
 		const recipientNames = this.#mapUsersIdsToNames(msg.whisper);
-		this.addOutgoingTextToHistory(recipientNames, msg.content, msg.timestamp);
+		this.#addOutgoingTextToHistory(recipientNames, msg.content, msg.timestamp);
 	}
 
-	addOutgoingTextToHistory(recipientNames, text, timestamp = null) {
+	#addOutgoingTextToHistory(recipientNames, text, timestamp = null) {
 		if (!timestamp) timestamp = Date.now();
 		const conjunctedRecipientNames = i18nLongConjunct(recipientNames);
 		// As Foundry can only send messages to a single recipient, the conjunction is only kept for in-memory history.
 		this.history.push([timestamp, 'out', conjunctedRecipientNames, text]);
 	}
 
-	isPublicMessage(msg) {
+	#isPublicMessage(msg) {
 		return !msg.whisper.length;
 	}
 
-	isWhisperForMe(msg) {
+	#isWhisperForMe(msg) {
 		if (msg.isAuthor      // outgoing whispers,
 			|| !msg.visible   // whispers where the current user is neither author nor recipient,
 			|| msg.isRoll     // and private dice rolls.
@@ -496,7 +491,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		return true;
 	}
 
-	isMessageGameSystemGenerated(msg) {
+	#isMessageGameSystemGenerated(msg) {
 		const systemGens = [
 			'<h3 class="nue">Getting Started</h3>',       // core: welcome to new world
 			'<h3 class="nue">Inviting Your Players</h3>', // core
@@ -507,7 +502,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		return systemGens.some((item) => msg.content.includes(item));
 	}
 
-	isMessageGameSystemSpecificRoll(msg) {
+	#isMessageGameSystemSpecificRoll(msg) {
 		if (msg._stats?.systemId === 'wfrp4e' && ( // Warhammer Fantasy 4e (system doesn't implement #isRoll)
 			msg.type === 'test' // skill or attribute tests
 			|| msg.type === 'handler' // opposed test handler messages
@@ -517,7 +512,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		return false;
 	}
 
-	isMessageModuleGenerated(msg) {
+	#isMessageModuleGenerated(msg) {
 		const moduleWelcomes = [
 			'<div class="dice-so-nice">',  // Dice So Nice
 			'<p>Welcome to Plutonium!</p>' // Plutonium
