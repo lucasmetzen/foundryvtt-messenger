@@ -3,8 +3,7 @@ name: Release checklist
 about: When releasing a new version, go through this checklist first.
 title: '🔖Release X.Y.Z (checklist)'
 labels: release
-assignees:
-  - @lucasmetzen
+assignees: @lucasmetzen
 
 ---
 
