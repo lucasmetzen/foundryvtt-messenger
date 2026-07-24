@@ -25,7 +25,7 @@ If you answered at least one of those questions with "Yes", then LAME Messenger 
 - Dedicated messenger-style window for sending and receiving whispers with chat history
 - Send a message to multiple recipients at the same time:  
   ![message sent to two users](https://github.com/lucasmetzen/foundryvtt-messenger/blob/main/docs/README-message-sent-to-two-users.webp?raw=true)
-- Visual and optional acoustic notifications (`pst-pst` sound) for incoming whisper
+- Visual and optional acoustic notifications (customizable or `pst-pst`sound) for incoming whisper
 - Fast access to the messenger window when you need it:
   - Via configurable keyboard shortcut, `Ctrl-M` by default (`Cmd-M` on MacOS)
   - Via button in the chat sidebar:
@@ -50,7 +50,8 @@ This module can be installed automatically from the Foundry Virtual Tabletop mod
 
 - Show notification message for incoming whisper
 - Notification message is displayed until dismissed
-- Play notification `pst-pst` sound for incoming whisper
+- Play notification sound for incoming whisper
+- Select sound file to be played as notification for incoming whisper (`pst-pst` sound by default)
 - Show currently disconnected users in user selection (grayed out):  
   ![disconnected users shown](https://github.com/lucasmetzen/foundryvtt-messenger/blob/main/docs/README-disconnected-users-shown.webp?raw=true)
 - Customisable keyboard shortcut for opening the window (via "Configure Controls" dialogue)
