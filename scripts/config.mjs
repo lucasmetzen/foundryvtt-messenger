@@ -5,7 +5,8 @@ export const MODULE_ID = "lame-messenger",
 const PATH = `modules/${MODULE_ID}`,
 	TEMPLATES_PATH = `${PATH}/templates`;
 
-export const SOUNDS_PATH = `${PATH}/sounds`,
+export const
+	DEFAULT_NOTIFICATION_SOUND_FILE = `${PATH}/sounds/pst-pst.ogg`,
 	TEMPLATE_PARTS_PATH = `${TEMPLATES_PATH}/parts`;
 
 export function localize(stringId) {

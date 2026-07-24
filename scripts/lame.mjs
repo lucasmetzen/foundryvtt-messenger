@@ -1,4 +1,4 @@
-import {localize, MODULE_ICON_CLASSES, TEMPLATE_PARTS_PATH, SOUNDS_PATH} from "./config.mjs";
+import {localize, MODULE_ICON_CLASSES, TEMPLATE_PARTS_PATH} from "./config.mjs";
 import {getSetting, registerSettings} from "./settings.mjs";
 import {registerKeybindings} from "./keybindings.mjs";
 import {registerHandlebarsHelpers} from "./helpers/handlebars-helpers.mjs";
@@ -128,6 +128,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		super(app);
 		this.history = [];
 		this.settings = {
+			notificationSoundFile: getSetting('notificationSoundFile'),
 			playNotificationSound: getSetting("playNotificationSoundForNewWhisper")
 		};
 	}
@@ -436,7 +437,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		 * According to browser network inspection, the file is at least not requested multiple times.
 		 */
 		await game.audio.create({
-			src: `${SOUNDS_PATH}/pst-pst.ogg`,
+			src: Lame.settings.notificationSoundFile,
 			context: game.audio.interface,
 			singleton: false,
 			preload: true,
