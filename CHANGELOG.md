@@ -1,5 +1,12 @@
 # Lucas's Awesome Messenger Extension, or short: LAME Messenger
 
+## 4.6.0 (2026-07-24): Choose your own ~~adventure~~ notification sound
+### ✨ Improvement
+* Add setting to allow users to select any sound file as notification sound for incoming whispers
+
+### Maintenance
+* Refactoring, mostly members encapsulation
+
 ## 4.5.0 (2026-07-21): "Is it Foundry VTT v14 already?!"
 ### Improvements
 - ✨ Add support for UI changes in Foundry VTT v14
