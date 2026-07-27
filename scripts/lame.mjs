@@ -88,7 +88,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 	// Provides template parts with scoped dynamic data:
 	/** @override */
-	async _preparePartContext(partId, context) {
+	async _preparePartContext(partId, context, options) {
 		switch ( partId ) {
 			case "history":
 				context.history = this.#beautifyHistory();
@@ -373,13 +373,13 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		await Lame.renderPart('users');
 	}
 
-	#sendWhisperTo(userIds, msg) {
+	async #sendWhisperTo(userIds, msg) {
 		const chatData = {
 			user: game.user.id,
 			content: msg,
 			whisper: userIds
 		};
-		ChatMessage.create(chatData);
+		await ChatMessage.create(chatData);
 	}
 
 	async _onKeyPressEvent(event) {
@@ -408,7 +408,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		}
 
 		// Send whisper(s):
-		this.#sendWhisperTo(selectedUserIds, messageText);
+		await this.#sendWhisperTo(selectedUserIds, messageText);
 		const selectedUserNames = this.#mapUsersIdsToNames(selectedUserIds);
 		this.#addOutgoingTextToHistory(selectedUserNames, messageText);
 		await this.#renderHistoryPartial();

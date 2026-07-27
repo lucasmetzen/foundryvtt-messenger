@@ -45,10 +45,10 @@ export function registerSettings() {
 		type: String,
 		default: DEFAULT_NOTIFICATION_SOUND_FILE,
 		filePicker: "audio",
-		onChange: value => {
+		onChange: async (value) => {
 			if (value === '') {
 				value = DEFAULT_NOTIFICATION_SOUND_FILE;
-				game.settings.set(MODULE_ID, 'notificationSoundFile', value);
+				await game.settings.set(MODULE_ID, 'notificationSoundFile', value);
 				// Setting the value to default triggers the onChange again. Since it only assigns the value to
 				//   the member in Lame, we can ignore it.
 			}
@@ -64,8 +64,8 @@ export function registerSettings() {
 		type: Boolean,
 		default: false,
 		requiresReload: false,
-		onChange: () => {
-			window.ui.controls.render();
+		onChange: async () => {
+			await window.ui.controls.render();
 		}
 	});
 
