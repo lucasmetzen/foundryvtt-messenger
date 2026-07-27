@@ -169,9 +169,8 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		return openerButton;
 	}
 
+	// v13+ only
 	onCollapseSidebar(_app, collapsed) {
-		if (game.release.generation < 13) return;
-
 		// Inspired by ChatLog#_toggleNotifications()
 		const embedInput = (!collapsed && ui.chat.active);
 		// Here, as in all static functions (needed for Hooks), `this` is the Hook object.
@@ -179,9 +178,8 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		else Lame.#moveOpenerButtonToNotificationArea();
 	}
 
+	// v12 only
 	onChangeSidebarTab(app) {
-		if (game.release.generation < 13) return;
-
 		// TODO: Check if this can be done differently without triggering so many times, possibly not doing anything at all.
 		//  Consider adding boolean member #sidebarChatVisible or similar.
 		if (app.id === "chat") Lame.#moveOpenerButtonToSidebar()

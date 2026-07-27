@@ -9,13 +9,13 @@ Hooks.once('ready', async () => {
 	Lame.computeUsersData();
 	await Lame.populateHistoryFromWorldMessages();
 
-	Hooks.on("collapseSidebar", Lame.onCollapseSidebar);
-	Hooks.on("changeSidebarTab", Lame.onChangeSidebarTab);
 	Hooks.on("createChatMessage", Lame.onCreateChatMessage);
 	Hooks.on('userConnected', Lame.computeUsersDataAndRenderPartial); // Update internal user list when user (dis)connects.
 	Hooks.on('clientSettingChanged', Lame.onClientSettingChanged);
 
 	if (game.release.generation > 12) {
+		Hooks.on("collapseSidebar", Lame.onCollapseSidebar); // v13+ only
+
 		const settingPipOrCards = game.settings.get('core', 'uiConfig').chatNotifications; // "cards" | "pip" (default)
 		if (settingPipOrCards === 'cards') {
 			// TODO: Check if there is a better way for the initial adding of the button to the notification area.
@@ -25,6 +25,8 @@ Hooks.once('ready', async () => {
 		} else {
 			Lame.addOpenerButtonToNotificationAreaAsStandalone();
 		}
+	} else {
+		Hooks.on("changeSidebarTab", Lame.onChangeSidebarTab); // v12 only
 	}
 });
 
