@@ -75,7 +75,6 @@ This module can be installed automatically from the Foundry Virtual Tabletop mod
 ## 💡 Planned features
 
 - Tabbed chat for each user
-- Configurable notification sound
 - Detachable messenger window (pop-out browser window)
 - Configurable keyboard shortcuts (insert line break while typing message, and send message)
 - Option to show the character's portrait image instead of the user's avatar if the user has an associated actor
