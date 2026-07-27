@@ -6,3 +6,6 @@ tmp/
 
 # Foundry VTT's file used to lock module, preventing automatic updates:
 *.lock
+
+# IntelliJ / Intellisense setup based on: https://foundryvtt.wiki/en/development/guides/improving-intellisense
+/foundryvtt-*/

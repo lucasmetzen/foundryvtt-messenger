@@ -36,7 +36,7 @@ export function registerSettings() {
 			Lame.settings.playNotificationSound = value;
 		}
 	});
-	
+
 	registerSetting("notificationSoundFile", {
 		name: "Notification sound file",
 		hint: 'The sound file to play as notification upon receiving a new whisper. Leave the field blank to reset to the default "pst-pst" sound.',
@@ -45,17 +45,17 @@ export function registerSettings() {
 		type: String,
 		default: DEFAULT_NOTIFICATION_SOUND_FILE,
 		filePicker: "audio",
-		onChange: value => {
+		onChange: async (value) => {
 			if (value === '') {
 				value = DEFAULT_NOTIFICATION_SOUND_FILE;
-				game.settings.set(MODULE_ID, 'notificationSoundFile', value);
+				await game.settings.set(MODULE_ID, 'notificationSoundFile', value);
 				// Setting the value to default triggers the onChange again. Since it only assigns the value to
 				//   the member in Lame, we can ignore it.
 			}
 			Lame.settings.notificationSoundFile = value;
 		}
 	});
-	
+
 	registerSetting('buttonInSceneControlToolbar', {
 		name: "LAME.Setting.ButtonInSceneControlToolbar",
 		hint: "LAME.Setting.ButtonInSceneControlToolbarHint",
@@ -64,8 +64,8 @@ export function registerSettings() {
 		type: Boolean,
 		default: false,
 		requiresReload: false,
-		onChange: () => {
-			window.ui.controls.render();
+		onChange: async () => {
+			await window.ui.controls.render();
 		}
 	});
 

@@ -40,7 +40,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 	/** @override */
 	static PARTS = {
-		// Can be access like this: this.constructor.PARTS[partId]
+		// Can be accessed like this: this.constructor.PARTS[partId]
 		users: {
 			id: "users",
 			classes: ["users"],
@@ -60,9 +60,14 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 	/**
 	 * The object holding HTML elements of LAME's UI for easy access.
-	 * @type {{chatbarButton: HTMLDivElement, messageField: HTMLDivElement}}
 	 */
-	ui = {};
+	ui = {
+		openerButton: this.#generateOpenerButton(),
+		core: {
+			chatControls: document.getElementById("chat-controls")
+		},
+		messageField: null // Declaration here not needed but adding it signals the field's existence to the IDE.
+	};
 
 	/**
 	 * The internally relevant users' data. Populated by {@link computeUsersData}.
@@ -83,8 +88,8 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 	// Provides template parts with scoped dynamic data:
 	/** @override */
-	async _preparePartContext(partId, context) {
-		switch ( partId ) {
+	async _preparePartContext(partId, context, options) {
+		switch (partId) {
 			case "history":
 				context.history = this.#beautifyHistory();
 				break;
@@ -95,8 +100,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		return context;
 	}
 
-	_onRender(_context, _options) {
-	}
+	_onRender(_context, _options) { }
 
 	_onFirstRender(_context, _options) {
 		/* Create div and move some of the partial elements into it. This is needed to maintain the ability to re-render
@@ -139,31 +143,30 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		registerHandlebarsHelpers();
 
 		Lame = new LAME();
-		Lame.ui.chatbarButton = Lame.#generateChatbarButton(); // TODO: Rename it as it's not always in the chatbar.
 	}
 
-	#generateChatbarButton() {
-		let chatbarButtonHtml;
+	#generateOpenerButton() {
+		let openerButtonHtml;
 		if (game.release.generation < 13) {
-			chatbarButtonHtml = `
+			openerButtonHtml = `
 				<a aria-label="${localize("LAME.Module.ShortTitle")}" role="button" class="lame-messenger" data-tooltip="LAME.Module.ShortTitle">
 					<i class="${MODULE_ICON_CLASSES}"></i>
 				</a>`;
 		} else {
-			chatbarButtonHtml = `<div id="lame-messenger-button" class="split-button">
+			openerButtonHtml = `<div id="lame-messenger-button" class="split-button">
 					<button type="button" class="ui-control icon ${MODULE_ICON_CLASSES}" data-tooltip="LAME.Module.ShortTitle"
 					aria-pressed="false"></button>
 				</div>`;
 		}
 
-		let chatbarButton = (game.release.generation < 13)
-			? foundry.applications.parseHTML(chatbarButtonHtml)
-			: foundry.utils.parseHTML(chatbarButtonHtml);
-		chatbarButton.addEventListener('click', async (_event) => {
+		let openerButton = (game.release.generation < 13)
+			? foundry.applications.parseHTML(openerButtonHtml)
+			: foundry.utils.parseHTML(openerButtonHtml);
+		openerButton.addEventListener('click', async (_event) => {
 			await Lame.show();
 		});
 
-		return chatbarButton;
+		return openerButton;
 	}
 
 	onCollapseSidebar(_app, collapsed) {
@@ -172,54 +175,57 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		// Inspired by ChatLog#_toggleNotifications()
 		const embedInput = (!collapsed && ui.chat.active);
 		// Here, as in all static functions (needed for Hooks), `this` is the Hook object.
-		if (embedInput) Lame.#moveChatbarButtonToSidebar()
-		else Lame.#moveChatbarButtonToNotificationArea();
+		if (embedInput) Lame.#moveOpenerButtonToSidebar()
+		else Lame.#moveOpenerButtonToNotificationArea();
 	}
 
 	onChangeSidebarTab(app) {
 		if (game.release.generation < 13) return;
 
 		// TODO: Check if this can be done differently without triggering so many times, possibly not doing anything at all.
-		//  Consider adding boolean member #chatbarVisible or similar.
-		if (app.id === "chat") Lame.#moveChatbarButtonToSidebar()
-		else Lame.#moveChatbarButtonToNotificationArea();
+		//  Consider adding boolean member #sidebarChatVisible or similar.
+		if (app.id === "chat") Lame.#moveOpenerButtonToSidebar()
+		else Lame.#moveOpenerButtonToNotificationArea();
 	}
 
-	#moveChatbarButtonToSidebar() {
-		this.ui.chatbarButton.classList.remove('standalone-for-pip'); // In case this is present.
+	#moveOpenerButtonToSidebar() {
+		this.ui.openerButton.classList.remove('standalone-for-pip'); // In case this is present.
 
 		// TODO: Check if there is a Foundry way to use a scoped sidebar part of the DOM instead of document.
 		const selector = (game.release.generation < 14) ? "#roll-privacy" : "#message-modes";
-		document.querySelector(selector).after(this.ui.chatbarButton);
+		document.querySelector(selector).after(this.ui.openerButton);
 	}
 
-	#moveChatbarButtonToNotificationArea() {
+	#moveOpenerButtonToNotificationArea() {
 		if (game.settings.get('core', 'uiConfig').chatNotifications === 'pip') {
-			Lame.addChatbarButtonToNotificationAreaAsStandalone();
+			Lame.addOpenerButtonToNotificationAreaAsStandalone();
 		} else {
-			document.getElementById("chat-controls").prepend(this.ui.chatbarButton);
+			// TODO: possibly store the queried element (test if that is a reference but it should be)
+			document.getElementById("chat-controls").prepend(this.ui.openerButton);
 		}
 	}
 
 	// v13+: Add/Remove standalone Messenger button when chat notification is set to pip/cards, respectively.
 	onClientSettingChanged(settingPath, options) {
-		if (settingPath !== "core.uiConfig" || game.release.generation < 13) return;
+		if (settingPath !== "core.uiConfig"
+			|| game.release.generation < 13
+			|| (ui.sidebar.expanded && ui.sidebar.tabGroups.primary === "chat")) return;
 
 		if (options.chatNotifications === "pip") {
-			Lame.addChatbarButtonToNotificationAreaAsStandalone();
+			Lame.addOpenerButtonToNotificationAreaAsStandalone();
 			log("Chat Notifications setting changed to 'pip': added Messenger button as standalone to notifications area.")
 		} else if (options.chatNotifications === "cards") {
-			Lame.ui.chatbarButton.classList.remove('standalone-for-pip'); // Works.
+			Lame.ui.openerButton.classList.remove('standalone-for-pip'); // Works.
 			// Foundry calls `renderChatInput` hook before `clientSettingChanged` to render the `#chat-controls` element.
 			//   We can therefore move the button ourselves without using `Hooking.once("renderChatInput")` for timing.
-			Lame.#moveChatbarButtonToNotificationArea();
+			Lame.#moveOpenerButtonToNotificationArea();
 			log("Chat Notifications setting changed to 'cards': removed standalone Messenger button from notifications area.")
 		}
 	}
 
-	addChatbarButtonToNotificationAreaAsStandalone() {
-		document.getElementById("chat-notifications").append(Lame.ui.chatbarButton);
-		Lame.ui.chatbarButton.classList.add('standalone-for-pip');
+	addOpenerButtonToNotificationAreaAsStandalone() {
+		document.getElementById("chat-notifications").append(Lame.ui.openerButton);
+		Lame.ui.openerButton.classList.add('standalone-for-pip');
 	}
 
 	async onCreateChatMessage(msg, _options, _senderUserId) {
@@ -311,7 +317,6 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		history.scrollTop = history.scrollHeight;
 	}
 
-
 	/** Return object with relevant user data.
 	 *  @type {Object}
 	 *  @example
@@ -330,16 +335,16 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 			// Exclude inactive user unless inactive users should be shown:
 			if (!user.active && !showInactiveUsers) return true;
 
+			// Foundry v13+:
+			if (usersToExclude instanceof Set
+				&& usersToExclude.size > 0
+				&& usersToExclude.has(user.id)
+			) return true;
+
 			// Foundry v12:
 			if (Array.isArray(usersToExclude)
 				&& usersToExclude.length > 0
 				&& usersToExclude.includes(user.id)
-			) return true;
-
-			// Foundry v13:
-			if (usersToExclude instanceof Set
-				&& usersToExclude.size > 0
-				&& usersToExclude.has(user.id)
 			) return true;
 
 			return false;
@@ -368,13 +373,13 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		await Lame.renderPart('users');
 	}
 
-	#sendWhisperTo(userIds, msg) {
+	async #sendWhisperTo(userIds, msg) {
 		const chatData = {
 			user: game.user.id,
 			content: msg,
 			whisper: userIds
 		};
-		ChatMessage.create(chatData);
+		await ChatMessage.create(chatData);
 	}
 
 	async _onKeyPressEvent(event) {
@@ -403,7 +408,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		}
 
 		// Send whisper(s):
-		this.#sendWhisperTo(selectedUserIds, messageText);
+		await this.#sendWhisperTo(selectedUserIds, messageText);
 		const selectedUserNames = this.#mapUsersIdsToNames(selectedUserIds);
 		this.#addOutgoingTextToHistory(selectedUserNames, messageText);
 		await this.#renderHistoryPartial();
@@ -459,9 +464,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	#mapUsersIdsToNames(ids) {
 		function getUserNameFromId(id, users) {
 			// If user does not exist, it was either deleted in the world, or is excluded via settings.
-			if (!users[id]) return "unknown";
-
-			return users[id].name;
+			return (!users[id]) ? "unknown" : users[id].name;
 		}
 
 		return ids.map(id => getUserNameFromId(id, this.users));
@@ -480,16 +483,13 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 
 	#isPublicMessage(msg) {
-		return !msg.whisper.length;
+		return !msg.whisper.length; // no whisper recipients
 	}
 
 	#isWhisperForMe(msg) {
-		if (msg.isAuthor      // outgoing whispers,
+		return !(msg.isAuthor // outgoing whispers,
 			|| !msg.visible   // whispers where the current user is neither author nor recipient,
-			|| msg.isRoll     // and private dice rolls.
-		) return false;
-
-		return true;
+			|| msg.isRoll);   // and private dice rolls.
 	}
 
 	#isMessageGameSystemGenerated(msg) {
@@ -504,13 +504,11 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 
 	#isMessageGameSystemSpecificRoll(msg) {
-		if (msg._stats?.systemId === 'wfrp4e' && ( // Warhammer Fantasy 4e (system doesn't implement #isRoll)
-			msg.type === 'test' // skill or attribute tests
+		return msg._stats?.systemId === 'wfrp4e' && ( // Warhammer Fantasy 4e (system doesn't implement #isRoll)
+			msg.type === 'test'       // skill or attribute tests
 			|| msg.type === 'handler' // opposed test handler messages
 			|| msg.type === 'opposed' // opposed test results
-		)) return true;
-
-		return false;
+		);
 	}
 
 	#isMessageModuleGenerated(msg) {

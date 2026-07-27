@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "module": "ES2022",
+    "target": "ES2022",
+    "paths": {
+      "@client/*": ["./foundryvtt-14-365/client/*"],
+      "@common/*": ["./foundryvtt-14-365/common/*"]
+    }
+  },
+  "exclude": ["node_modules", "**/node_modules/*"],
+  "include": ["./module.mjs",
+    "foundryvtt-14-365/client/client.mjs",
+    "foundryvtt-14-365/client/global.d.mts",
+    "foundryvtt-14-365/common/global.d.mts",
+    ".d.ts"],
+  "typeAcquisition": {
+    "include": ["jquery"]
+  }
+}
