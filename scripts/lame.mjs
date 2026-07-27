@@ -169,6 +169,23 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		return openerButton;
 	}
 
+	async onReady(){
+		this.computeUsersData();
+		await this.populateHistoryFromWorldMessages();
+
+		if (game.release.generation < 13) return;
+
+		const settingPipOrCards = game.settings.get('core', 'uiConfig').chatNotifications; // "cards" | "pip" (default)
+		if (settingPipOrCards === 'cards') {
+			// TODO: Check if there is a better way for the initial adding of the button to the notification area.
+			//   Could use `renderChatLog` (or check if e.g. `renderChatNotification` exists). But I'd say it's fine for now.
+			// Initial display button in notification area if sidebar is collapsed:
+			if (!ui.sidebar.expanded) this.onCollapseSidebar(undefined, true);
+		} else {
+			this.addOpenerButtonToNotificationAreaAsStandalone();
+		}
+	}
+
 	// v13+ only
 	onCollapseSidebar(_app, collapsed) {
 		// Inspired by ChatLog#_toggleNotifications()
@@ -184,6 +201,28 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		//  Consider adding boolean member #sidebarChatVisible or similar.
 		if (app.id === "chat") Lame.#moveOpenerButtonToSidebar()
 		else Lame.#moveOpenerButtonToNotificationArea();
+	}
+
+	// Add button to chat controls (v12 only)
+	onRenderSceneControlsV12(_controls, html) {
+		if (!getSetting("buttonInSceneControlToolbar")) return;
+
+		const sceneControlButtonHtml = `<li class="scene-control control-tool toggle" data-tooltip="LAME.Module.ShortTitle">
+				<i class="${MODULE_ICON_CLASSES}"></i>
+			</li>`;
+		let sceneControlButton = foundry.applications.parseHTML(sceneControlButtonHtml);
+		sceneControlButton.addEventListener('click', async (_event) => {
+			await Lame.show();
+		});
+
+		html.find('.control-tools').find('.scene-control').last().after(sceneControlButton);
+	}
+
+	// Add button to chat controls (v12 only)
+	async onRenderSidebarTabV12(app, html, _data) {
+		if (app.tabName !== "chat" || !getSetting("buttonInChatControls")) return;
+
+		html.find("#chat-controls select.roll-type-select").after(Lame.ui.openerButton);
 	}
 
 	#moveOpenerButtonToSidebar() {
