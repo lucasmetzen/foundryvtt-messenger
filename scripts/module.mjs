@@ -23,7 +23,7 @@ Hooks.once('ready', async () => {
 			// Initial display button in notification area if sidebar is collapsed:
 			if (!ui.sidebar.expanded) Lame.onCollapseSidebar(undefined, true);
 		} else {
-			Lame.addChatbarButtonToNotificationAreaAsStandalone();
+			Lame.addOpenerButtonToNotificationAreaAsStandalone();
 		}
 	}
 });
@@ -50,5 +50,5 @@ Hooks.on("renderSidebarTab", async (app, html, _data) => {
 
 	if (app.tabName !== "chat" || !getSetting("buttonInChatControls")) return;
 
-	html.find("#chat-controls select.roll-type-select").after(Lame.ui.chatbarButton);
+	html.find("#chat-controls select.roll-type-select").after(Lame.ui.openerButton);
 });
