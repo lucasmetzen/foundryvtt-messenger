@@ -60,9 +60,14 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 	/**
 	 * The object holding HTML elements of LAME's UI for easy access.
-	 * @type {{openerButton: HTMLDivElement, messageField: HTMLDivElement}}
 	 */
-	ui = {};
+	ui = {
+		openerButton: this.#generateOpenerButton(),
+		core: {
+			chatControls: document.getElementById("chat-controls")
+		},
+		messageField: null // Declaration here not needed but adding it signals the field's existence to the IDE.
+	};
 
 	/**
 	 * The internally relevant users' data. Populated by {@link computeUsersData}.
@@ -139,7 +144,6 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		registerHandlebarsHelpers();
 
 		Lame = new LAME();
-		Lame.ui.chatbarButton = Lame.#generateChatbarButton(); // TODO: Rename it as it's not always in the chatbar.
 	}
 
 	#generateOpenerButton() {
