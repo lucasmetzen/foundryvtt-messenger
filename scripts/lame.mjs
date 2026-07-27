@@ -208,7 +208,9 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 	// v13+: Add/Remove standalone Messenger button when chat notification is set to pip/cards, respectively.
 	onClientSettingChanged(settingPath, options) {
-		if (settingPath !== "core.uiConfig" || game.release.generation < 13) return;
+		if (settingPath !== "core.uiConfig"
+			|| game.release.generation < 13
+			|| (ui.sidebar.expanded && ui.sidebar.tabGroups.primary === "chat")) return;
 
 		if (options.chatNotifications === "pip") {
 			Lame.addOpenerButtonToNotificationAreaAsStandalone();
