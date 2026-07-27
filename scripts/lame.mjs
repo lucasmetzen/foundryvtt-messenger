@@ -40,7 +40,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 
 	/** @override */
 	static PARTS = {
-		// Can be access like this: this.constructor.PARTS[partId]
+		// Can be accessed like this: this.constructor.PARTS[partId]
 		users: {
 			id: "users",
 			classes: ["users"],
@@ -89,7 +89,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	// Provides template parts with scoped dynamic data:
 	/** @override */
 	async _preparePartContext(partId, context, options) {
-		switch ( partId ) {
+		switch (partId) {
 			case "history":
 				context.history = this.#beautifyHistory();
 				break;
@@ -100,8 +100,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		return context;
 	}
 
-	_onRender(_context, _options) {
-	}
+	_onRender(_context, _options) { }
 
 	_onFirstRender(_context, _options) {
 		/* Create div and move some of the partial elements into it. This is needed to maintain the ability to re-render
@@ -318,7 +317,6 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 		history.scrollTop = history.scrollHeight;
 	}
 
-
 	/** Return object with relevant user data.
 	 *  @type {Object}
 	 *  @example
@@ -337,16 +335,16 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 			// Exclude inactive user unless inactive users should be shown:
 			if (!user.active && !showInactiveUsers) return true;
 
+			// Foundry v13+:
+			if (usersToExclude instanceof Set
+				&& usersToExclude.size > 0
+				&& usersToExclude.has(user.id)
+			) return true;
+
 			// Foundry v12:
 			if (Array.isArray(usersToExclude)
 				&& usersToExclude.length > 0
 				&& usersToExclude.includes(user.id)
-			) return true;
-
-			// Foundry v13:
-			if (usersToExclude instanceof Set
-				&& usersToExclude.size > 0
-				&& usersToExclude.has(user.id)
 			) return true;
 
 			return false;
@@ -466,9 +464,7 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	#mapUsersIdsToNames(ids) {
 		function getUserNameFromId(id, users) {
 			// If user does not exist, it was either deleted in the world, or is excluded via settings.
-			if (!users[id]) return "unknown";
-
-			return users[id].name;
+			return (!users[id]) ? "unknown" : users[id].name;
 		}
 
 		return ids.map(id => getUserNameFromId(id, this.users));
@@ -487,16 +483,13 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 
 	#isPublicMessage(msg) {
-		return !msg.whisper.length;
+		return !msg.whisper.length; // no whisper recipients
 	}
 
 	#isWhisperForMe(msg) {
-		if (msg.isAuthor      // outgoing whispers,
+		return !(msg.isAuthor // outgoing whispers,
 			|| !msg.visible   // whispers where the current user is neither author nor recipient,
-			|| msg.isRoll     // and private dice rolls.
-		) return false;
-
-		return true;
+			|| msg.isRoll);   // and private dice rolls.
 	}
 
 	#isMessageGameSystemGenerated(msg) {
@@ -511,13 +504,11 @@ export class LAME extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 
 	#isMessageGameSystemSpecificRoll(msg) {
-		if (msg._stats?.systemId === 'wfrp4e' && ( // Warhammer Fantasy 4e (system doesn't implement #isRoll)
-			msg.type === 'test' // skill or attribute tests
+		return msg._stats?.systemId === 'wfrp4e' && ( // Warhammer Fantasy 4e (system doesn't implement #isRoll)
+			msg.type === 'test'       // skill or attribute tests
 			|| msg.type === 'handler' // opposed test handler messages
 			|| msg.type === 'opposed' // opposed test results
-		)) return true;
-
-		return false;
+		);
 	}
 
 	#isMessageModuleGenerated(msg) {

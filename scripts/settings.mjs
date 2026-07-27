@@ -36,7 +36,7 @@ export function registerSettings() {
 			Lame.settings.playNotificationSound = value;
 		}
 	});
-	
+
 	registerSetting("notificationSoundFile", {
 		name: "Notification sound file",
 		hint: 'The sound file to play as notification upon receiving a new whisper. Leave the field blank to reset to the default "pst-pst" sound.',
@@ -55,7 +55,7 @@ export function registerSettings() {
 			Lame.settings.notificationSoundFile = value;
 		}
 	});
-	
+
 	registerSetting('buttonInSceneControlToolbar', {
 		name: "LAME.Setting.ButtonInSceneControlToolbar",
 		hint: "LAME.Setting.ButtonInSceneControlToolbarHint",
