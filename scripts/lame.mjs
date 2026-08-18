@@ -1,4 +1,4 @@
-import {localize, MODULE_ICON_CLASSES, TEMPLATE_PARTS_PATH} from "./config.mjs";
+import {localize, MODULE_ICON_CLASSES, MODULE_ID, TEMPLATE_PARTS_PATH} from "./config.mjs";
 import {getSetting, registerSettings} from "./settings.mjs";
 import {registerKeybindings} from "./keybindings.mjs";
 import {registerHandlebarsHelpers} from "./helpers/handlebars-helpers.mjs";
