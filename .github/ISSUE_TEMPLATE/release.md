@@ -19,3 +19,4 @@ assignees: lucasmetzen
     - [ ] Merge to `main`
 - [ ] Publish release
 - [ ] Verify new release on [Foundry's package page](https://foundryvtt.com/packages/lame-messenger)
+- [ ] Download module from Foundry VTT's catalogue and re-verify functionality 
