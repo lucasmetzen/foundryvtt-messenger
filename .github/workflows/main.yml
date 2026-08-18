@@ -1,4 +1,5 @@
-# GitHub Actions workflow for creating a new FoundryVTT module release.
+# GitHub Actions workflow for creating a new FoundryVTT module release, based on
+# https://github.com/League-of-Foundry-Developers/FoundryVTT-Module-Template/blob/master/.github/workflows/main.yml
 #
 # Useful References:
 #   - https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions
