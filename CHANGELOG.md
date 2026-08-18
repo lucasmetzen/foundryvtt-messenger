@@ -1,6 +1,17 @@
 # Lucas's Awesome Messenger Extension, or short: LAME Messenger
 
-## 4.6.1 (2026-08-18)
+## 4.6.2 (2026-08-18): The "Apologies!" Edition
+I have accidentally broken the module since version 4.6.0 without noticing until now, even with the amount of testing I'm usually doing. 🤦
+
+That left you without the working module for a month and I apologise for this!
+I have amended my release checklist to avoid this and am taking further measures to improve testing.
+
+(If you are really interested in the boring details, feel free to have a look here: https://github.com/lucasmetzen/foundryvtt-messenger/pull/153)
+
+### Fixes
+* 🚑️Fix missing MODULE_ID import in https://github.com/lucasmetzen/foundryvtt-messenger/pull/153
+
+## 4.6.1b (2026-08-18)
 ### ✅ Testing
 * Compatibility with Foundry VTT v14.366 verified
 
